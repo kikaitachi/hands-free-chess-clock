@@ -18,5 +18,5 @@ jobs:
           python -m pip install ninja
       - name: Build
         run: |
-          cmake -B build -T Ninja
+          cmake -B build -G Ninja
           cmake --build build
