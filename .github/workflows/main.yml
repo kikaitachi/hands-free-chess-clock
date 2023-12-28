@@ -15,6 +15,7 @@ jobs:
           echo 'deb [signed-by=/usr/share/keyrings/kitware-archive-keyring.gpg] https://apt.kitware.com/ubuntu/ jammy main' | sudo tee /etc/apt/sources.list.d/kitware.list >/dev/null
           sudo apt-get update
           sudo apt-get install cmake
+          python -m pip install ninja
       - name: Build
         run: |
           cmake -B build -T ninja
