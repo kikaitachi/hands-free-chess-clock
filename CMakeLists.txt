@@ -21,7 +21,9 @@ target_sources(${PROJECT_NAME}
 target_sources(${PROJECT_NAME}
   PUBLIC
     FILE_SET modules TYPE CXX_MODULES FILES
+    src/audio_capture.cpp
     src/control_loop.cpp
+    src/video_capture.cpp
 )
 target_link_libraries (${PROJECT_NAME} ${ALSA_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
