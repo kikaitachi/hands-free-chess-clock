@@ -2,6 +2,7 @@ module;
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 #include <alsa/asoundlib.h>
 
 export module audio_capture;
