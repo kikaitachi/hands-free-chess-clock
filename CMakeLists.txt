@@ -8,6 +8,8 @@ set(CMAKE_CXX_SCAN_FOR_MODULES True)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -stdlib=libc++")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ -lc++abi")
 
+find_package(ALSA REQUIRED)
+include_directories(${ALSA_INCLUDE_DIRS})
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
@@ -21,4 +23,5 @@ target_sources(${PROJECT_NAME}
     FILE_SET modules TYPE CXX_MODULES FILES
     src/control_loop.cpp
 )
+target_link_libraries (${PROJECT_NAME} ${ALSA_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
