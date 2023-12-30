@@ -13,9 +13,16 @@ include_directories(${ALSA_INCLUDE_DIRS})
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
+include(FetchContent)
+FetchContent_Declare(whisper.cpp
+  GIT_REPOSITORY https://github.com/ggerganov/whisper.cpp.git
+  GIT_TAG v1.5.2
+)
+FetchContent_MakeAvailable(whisper.cpp)
+
 add_executable(${PROJECT_NAME})
 target_sources(${PROJECT_NAME}
-    PUBLIC
+  PUBLIC
     src/main.cpp
 )
 target_sources(${PROJECT_NAME}
@@ -25,5 +32,8 @@ target_sources(${PROJECT_NAME}
     src/control_loop.cpp
     src/video_capture.cpp
 )
-target_link_libraries (${PROJECT_NAME} ${ALSA_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} ${OpenCV_LIBS})
+target_link_libraries(${PROJECT_NAME}
+  ${ALSA_LIBRARIES}
+  ${OpenCV_LIBS}
+  whisper
+)
