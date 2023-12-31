@@ -30,6 +30,7 @@ target_sources(${PROJECT_NAME}
     FILE_SET modules TYPE CXX_MODULES FILES
     src/audio_capture.cpp
     src/control_loop.cpp
+    scr/speech_to_text.cpp
     src/video_capture.cpp
 )
 target_link_libraries(${PROJECT_NAME}
