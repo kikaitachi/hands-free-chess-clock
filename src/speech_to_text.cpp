@@ -12,5 +12,5 @@ export class SpeechToText {
     ctx = whisper_init_from_file_with_params("base", cparams);
   }
  private:
-  struct whisper_context* ctx;
+  whisper_context* ctx;
 };
