@@ -31,6 +31,19 @@ export class AudioCapture {
       fprintf(stderr, "Can't set sample format (%s)\n", snd_strerror(err));
       exit (1);
     }
+    if ((err = snd_pcm_hw_params_set_rate_near(capture_handle, hw_params, sample_rate, 0)) < 0) {
+			fprintf (stderr, "Can't set sample rate (%s)\n", snd_strerror(err));
+			exit (1);
+		}
+		if ((err = snd_pcm_hw_params_set_channels(capture_handle, hw_params, channels)) < 0) {
+			fprintf(stderr, "Can't set channel count (%s)\n", snd_strerror(err));
+			exit (1);
+		}
+		if ((err = snd_pcm_hw_params(capture_handle, hw_params)) < 0) {
+			fprintf(stderr, "Can't set parameters (%s)\n", snd_strerror(err));
+			exit (1);
+		}
+		snd_pcm_hw_params_free(hw_params);
   }
 
   void start() {
@@ -39,5 +52,7 @@ export class AudioCapture {
  private:
   snd_pcm_t *capture_handle;
   snd_pcm_hw_params_t *hw_params;
-	snd_pcm_format_t format = SND_PCM_FORMAT_S16_LE;
+	snd_pcm_format_t format = SND_PCM_FORMAT_FLOAT_LE;
+  int sample_rate = 16000;
+  int channels = 1;
 };
