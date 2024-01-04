@@ -9,7 +9,7 @@ export module audio_capture;
 
 export class AudioCapture {
  public:
-  AudioCapture(std::string device = "hw:0") {
+  AudioCapture(std::string device = "default") {
     int err;
     if ((err = snd_pcm_open(&capture_handle, device.c_str(), SND_PCM_STREAM_CAPTURE, 0)) < 0) {
       fprintf(stderr, "Can't open audio device %s (%s)\n", device.c_str(), snd_strerror(err));
