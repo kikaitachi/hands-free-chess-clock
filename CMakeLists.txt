@@ -30,6 +30,8 @@ target_sources(${PROJECT_NAME}
     FILE_SET modules TYPE CXX_MODULES FILES
     src/audio_capture.cpp
     src/control_loop.cpp
+    src/logger.cpp
+    src/mpscq.cpp
     src/speech_to_text.cpp
     src/video_capture.cpp
 )

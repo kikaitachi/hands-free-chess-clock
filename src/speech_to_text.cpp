@@ -3,6 +3,7 @@ module;
 #include <cstring>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
 #include <vector>
 #include "whisper.h"
 
@@ -22,10 +23,9 @@ export class SpeechToText {
     return WHISPER_SAMPLE_RATE;
   }
 
-  void infer(const float *samples, int count) {
-    //fprintf(stderr, "Inferring...\n");
+  std::string infer(const float *samples, int count) {
+    std::string result;
     whisper_full_params params = whisper_full_default_params(WHISPER_SAMPLING_GREEDY);
-    //params.print_progress = true;
     params.n_threads = 8;
     params.suppress_blank = true;
     params.suppress_non_speech_tokens = true;
@@ -36,11 +36,10 @@ export class SpeechToText {
         exit(1);
     }
     const int n_segments = whisper_full_n_segments(ctx);
-    for (int i = 0; i < n_segments; ++i) {
-      const char * text = whisper_full_get_segment_text(ctx, i);
-      printf("%s", text);
+    for (int i = 0; i < n_segments; i++) {
+      result += whisper_full_get_segment_text(ctx, i);
     }
-    printf("\n");
+    return result;
   }
  private:
   whisper_context* ctx;
