@@ -25,4 +25,4 @@ jobs:
           export CXX=/usr/bin/clang++-17
           cmake -B build -G Ninja
           cmake --build build
-          bash build/_deps/whisper.cpp-src/models/download-ggml-model.sh base
+          bash build/_deps/whisper.cpp-src/models/download-ggml-model.sh tiny.en
