@@ -29,6 +29,7 @@ target_sources(${PROJECT_NAME}
   PUBLIC
     FILE_SET modules TYPE CXX_MODULES FILES
     src/audio_capture.cpp
+    src/command_parser.cpp
     src/control_loop.cpp
     src/logger.cpp
     src/mpscq.cpp
