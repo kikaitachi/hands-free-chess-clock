@@ -53,7 +53,7 @@ export class AudioCapture {
       fprintf(stderr, "Can't prepare audio interface for use (%s)\n", snd_strerror(err));
       exit(1);
     }
-    unsigned int sample_count = sample_rate * 5;
+    unsigned int sample_count = sample_rate * 4;
     char buffer[snd_pcm_format_width(format) / 8 * channels * sample_count];
     for ( ; ; ) {
       if ((err = snd_pcm_readi(capture_handle, buffer, sample_count)) != sample_count) {
