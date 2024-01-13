@@ -10,7 +10,7 @@ export module audio_capture;
 
 export class AudioCapture {
  public:
-  AudioCapture(unsigned int sample_rate, std::string device = "default") : sample_rate(sample_rate) {
+  AudioCapture(unsigned int sample_rate, std::string device = "plughw:DEV=0,CARD=0") : sample_rate(sample_rate) {
     int err;
     if ((err = snd_pcm_open(&capture_handle, device.c_str(), SND_PCM_STREAM_CAPTURE, 0)) < 0) {
       fprintf(stderr, "Can't open audio device %s (%s)\n", device.c_str(), snd_strerror(err));
