@@ -60,7 +60,7 @@ export class AudioCapture {
         fprintf(stderr, "Read from audio interface failed: %s\n", snd_strerror (err));
         exit(1);
       }
-      //fprintf(stdout, "read %lu bytes\n", sizeof(buffer));
+      fprintf(stdout, "read %lu bytes\n", sizeof(buffer));
       handler((float*)buffer, sample_count);
     }
   }

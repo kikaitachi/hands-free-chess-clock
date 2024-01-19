@@ -16,7 +16,7 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 include(FetchContent)
 FetchContent_Declare(whisper.cpp
   GIT_REPOSITORY https://github.com/ggerganov/whisper.cpp.git
-  GIT_TAG v1.5.2
+  GIT_TAG v1.5.4
 )
 FetchContent_MakeAvailable(whisper.cpp)
 
