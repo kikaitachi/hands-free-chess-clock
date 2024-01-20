@@ -1,5 +1,6 @@
 import audio_capture;
 import command_parser;
+import display;
 import logger;
 import speech_to_text;
 import video_capture;
@@ -7,6 +8,7 @@ import video_capture;
 #include <string>
 
 int main() {
+  Display display;
   CommandParser command_parser;
   SpeechToText speech_to_text;
   AudioCapture audio_capture(speech_to_text.getSampleRate());
@@ -15,8 +17,10 @@ int main() {
     if (command_parser.recognised(speech)) {
       logger::info("Set chess clock to: %d+%dms",
         command_parser.getTime(), command_parser.getIncrement());
+      display.set_white("test");
     }
   });
+  display.set_white("tst");
   audio_capture.start([&](const float *samples, int count) {
     speech_to_text.add_audio(samples, count);
   });
