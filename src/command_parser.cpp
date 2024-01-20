@@ -10,8 +10,8 @@ export module command_parser;
 export class CommandParser {
  public:
   CommandParser()
-      : command_syntax(
-          "set (chess|just|shaft) (clock|block|lock|look|go off|go up) to (.*).",
+      : start_command_syntax(
+          "start ([0-9]+)(-minute| minute| minutes) game",
           std::regex_constants::ECMAScript | std::regex_constants::icase) {
   }
 
@@ -21,19 +21,17 @@ export class CommandParser {
    */
   bool recognised(std::string text) {
     std::smatch matches;
-    if (std::regex_search(text, matches, command_syntax)) {
-      std::string time_part = matches[3].str();
-      auto pos = time_part.find_first_of(' ');
-      if (pos != time_part.npos) {
-        std::string number = time_part.substr(0, pos);
-        try {
-          time = std::stoi(number) * 60 * 1000;
-        } catch (std::exception e) {
-          logger::error("%s can't be parsed as number: %s", number.c_str(), e.what());
-        }
-        increment = 0;
-        return true;
+    if (std::regex_search(text, matches, start_command_syntax)) {
+      logger::debug("Match found");
+      std::string number = matches[1].str();
+      logger::debug("Time part: %s", number.c_str());
+      try {
+        time = std::stoi(number) * 60 * 1000;
+      } catch (std::exception e) {
+        logger::error("%s can't be parsed as number: %s", number.c_str(), e.what());
       }
+      increment = 0;
+      return true;
     }
     return false;
   }
@@ -55,5 +53,5 @@ export class CommandParser {
  private:
   unsigned int time;
   unsigned int increment;
-  std::regex command_syntax;
+  std::regex start_command_syntax;
 };
