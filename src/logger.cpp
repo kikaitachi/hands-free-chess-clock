@@ -1,6 +1,5 @@
-module;
-
-import mpscq;
+#include "logger.hpp"
+#include "mpscq.hpp"
 
 #include <errno.h>
 #include <stdarg.h>
@@ -14,13 +13,11 @@ import mpscq;
 #include <string>
 #include <thread>
 
-export module logger;
-
 using namespace std::chrono_literals;
 
 namespace logger {
 
-export enum level { level_debug,
+enum level { level_debug,
                     level_info,
                     level_warn,
                     level_error };
@@ -61,11 +58,11 @@ std::thread logging_thread([]() {
 
 static level current_level = level_debug;
 
-export void set_level(level log_level) {
+void set_level(level log_level) {
   current_level = log_level;
 }
 
-export level get_level() {
+level get_level() {
   return current_level;
 }
 
@@ -81,31 +78,31 @@ void log_entry(const char level, const std::string format, va_list argptr) {
   entries.push(new LogEntry(level, std::string(message, len)));
 }
 
-export void debug(const std::string format, ...) {
+void debug(const std::string format, ...) {
   if (current_level <= level_debug) {
     log('D', format);
   }
 }
 
-export void warn(std::string format, ...) {
+void warn(std::string format, ...) {
   if (current_level <= level_warn) {
     log('W', format);
   }
 }
 
-export void error(const std::string format, ...) {
+void error(const std::string format, ...) {
   if (current_level <= level_error) {
     log('E', format);
   }
 }
 
-export void info(const std::string format, ...) {
+void info(const std::string format, ...) {
   if (current_level <= level_info) {
     log('I', format);
   }
 }
 
-export void last(const std::string format, ...) {
+void last(const std::string format, ...) {
   std::string error(strerror(errno));
   log('L', format + ": " + error);
 }

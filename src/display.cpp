@@ -1,147 +1,118 @@
-module;
+#include "display.hpp"
+#include "logger.hpp"
 
-import logger;
-
-#include <chrono>
-#include <fcntl.h>
-#include <linux/i2c-dev.h>
-#include <linux/i2c.h>
-#include <sys/ioctl.h>
-#include <string>
-#include <thread>
-
-export module display;
-
-using namespace std::chrono_literals;
-
-const int ALPHA_CMD_SYSTEM_SETUP = 0b00100000;
-const int ALPHA_CMD_DIMMING_SETUP = 0b11100000;
-const int ALPHA_CMD_DISPLAY_SETUP = 0b10000000;
-
-const int ALPHA_BLINK_RATE_NOBLINK = 0b00;
-const int ALPHA_DISPLAY_ON = 0b1;
-
-const int FIRST_ADDRESS = 0x70;
-const int DISPLAYS = 2;
-
-export class Display {
- public:
-  Display() {
-    std::string i2c_bus = "/dev/i2c-7";
-    if ((fd = open(i2c_bus.c_str(), O_RDWR)) == -1) {
-      logger::last("Failed to open i2c bus %s", i2c_bus.c_str());
-    } else {
-      logger::info("Opened i2c bus %s", i2c_bus.c_str());
-    }
-
-    struct i2c_msg msg[DISPLAYS];
-    struct i2c_rdwr_ioctl_data i2c_data;
-    i2c_data.msgs = msg;
-    i2c_data.nmsgs = DISPLAYS;
-
-    uint8_t dataToWrite = ALPHA_CMD_SYSTEM_SETUP | 1; // Enable system clock
-    for (int i = 0; i < DISPLAYS; i++) {  
-      msg[i].addr = FIRST_ADDRESS + i;
-      msg[i].flags = 0;
-      msg[i].len = 1;
-      msg[i].buf = &dataToWrite;
-    }
-    if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
-      logger::last("Failed to enable display system clock");
-    }
-    std::this_thread::sleep_for(1ms);
-
-    dataToWrite = ALPHA_CMD_DIMMING_SETUP | 15;
-    if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
-      logger::last("Failed to setup dimming");
-    }
-
-    dataToWrite = ALPHA_CMD_DISPLAY_SETUP | (ALPHA_BLINK_RATE_NOBLINK << 1) | ALPHA_DISPLAY_ON;
-    if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
-      logger::last("Failed to setup display");
-    }
+Display::Display() {
+  std::string i2c_bus = "/dev/i2c-7";
+  if ((fd = open(i2c_bus.c_str(), O_RDWR)) == -1) {
+    logger::last("Failed to open i2c bus %s", i2c_bus.c_str());
+  } else {
+    logger::info("Opened i2c bus %s", i2c_bus.c_str());
   }
 
-  void set_white(std::string text) {
-    logger::debug("Udating display");
-    struct i2c_msg msg[2];
-    struct i2c_rdwr_ioctl_data i2c_data;
-    i2c_data.msgs = msg;
-    i2c_data.nmsgs = 2;
+  struct i2c_msg msg[DISPLAYS];
+  struct i2c_rdwr_ioctl_data i2c_data;
+  i2c_data.msgs = msg;
+  i2c_data.nmsgs = DISPLAYS;
 
-    uint8_t dataToWrite = 0;
-    msg[0].addr = FIRST_ADDRESS;
-    msg[0].flags = 0;
-    msg[0].len = 1;
-    msg[0].buf = &dataToWrite;
+  uint8_t dataToWrite = ALPHA_CMD_SYSTEM_SETUP | 1; // Enable system clock
+  for (int i = 0; i < DISPLAYS; i++) {
+    msg[i].addr = FIRST_ADDRESS + i;
+    msg[i].flags = 0;
+    msg[i].len = 1;
+    msg[i].buf = &dataToWrite;
+  }
+  if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
+    logger::last("Failed to enable display system clock");
+  }
+  std::this_thread::sleep_for(1ms);
 
-    uint8_t data[16] = {
-      0b00000000,
-      0b00000000,
-      0b00000001,
-      0b00000001,
-      0b00000000,
-      0b00000000,
-      0b00000000,
-      0b00000000,
-      0b00000000,
-      0b00000000,
-      0b00000000,
-      0b00000000,
-      0b00000000,
-      0b00000000,
-      0b00000000,
-      0b00000000
-    };
-    msg[1].addr = FIRST_ADDRESS;
-    msg[1].flags = I2C_M_STOP;
-    msg[1].len = 16;
-    msg[1].buf = data;
-    if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
-      logger::last("Failed to update display");
-    }
+  dataToWrite = ALPHA_CMD_DIMMING_SETUP | 15;
+  if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
+    logger::last("Failed to setup dimming");
   }
 
-  void set_black(std::string text) {
-    logger::debug("Udating display");
-    struct i2c_msg msg[2];
-    struct i2c_rdwr_ioctl_data i2c_data;
-    i2c_data.msgs = msg;
-    i2c_data.nmsgs = 2;
-
-    uint8_t dataToWrite = 0;
-    msg[0].addr = FIRST_ADDRESS + 1;
-    msg[0].flags = 0;
-    msg[0].len = 1;
-    msg[0].buf = &dataToWrite;
-
-    uint8_t data[16] = {
-      0b00000000,
-      0b00000000,
-      0b00000001,
-      0b00000001,
-      0b00000001,
-      0b00000000,
-      0b00000000,
-      0b00000000,
-      0b00000000,
-      0b00000000,
-      0b00000000,
-      0b00000000,
-      0b00000000,
-      0b00000000,
-      0b00000000,
-      0b00000000
-    };
-    msg[1].addr = FIRST_ADDRESS + 1;
-    msg[1].flags = I2C_M_STOP;
-    msg[1].len = 16;
-    msg[1].buf = data;
-    if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
-      logger::last("Failed to update display");
-    }
+  dataToWrite = ALPHA_CMD_DISPLAY_SETUP | (ALPHA_BLINK_RATE_NOBLINK << 1) | ALPHA_DISPLAY_ON;
+  if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
+    logger::last("Failed to setup display");
   }
+}
 
- private:
-  int fd;
-};
+void Display::set_white(std::string text) {
+  logger::debug("Updating white display");
+  struct i2c_msg msg[2];
+  struct i2c_rdwr_ioctl_data i2c_data;
+  i2c_data.msgs = msg;
+  i2c_data.nmsgs = 2;
+
+  uint8_t dataToWrite = 0;
+  msg[0].addr = FIRST_ADDRESS;
+  msg[0].flags = 0;
+  msg[0].len = 1;
+  msg[0].buf = &dataToWrite;
+
+  uint8_t data[16] = {
+    0b00000000,
+    0b00000000,
+    0b00000001,
+    0b00000001,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000
+  };
+  msg[1].addr = FIRST_ADDRESS;
+  msg[1].flags = I2C_M_STOP;
+  msg[1].len = 16;
+  msg[1].buf = data;
+  if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
+    logger::last("Failed to update display");
+  }
+}
+
+void Display::set_black(std::string text) {
+  logger::debug("Updating black display");
+  struct i2c_msg msg[2];
+  struct i2c_rdwr_ioctl_data i2c_data;
+  i2c_data.msgs = msg;
+  i2c_data.nmsgs = 2;
+
+  uint8_t dataToWrite = 0;
+  msg[0].addr = FIRST_ADDRESS + 1;
+  msg[0].flags = 0;
+  msg[0].len = 1;
+  msg[0].buf = &dataToWrite;
+
+  uint8_t data[16] = {
+    0b00000000,
+    0b00000000,
+    0b00000001,
+    0b00000001,
+    0b00000001,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000,
+    0b00000000
+  };
+  msg[1].addr = FIRST_ADDRESS + 1;
+  msg[1].flags = I2C_M_STOP;
+  msg[1].len = 16;
+  msg[1].buf = data;
+  if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
+    logger::last("Failed to update display");
+  }
+}

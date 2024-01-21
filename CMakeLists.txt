@@ -3,10 +3,6 @@ cmake_minimum_required(VERSION 3.28)
 project(hands-free-chess-clock LANGUAGES CXX VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_SCAN_FOR_MODULES True)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -flto -O3 -stdlib=libc++")
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -flto -stdlib=libc++ -lc++abi")
 
 find_package(ALSA REQUIRED)
 include_directories(${ALSA_INCLUDE_DIRS})
@@ -21,13 +17,10 @@ FetchContent_Declare(whisper.cpp
 FetchContent_MakeAvailable(whisper.cpp)
 
 add_executable(${PROJECT_NAME})
+
 target_sources(${PROJECT_NAME}
   PUBLIC
     src/main.cpp
-)
-target_sources(${PROJECT_NAME}
-  PUBLIC
-    FILE_SET modules TYPE CXX_MODULES FILES
     src/audio_capture.cpp
     src/command_parser.cpp
     src/display.cpp
@@ -36,6 +29,7 @@ target_sources(${PROJECT_NAME}
     src/speech_to_text.cpp
     src/video_capture.cpp
 )
+
 target_link_libraries(${PROJECT_NAME}
   ${ALSA_LIBRARIES}
   ${OpenCV_LIBS}
