@@ -21,6 +21,9 @@ const int ALPHA_CMD_DISPLAY_SETUP = 0b10000000;
 const int ALPHA_BLINK_RATE_NOBLINK = 0b00;
 const int ALPHA_DISPLAY_ON = 0b1;
 
+const int FIRST_ADDRESS = 0x70;
+const int DISPLAYS = 2;
+
 export class Display {
  public:
   Display() {
@@ -31,16 +34,18 @@ export class Display {
       logger::info("Opened i2c bus %s", i2c_bus.c_str());
     }
 
-    struct i2c_msg msg[1];
+    struct i2c_msg msg[DISPLAYS];
     struct i2c_rdwr_ioctl_data i2c_data;
     i2c_data.msgs = msg;
-    i2c_data.nmsgs = 1;
+    i2c_data.nmsgs = DISPLAYS;
 
     uint8_t dataToWrite = ALPHA_CMD_SYSTEM_SETUP | 1; // Enable system clock
-    msg[0].addr = 0x70;
-    msg[0].flags = 0;
-    msg[0].len = 1;
-    msg[0].buf = &dataToWrite;
+    for (int i = 0; i < DISPLAYS; i++) {  
+      msg[i].addr = FIRST_ADDRESS + i;
+      msg[i].flags = 0;
+      msg[i].len = 1;
+      msg[i].buf = &dataToWrite;
+    }
     if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
       logger::last("Failed to enable display system clock");
     }
@@ -65,7 +70,7 @@ export class Display {
     i2c_data.nmsgs = 2;
 
     uint8_t dataToWrite = 0;
-    msg[0].addr = 0x70;
+    msg[0].addr = FIRST_ADDRESS;
     msg[0].flags = 0;
     msg[0].len = 1;
     msg[0].buf = &dataToWrite;
@@ -74,7 +79,7 @@ export class Display {
       0b00000000,
       0b00000000,
       0b00000001,
-      0b00000000,
+      0b00000001,
       0b00000000,
       0b00000000,
       0b00000000,
@@ -88,7 +93,47 @@ export class Display {
       0b00000000,
       0b00000000
     };
-    msg[1].addr = 0x70;
+    msg[1].addr = FIRST_ADDRESS;
+    msg[1].flags = I2C_M_STOP;
+    msg[1].len = 16;
+    msg[1].buf = data;
+    if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
+      logger::last("Failed to update display");
+    }
+  }
+
+  void set_black(std::string text) {
+    logger::debug("Udating display");
+    struct i2c_msg msg[2];
+    struct i2c_rdwr_ioctl_data i2c_data;
+    i2c_data.msgs = msg;
+    i2c_data.nmsgs = 2;
+
+    uint8_t dataToWrite = 0;
+    msg[0].addr = FIRST_ADDRESS + 1;
+    msg[0].flags = 0;
+    msg[0].len = 1;
+    msg[0].buf = &dataToWrite;
+
+    uint8_t data[16] = {
+      0b00000000,
+      0b00000000,
+      0b00000001,
+      0b00000001,
+      0b00000001,
+      0b00000000,
+      0b00000000,
+      0b00000000,
+      0b00000000,
+      0b00000000,
+      0b00000000,
+      0b00000000,
+      0b00000000,
+      0b00000000,
+      0b00000000,
+      0b00000000
+    };
+    msg[1].addr = FIRST_ADDRESS + 1;
     msg[1].flags = I2C_M_STOP;
     msg[1].len = 16;
     msg[1].buf = data;

@@ -21,6 +21,7 @@ int main() {
     }
   });
   display.set_white("tst");
+  display.set_black("tst");
   audio_capture.start([&](const float *samples, int count) {
     speech_to_text.add_audio(samples, count);
   });
