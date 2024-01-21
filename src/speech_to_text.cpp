@@ -4,7 +4,7 @@
 SpeechToText::SpeechToText() {
   struct whisper_context_params cparams;
   cparams.use_gpu = true;
-  ctx = whisper_init_from_file_with_params("build/_deps/whisper.cpp-src/models/ggml-tiny.en.bin", cparams);
+  ctx = whisper_init_from_file_with_params("build/_deps/whisper.cpp-src/models/ggml-small.en.bin", cparams);
 }
 
 unsigned int SpeechToText::getSampleRate() {

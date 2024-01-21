@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.28)
 project(hands-free-chess-clock LANGUAGES CXX VERSION 0.1.0)
 
 set(CMAKE_CXX_STANDARD 20)
+set(WHISPER_CUBLAS 1)
 
 find_package(ALSA REQUIRED)
 include_directories(${ALSA_INCLUDE_DIRS})
