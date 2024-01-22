@@ -31,6 +31,10 @@ class Display {
 
  private:
   int fd;
+  uint8_t mem[16 * 2];
+
+  void illuminate_segment(uint8_t segment, uint8_t digit);
+  void illuminate_char(uint16_t segmentsToTurnOn, uint8_t digit);
 };
 
 #endif  // DISPLAY_H_
