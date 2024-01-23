@@ -102,7 +102,6 @@ static const uint16_t segments[] {
 };
 
 Display::Display() {
-  memset(mem, 0, sizeof(mem));
   std::string i2c_bus = "/dev/i2c-7";
   if ((fd = open(i2c_bus.c_str(), O_RDWR)) == -1) {
     logger::last("Failed to open i2c bus %s", i2c_bus.c_str());
@@ -115,27 +114,30 @@ Display::Display() {
   i2c_data.msgs = msg;
   i2c_data.nmsgs = DISPLAYS;
 
-  uint8_t dataToWrite = ALPHA_CMD_SYSTEM_SETUP | 1; // Enable system clock
+  uint8_t command = ALPHA_CMD_SYSTEM_SETUP | 1; // Enable system clock
   for (int i = 0; i < DISPLAYS; i++) {
     msg[i].addr = FIRST_ADDRESS + i;
     msg[i].flags = 0;
     msg[i].len = 1;
-    msg[i].buf = &dataToWrite;
+    msg[i].buf = &command;
   }
   if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
     logger::last("Failed to enable display system clock");
   }
   std::this_thread::sleep_for(1ms);
 
-  dataToWrite = ALPHA_CMD_DIMMING_SETUP | 15;
+  command = ALPHA_CMD_DIMMING_SETUP | 15;
   if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
     logger::last("Failed to setup dimming");
   }
 
-  dataToWrite = ALPHA_CMD_DISPLAY_SETUP | (ALPHA_BLINK_RATE_NOBLINK << 1) | ALPHA_DISPLAY_ON;
+  command = ALPHA_CMD_DISPLAY_SETUP | (ALPHA_BLINK_RATE_NOBLINK << 1) | ALPHA_DISPLAY_ON;
   if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
     logger::last("Failed to setup display");
   }
+
+  set_white("");
+  set_black("");
 }
 
 void Display::set_white(std::string text) {

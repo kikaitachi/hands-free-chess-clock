@@ -1,6 +1,5 @@
 #include "audio_capture.hpp"
 #include "command_parser.hpp"
-#include "display.hpp"
 #include "game.hpp"
 #include "logger.hpp"
 #include "speech_to_text.hpp"
@@ -9,7 +8,6 @@
 #include <string>
 
 int main() {
-  Display display;
   Game game;
   CommandParser command_parser;
   SpeechToText speech_to_text;
@@ -21,15 +19,12 @@ int main() {
     if (command_parser.recognised(speech)) {
       if (!game.playing) {
         game.reset(command_parser.getTime(), command_parser.getIncrement());
-        display.set_white("test");
       } else {
         logger::info("Not starting new %d+%dms game as there is game in progress",
           command_parser.getTime(), command_parser.getIncrement());
       }
     }
   });
-  display.set_white("d2d4");
-  display.set_black("10:2.5");
   audio_capture.start([&](const float *samples, int count) {
     speech_to_text.add_audio(samples, count);
   });
