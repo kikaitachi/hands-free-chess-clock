@@ -141,49 +141,11 @@ Display::Display() {
 void Display::set_white(std::string text) {
   logger::debug("Updating white display");
   illuminate_text(text, 0);
-
-  struct i2c_msg msg[2];
-  struct i2c_rdwr_ioctl_data i2c_data;
-  i2c_data.msgs = msg;
-  i2c_data.nmsgs = 2;
-
-  uint8_t dataToWrite = 0;
-  msg[0].addr = FIRST_ADDRESS;
-  msg[0].flags = 0;
-  msg[0].len = 1;
-  msg[0].buf = &dataToWrite;
-
-  msg[1].addr = FIRST_ADDRESS;
-  msg[1].flags = I2C_M_STOP;
-  msg[1].len = 16;
-  msg[1].buf = mem;
-  if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
-    logger::last("Failed to update display");
-  }
 }
 
 void Display::set_black(std::string text) {
   logger::debug("Updating black display");
   illuminate_text(text, 1);
-
-  struct i2c_msg msg[2];
-  struct i2c_rdwr_ioctl_data i2c_data;
-  i2c_data.msgs = msg;
-  i2c_data.nmsgs = 2;
-
-  uint8_t dataToWrite = 0;
-  msg[0].addr = FIRST_ADDRESS + 1;
-  msg[0].flags = 0;
-  msg[0].len = 1;
-  msg[0].buf = &dataToWrite;
-
-  msg[1].addr = FIRST_ADDRESS + 1;
-  msg[1].flags = I2C_M_STOP;
-  msg[1].len = 16;
-  msg[1].buf = &mem[16];
-  if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
-    logger::last("Failed to update display");
-  }
 }
 
 void Display::illuminate_segment(uint8_t segment, uint8_t digit) {
@@ -244,5 +206,23 @@ void Display::illuminate_text(std::string text, int black) {
         break;
       }
     }
+  }
+  struct i2c_msg msg[2];
+  struct i2c_rdwr_ioctl_data i2c_data;
+  i2c_data.msgs = msg;
+  i2c_data.nmsgs = 2;
+
+  uint8_t dataToWrite = 0;
+  msg[0].addr = FIRST_ADDRESS + black;
+  msg[0].flags = 0;
+  msg[0].len = 1;
+  msg[0].buf = &dataToWrite;
+
+  msg[1].addr = FIRST_ADDRESS + black;
+  msg[1].flags = I2C_M_STOP;
+  msg[1].len = 16;
+  msg[1].buf = &mem[16 * black];
+  if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
+    logger::last("Failed to update display");
   }
 }
