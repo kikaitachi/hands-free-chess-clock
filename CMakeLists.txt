@@ -25,6 +25,7 @@ target_sources(${PROJECT_NAME}
     src/audio_capture.cpp
     src/command_parser.cpp
     src/display.cpp
+    src/game.cpp
     src/logger.cpp
     src/mpscq.cpp
     src/speech_to_text.cpp
