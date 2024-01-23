@@ -14,10 +14,12 @@ class Game {
   unsigned int time_white_ms;
   unsigned int time_black_ms;
   unsigned int increment_ms;
+  bool white_turn;
   Display display;
   std::chrono::steady_clock::time_point last_clock_change;
 
   std::string format_time(unsigned int time_ms);
+  void update_clock();
 };
 
 #endif  // GAME_H_

@@ -141,12 +141,10 @@ Display::Display() {
 }
 
 void Display::set_white(std::string text) {
-  logger::debug("Updating white display");
   illuminate_text(text, 0);
 }
 
 void Display::set_black(std::string text) {
-  logger::debug("Updating black display");
   illuminate_text(text, 1);
 }
 
