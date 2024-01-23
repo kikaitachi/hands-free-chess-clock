@@ -34,7 +34,9 @@ class Display {
   uint8_t mem[16 * 2];
 
   void illuminate_segment(uint8_t segment, uint8_t digit);
-  void illuminate_char(uint16_t segmentsToTurnOn, uint8_t digit);
+  void illuminate_segments(uint16_t segments, uint8_t digit);
+  void illuminate_char(char c, uint8_t digit);
+  void illuminate_text(std::string text, int black);
 };
 
 #endif  // DISPLAY_H_

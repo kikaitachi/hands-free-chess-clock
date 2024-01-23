@@ -22,8 +22,8 @@ int main() {
       display.set_white("test");
     }
   });
-  display.set_white("tst");
-  display.set_black("tst");
+  display.set_white("d2d4");
+  display.set_black("10:2.5");
   audio_capture.start([&](const float *samples, int count) {
     speech_to_text.add_audio(samples, count);
   });
