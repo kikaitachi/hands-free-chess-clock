@@ -4,6 +4,9 @@
 class VideoCapture {
  public:
   void start();
+
+ private:
+  void process();
 };
 
 
