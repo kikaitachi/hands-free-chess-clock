@@ -1,6 +1,6 @@
 # Hands Free Chess Clock
 
-![Last build result](https://github.com/kikaitachi/hands-free-chess-clock/workflows/main/badge.svg)
+![Last build result](https://github.com/kikaitachi/hands-free-chess-clock/workflows/CI/badge.svg)
 
 ## Credits
 
