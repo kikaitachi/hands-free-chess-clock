@@ -8,6 +8,7 @@ CommandParser::CommandParser()
 }
 
 bool CommandParser::recognised(std::string text) {
+  text = std::regex_replace(text, std::regex("one"), "1");
   std::smatch matches;
   if (std::regex_search(text, matches, start_command_syntax)) {
     logger::debug("Match found");

@@ -2,6 +2,7 @@
 #define VIDEO_CAPTURE_H_
 
 #include <mutex>
+#include <opencv2/opencv.hpp>
 
 class VideoCapture {
  public:

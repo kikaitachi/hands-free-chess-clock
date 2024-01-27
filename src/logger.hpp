@@ -7,6 +7,7 @@ namespace logger {
 
   void debug(const std::string format, ...);
   void info(const std::string format, ...);
+  void warn(const std::string format, ...);
   void error(const std::string format, ...);
   void last(const std::string format, ...);
 }

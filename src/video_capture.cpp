@@ -1,8 +1,9 @@
 #include "logger.hpp"
 #include "video_capture.hpp"
 #include <filesystem>
-#include <opencv2/opencv.hpp>
 #include <thread>
+
+using namespace std::chrono_literals;
 
 VideoCapture::VideoCapture() {
   std::filesystem::create_directories("images");
@@ -28,12 +29,14 @@ void VideoCapture::capture_frames() {
     logger::error("Failed to open camera");
     return;
   }
-  for (int i = 0; ; i++) {
-    frame_mutex.lock()
+  for ( ; ; ) {
+    frame_mutex.lock();
     cap.read(frame);
     frame_mutex.unlock();
     if (frame.empty()) {
-      logger::error("Blank frame grabbed");
+      logger::warn("Blank frame grabbed");
     }
+    // Increase chance for start_game to get the lock
+    std::this_thread::sleep_for(2ms);
   }
 }
