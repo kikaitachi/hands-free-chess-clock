@@ -1,5 +1,7 @@
 # Hands Free Chess Clock
 
+![Last build result](https://github.com/kikaitachi/hands-free-chess-clock/workflows/main/badge.svg)
+
 ## Credits
 
 This project directly or indirectly uses these open source projects:
