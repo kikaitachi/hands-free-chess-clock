@@ -38,11 +38,13 @@ void VideoCapture::start_game() {
     if (approx.size().height == 4 && cv::isContourConvex(approx)) {
       std::vector<std::pair<cv::Point, cv::Point>> horizontal_lines;
       std::vector<std::pair<cv::Point, cv::Point>> vertical_lines;
+      std::vector<double> line_lengths;
       for (int i = 0; i < 4; i++) {
         cv::Point pt1 = approx.at<cv::Point>(i, 0);
         cv::Point pt2 = approx.at<cv::Point>((i + 1) % 4, 0);
         std::pair<cv::Point, cv::Point> line;
         //cv::line(markers, pt1, pt2, {0, 255, 0}, 5, cv::LINE_AA);
+        line_lengths.push_back(std::sqrt(std::pow(pt2.y - pt1.y, 2) + std::pow(pt2.x - pt1.y, 2)));
         double angle = std::atan2(pt2.y - pt1.y, pt2.x - pt1.x) * 180.0 / M_PI;
         if (
             angle > -5 && angle < 5 ||
@@ -54,7 +56,8 @@ void VideoCapture::start_game() {
           vertical_lines.push_back(line);
         }
       }
-      if (horizontal_lines.size() == 2) {
+      std::sort(line_lengths.begin(), line_lengths.end());
+      if (horizontal_lines.size() == 2 && line_lengths[0] > line_lengths[3] * 0.45) {
         cv::polylines(markers, approx, true, {0, 255, 0}, 5, cv::LINE_AA);
       }
     }
