@@ -11,7 +11,7 @@ int main() {
   Game game;
   CommandParser command_parser;
   SpeechToText speech_to_text;
-  AudioCapture audio_capture(speech_to_text.getSampleRate(), "plughw:DEV=0,CARD=0");
+  AudioCapture audio_capture(speech_to_text.getSampleRate(), "plughw:DEV=0,CARD=C920");
   VideoCapture video_capture;
   speech_to_text.start([&](const std::string speech) {
     logger::info("Speech: %s", speech.c_str());
