@@ -1,5 +1,22 @@
 #include "command_parser.hpp"
 #include "logger.hpp"
+#include <vector>
+
+static std::vector<std::string> numbers = {
+  "zero",
+  "one",
+  "two",
+  "three",
+  "four",
+  "five",
+  "six",
+  "seven",
+  "eight",
+  "nine",
+  "ten",
+  "eleven",
+  "twelve",
+};
 
 CommandParser::CommandParser()
     : start_command_syntax(
@@ -8,7 +25,9 @@ CommandParser::CommandParser()
 }
 
 bool CommandParser::recognised(std::string text) {
-  text = std::regex_replace(text, std::regex("one"), "1");
+  for (int i = 0; i < numbers.size(); i++) {
+    text = std::regex_replace(text, std::regex(numbers[i]), std::to_string(1));
+  }
   std::smatch matches;
   if (std::regex_search(text, matches, start_command_syntax)) {
     logger::debug("Match found");

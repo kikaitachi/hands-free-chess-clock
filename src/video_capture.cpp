@@ -17,7 +17,15 @@ void VideoCapture::start_game() {
   // Detect board
   std::lock_guard<std::mutex> guard(frame_mutex);
   cv::imwrite("images/start_game_original.jpg", frame);
-  // TODO: implement
+  cv::Mat gray;
+  cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
+  cv::imwrite("images/start_game_gray.jpg", gray);
+  cv::Mat blurred;
+  cv::medianBlur(gray, blurred, 5);
+  cv::imwrite("images/start_game_blurred.jpg", blurred);
+  cv::Mat threshold;
+  cv::adaptiveThreshold(blurred, threshold, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 11, 2);
+  cv::imwrite("images/start_game_threshold.jpg", threshold);
 }
 
 void VideoCapture::capture_frames() {
