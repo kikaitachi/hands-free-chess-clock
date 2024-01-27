@@ -13,11 +13,11 @@ int main() {
   SpeechToText speech_to_text;
   AudioCapture audio_capture(speech_to_text.getSampleRate(), "plughw:DEV=0,CARD=0");
   VideoCapture video_capture;
-  video_capture.start();
   speech_to_text.start([&](const std::string speech) {
     logger::info("Speech: %s", speech.c_str());
     if (command_parser.recognised(speech)) {
       if (!game.playing) {
+        video_capture.start_game();
         game.reset(command_parser.getTime(), command_parser.getIncrement());
       } else {
         logger::info("Not starting new %d+%dms game as there is game in progress",

@@ -1,12 +1,18 @@
 #ifndef VIDEO_CAPTURE_H_
 #define VIDEO_CAPTURE_H_
 
+#include <mutex>
+
 class VideoCapture {
  public:
-  void start();
+  VideoCapture();
+  void start_game();
 
  private:
-  void process();
+  cv::Mat frame;
+  std::mutex frame_mutex;
+
+  void capture_frames();
 };
 
 
