@@ -1,8 +1,9 @@
 #include "logger.hpp"
 #include "video_capture.hpp"
-#include <opencv2/core/hal/interface.h>
+#include <cmath>
 #include <filesystem>
 #include <thread>
+#include <utility>
 
 using namespace std::chrono_literals;
 
@@ -35,12 +36,27 @@ void VideoCapture::start_game() {
     cv::Mat approx;
     approxPolyDP(contour, approx, 20, true);
     if (approx.size().height == 4 && cv::isContourConvex(approx)) {
+      std::vector<std::pair<cv::Point, cv::Point>> horizontal_lines;
+      std::vector<std::pair<cv::Point, cv::Point>> vertical_lines;
       for (int i = 0; i < 4; i++) {
         cv::Point pt1 = approx.at<cv::Point>(i, 0);
         cv::Point pt2 = approx.at<cv::Point>((i + 1) % 4, 0);
-        cv::line(markers, pt1, pt2, {0, 255, 0}, 5, cv::LINE_AA);
+        std::pair<cv::Point, cv::Point> line;
+        //cv::line(markers, pt1, pt2, {0, 255, 0}, 5, cv::LINE_AA);
+        double angle = std::atan2(pt2.y - pt1.y, pt2.x - pt1.x) * 180.0 / M_PI;
+        if (
+            angle > -5 && angle < 5 ||
+            angle > -185 && angle < -175 ||
+            angle > 175 && angle < 185
+        ) {
+          horizontal_lines.push_back(line);
+        } else {
+          vertical_lines.push_back(line);
+        }
       }
-      //cv::polylines(markers, approx, true, {0, 255, 0}, 5, cv::LINE_AA);
+      if (horizontal_lines.size() == 2) {
+        cv::polylines(markers, approx, true, {0, 255, 0}, 5, cv::LINE_AA);
+      }
     }
   }
   cv::imwrite("images/start_game_markers.jpg", markers);
