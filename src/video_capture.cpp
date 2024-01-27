@@ -78,7 +78,7 @@ void VideoCapture::start_game() {
       for (int i = 0; i < 4; i++) {
         cv::Point pt1 = approx.at<cv::Point>(i, 0);
         cv::Point pt2 = approx.at<cv::Point>((i + 1) % 4, 0);
-        Line line;
+        Line line(pt1, pt2);
         line_lengths.push_back(std::sqrt(std::pow(pt2.y - pt1.y, 2) + std::pow(pt2.x - pt1.y, 2)));
         double angle = std::atan2(pt2.y - pt1.y, pt2.x - pt1.x) * 180.0 / M_PI;
         if (
@@ -94,19 +94,29 @@ void VideoCapture::start_game() {
       std::sort(line_lengths.begin(), line_lengths.end());
       if (horizontal_lines.size() == 2 && line_lengths[0] > line_lengths[3] * 0.45) {
         std::sort(horizontal_lines.begin(), horizontal_lines.end(), line_top);
-        if (!topmost_line || line_top.operator()(topmost_line.value(), horizontal_lines[0])) {
+        if (!topmost_line || !line_top.operator()(topmost_line.value(), horizontal_lines[0])) {
           topmost_line = horizontal_lines[0];
         }
         std::sort(horizontal_lines.begin(), horizontal_lines.end(), line_bottom);
-        if (!bottommost_line || !line_bottom.operator()(bottommost_line.value(), horizontal_lines[1])) {
+        if (!bottommost_line || line_bottom.operator()(bottommost_line.value(), horizontal_lines[1])) {
           bottommost_line = horizontal_lines[1];
+        }
+        std::sort(vertical_lines.begin(), vertical_lines.end(), line_left);
+        if (!leftmost_line || !line_left.operator()(leftmost_line.value(), vertical_lines[0])) {
+          leftmost_line = vertical_lines[0];
+        }
+        std::sort(vertical_lines.begin(), vertical_lines.end(), line_right);
+        if (!rightmost_line || line_right.operator()(rightmost_line.value(), vertical_lines[1])) {
+          rightmost_line = vertical_lines[1];
         }
         cv::polylines(markers, approx, true, {0, 255, 0}, 5, cv::LINE_AA);
       }
     }
   }
-  cv::line(markers, topmost_line.value().first, topmost_line.value().second, {255, 0, 0}, 5, cv::LINE_AA);
-  cv::line(markers, bottommost_line.value().first, bottommost_line.value().second, {255, 0, 0}, 5, cv::LINE_AA);
+  cv::line(markers, topmost_line.value().first, topmost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
+  cv::line(markers, bottommost_line.value().first, bottommost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
+  cv::line(markers, leftmost_line.value().first, leftmost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
+  cv::line(markers, rightmost_line.value().first, rightmost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
   cv::imwrite("images/start_game_markers.jpg", markers);
 }
 
