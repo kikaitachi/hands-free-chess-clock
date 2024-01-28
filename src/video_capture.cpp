@@ -74,7 +74,8 @@ void VideoCapture::start_game() {
   // Detect board
   std::lock_guard<std::mutex> guard(frame_mutex);
   cv::imwrite("images/start_game_original.jpg", frame);
-  cv::Mat markers(frame);
+  cv::Mat markers;
+  frame.copyTo(markers);
   cv::Mat gray;
   cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
   cv::imwrite("images/start_game_gray.jpg", gray);
@@ -163,6 +164,28 @@ void VideoCapture::start_game() {
   cv::circle(markers, final_top_right_point, 10, {255, 0, 255}, -1);
 
   cv::imwrite("images/start_game_markers.jpg", markers);
+
+  std::vector<cv::Point2f> points_from({
+    final_bottom_left_point,
+    final_top_left_point,
+    final_top_right_point,
+    final_bottom_right_point
+  });
+  float height = markers.size().height;
+  std::vector<cv::Point2f> points_to({
+    {0.0f, height},
+    {0.0f, 0.0f},
+    {height, 0.0f},
+    {height, height}
+  });
+  cv::Mat perspective_transform = cv::getPerspectiveTransform(points_from, points_to);
+
+  cv::Mat img_perspective;
+  cv::warpPerspective(
+      frame, img_perspective, perspective_transform,
+      {(int)height, (int)height}
+  );
+  cv::imwrite("images/start_game_perspective.jpg", img_perspective);
 }
 
 void VideoCapture::capture_frames() {
