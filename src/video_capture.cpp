@@ -187,7 +187,7 @@ void VideoCapture::start_game() {
   );
   cv::imwrite("images/start_game_perspective.jpg", img_perspective);
 
-  bg_sub = cv::createBackgroundSubtractorMOG2();
+  bg_sub = cv::createBackgroundSubtractorMOG2(500, 32, true);
 }
 
 void VideoCapture::capture_frames() {
@@ -199,6 +199,9 @@ void VideoCapture::capture_frames() {
     logger::error("Failed to open camera");
     return;
   }
+  cap.set(cv::CAP_PROP_FRAME_WIDTH, 864);
+  cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+  cap.set(cv::CAP_PROP_AUTOFOCUS, 0);
   for (int i = 0; ; ) {
     frame_mutex.lock();
     cap.read(frame);
@@ -210,7 +213,7 @@ void VideoCapture::capture_frames() {
           {height, height}
       );
       cv::Mat mask;
-      bg_sub->apply(img_perspective, mask, 0);
+      bg_sub->apply(img_perspective, mask, -1);
       cv::Mat colored;
       cv::cvtColor(mask, colored, cv::COLOR_GRAY2BGR);
       cv::Mat bg_sub;
