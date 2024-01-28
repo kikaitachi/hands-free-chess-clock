@@ -217,10 +217,11 @@ void VideoCapture::capture_frames() {
       cv::Mat colored;
       cv::cvtColor(mask, colored, cv::COLOR_GRAY2BGR);
       cv::Mat bg_sub;
+      cv::Mat heatmap(img_perspective.rows, img_perspective.cols, img_perspective.type);
       cv::Mat images[] = {
-        img_perspective, colored
+        img_perspective, colored, heatmap
       };
-      cv::hconcat(images, 2, bg_sub);
+      cv::hconcat(images, 3, bg_sub);
       cv::imwrite("images/bg_sub" + std::to_string(i) + ".jpg", bg_sub);
       i++;
     }
