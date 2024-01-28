@@ -4,6 +4,7 @@
 #include <cmath>
 #include <filesystem>
 #include <optional>
+#include <stdexcept>
 #include <thread>
 #include <utility>
 
@@ -38,6 +39,28 @@ struct {
   }
 }
 line_right;
+
+double det(double ax, double ay, double bx, double by) {
+  return ax * by - ay * bx;
+}
+
+cv::Point line_intersection(Line line1, Line line2) {
+  double ax = line1.first.x - line1.second.x;
+  double ay = line2.first.x - line2.second.x;
+  double bx = line1.first.y - line1.second.y;
+  double by = line2.first.y - line2.second.y;
+
+  double div = det(ax, ay, bx, by);
+  if (div == 0) {
+    throw std::runtime_error("lines do not intersect");
+  }
+
+  double cx = det(line1.first.x, line1.first.y, line1.second.x, line1.second.y);
+  double cy = det(line2.first.x, line2.first.y, line2.second.x, line2.second.y);
+  double x = det(cx, cy, ax, ay) / div;
+  double y = det(cx, cy, bx, by) / div;
+  return cv::Point((int)x, (int)y);
+}
 
 VideoCapture::VideoCapture() {
   std::filesystem::create_directories("images");
@@ -117,6 +140,16 @@ void VideoCapture::start_game() {
   cv::line(markers, bottommost_line.value().first, bottommost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
   cv::line(markers, leftmost_line.value().first, leftmost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
   cv::line(markers, rightmost_line.value().first, rightmost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
+
+  cv::Point bottom_left_point = line_intersection(leftmost_line.value(), bottommost_line.value());
+  cv::circle(markers, bottom_left_point, 10, (0, 0, 255), -1);
+  cv::Point bottom_right_point = line_intersection(rightmost_line.value(), bottommost_line.value());
+  cv::circle(markers, bottom_right_point, 10, (0, 0, 255), -1);
+  cv::Point top_left_point = line_intersection(leftmost_line.value(), topmost_line.value());
+  cv::circle(markers, top_left_point, 10, (0, 0, 255), -1);
+  cv::Point top_right_point = line_intersection(rightmost_line.value(), topmost_line.value());
+  cv::circle(markers, top_right_point, 10, (0, 0, 255), -1);
+
   cv::imwrite("images/start_game_markers.jpg", markers);
 }
 
