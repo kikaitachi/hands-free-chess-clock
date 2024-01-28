@@ -192,16 +192,14 @@ void VideoCapture::start_game() {
 
 void VideoCapture::capture_frames() {
   cv::VideoCapture cap;
-  int deviceID = 0;             // 0 = open default camera
-  int apiID = cv::CAP_ANY;      // 0 = autodetect default API
-  cap.open(deviceID, apiID);
+  int deviceID = 0;  // 0 = open default camera
+  cap.open(deviceID);
   if (!cap.isOpened()) {
     logger::error("Failed to open camera");
     return;
   }
   cap.set(cv::CAP_PROP_FRAME_WIDTH, 864);
   cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
-  cap.set(cv::CAP_PROP_AUTOFOCUS, 0);
   for (int i = 0; ; ) {
     frame_mutex.lock();
     cap.read(frame);
@@ -217,7 +215,35 @@ void VideoCapture::capture_frames() {
       cv::Mat colored;
       cv::cvtColor(mask, colored, cv::COLOR_GRAY2BGR);
       cv::Mat bg_sub;
-      cv::Mat heatmap(img_perspective.rows, img_perspective.cols, img_perspective.type());
+      cv::Mat small;
+      cv::resize(mask, small, {8, 8}, 0, 0);
+      cv::Mat big;
+      cv::resize(small, big, {480, 480}, 0, 0);
+      cv::Mat heatmap;
+      cv::cvtColor(big, heatmap, cv::COLOR_GRAY2BGR);
+      /*cv::Mat heatmap(img_perspective.rows, img_perspective.cols, img_perspective.type());
+      int sums[8][8];
+      std::memset(sums, 0, 8 * 8 * sizeof(int));
+      for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+          for (int row = 0; row < 60; row++) {
+            for (int col = 0; col < 60; col++) {
+              int value = mask.at<int>(j * 60 + row, i * 60 + col) > 0;
+              sums[j][i] += value;
+            }
+          }
+        }
+      }
+      int max = 60 * 60;
+      double scale = 255.0 / max;
+      for (int i = 0; i < 8; i++) {
+        for (int j = 0; j < 8; j++) {
+          double color = sums[j][i] * scale;
+          cv::rectangle(heatmap,
+            {i * 60, j * 60}, {i * 60 + 60, j * 60 + 60},
+            {color, color, color}, -1);
+        }
+      }*/
       cv::Mat images[] = {
         img_perspective, colored, heatmap
       };
