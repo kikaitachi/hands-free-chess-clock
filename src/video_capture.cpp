@@ -178,7 +178,7 @@ void VideoCapture::start_game() {
     {height, 0.0f},
     {height, height}
   });
-  cv::Mat perspective_transform = cv::getPerspectiveTransform(points_from, points_to);
+  perspective_transform = cv::getPerspectiveTransform(points_from, points_to);
 
   cv::Mat img_perspective;
   cv::warpPerspective(
@@ -186,6 +186,8 @@ void VideoCapture::start_game() {
       {(int)height, (int)height}
   );
   cv::imwrite("images/start_game_perspective.jpg", img_perspective);
+
+  bg_sub = cv::createBackgroundSubtractorMOG2();
 }
 
 void VideoCapture::capture_frames() {
@@ -197,9 +199,28 @@ void VideoCapture::capture_frames() {
     logger::error("Failed to open camera");
     return;
   }
-  for ( ; ; ) {
+  for (int i = 0; ; ) {
     frame_mutex.lock();
     cap.read(frame);
+    if (!bg_sub.empty()) {
+      int height = frame.size().height;
+      cv::Mat img_perspective;
+      cv::warpPerspective(
+          frame, img_perspective, perspective_transform,
+          {height, height}
+      );
+      cv::Mat mask;
+      bg_sub->apply(img_perspective, mask, 0);
+      cv::Mat colored;
+      cv::cvtColor(mask, colored, cv::COLOR_GRAY2BGR);
+      cv::Mat bg_sub;
+      cv::Mat images[] = {
+        img_perspective, colored
+      };
+      cv::hconcat(images, 2, bg_sub);
+      cv::imwrite("images/bg_sub" + std::to_string(i) + ".jpg", bg_sub);
+      i++;
+    }
     frame_mutex.unlock();
     if (frame.empty()) {
       logger::warn("Blank frame grabbed");

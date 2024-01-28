@@ -11,6 +11,8 @@ class VideoCapture {
 
  private:
   cv::Mat frame;
+  cv::Mat perspective_transform;
+  cv::Ptr<cv::BackgroundSubtractor> bg_sub;
   std::mutex frame_mutex;
 
   void capture_frames();
