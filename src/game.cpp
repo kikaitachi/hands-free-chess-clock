@@ -43,7 +43,7 @@ void Game::switch_clock() {
 
 void Game::update_clock(std::function<void()> on_game_over) {
   while (playing) {
-    std::this_thread::sleep_for(100ms);
+    std::this_thread::sleep_for(50ms);
     std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
     unsigned int millis = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_clock_change).count();
     if (white_turn) {
@@ -89,5 +89,5 @@ std::string Game::format_time(unsigned int time_ms) {
   // Show only seconds
   std::string seconds = std::to_string(time_ms / 1000 % 60);
   std::string deciseconds = std::to_string(time_ms / 100 % 10);
-  return seconds + "." + deciseconds;
+  return "  " + seconds + "." + deciseconds;
 }
