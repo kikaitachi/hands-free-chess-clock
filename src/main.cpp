@@ -52,6 +52,9 @@ int main() {
             video_capture.stop_game();
           });
           break;
+        case SWITCH_CLOCK:
+          game.switch_clock();
+          break;
         case NO_COMMAND:
           break;
       }
