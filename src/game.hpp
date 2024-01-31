@@ -8,7 +8,9 @@ class Game {
  public:
   bool playing = false;
 
-  void reset(unsigned int time_ms, unsigned int increment_ms);
+  void ready();
+  void start(unsigned int time_ms, unsigned int increment_ms);
+  void stop();
   void switch_clock();
 
  private:

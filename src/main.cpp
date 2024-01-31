@@ -21,18 +21,23 @@ int main() {
       game.switch_clock();
     }
   );
-  speech_to_text.start([&](const std::string speech) {
-    logger::info("Speech: %s", speech.c_str());
-    if (command_parser.recognised(speech)) {
-      if (!game.playing) {
-        video_capture.start_game();
-        game.reset(command_parser.getTime(), command_parser.getIncrement());
-      } else {
-        logger::info("Not starting new %d+%dms game as there is game in progress",
-          command_parser.getTime(), command_parser.getIncrement());
+  speech_to_text.start(
+    [&]() {
+      game.ready();
+    },
+    [&](const std::string speech) {
+      logger::info("Speech: %s", speech.c_str());
+      if (command_parser.recognised(speech)) {
+        if (!game.playing) {
+          video_capture.start_game();
+          game.start(command_parser.getTime(), command_parser.getIncrement());
+        } else {
+          logger::info("Not starting new %d+%dms game as there is game in progress",
+            command_parser.getTime(), command_parser.getIncrement());
+        }
       }
     }
-  });
+  );
   audio_capture.start([&](const float *samples, int count) {
     speech_to_text.add_audio(samples, count);
   });

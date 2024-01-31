@@ -131,12 +131,10 @@ Display::Display() {
     logger::last("Failed to setup dimming");
   }
 
-  command = ALPHA_CMD_DISPLAY_SETUP | (ALPHA_BLINK_RATE_NOBLINK << 1) | ALPHA_DISPLAY_ON;
-  if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
-    logger::last("Failed to setup display");
-  }
+  blink_white(BLINK_RATE_1HZ);
+  blink_black(BLINK_RATE_NOBLINK);
 
-  set_white("");
+  set_white("WAIT");
   set_black("");
 }
 
@@ -146,6 +144,31 @@ void Display::set_white(std::string text) {
 
 void Display::set_black(std::string text) {
   illuminate_text(text, 1);
+}
+
+void Display::blink_white(int rate) {
+  blink(FIRST_ADDRESS, rate);
+}
+
+void Display::blink_black(int rate) {
+  blink(FIRST_ADDRESS + 1, rate);
+}
+
+void Display::blink(int address, int rate) {
+  struct i2c_msg msg[1];
+  struct i2c_rdwr_ioctl_data i2c_data;
+  i2c_data.msgs = msg;
+  i2c_data.nmsgs = 1;
+
+  uint8_t command = ALPHA_CMD_DISPLAY_SETUP | (rate << 1) | ALPHA_DISPLAY_ON;
+  msg[0].addr = address;
+  msg[0].flags = 0;
+  msg[0].len = 1;
+  msg[0].buf = &command;
+
+  if (ioctl(fd, I2C_RDWR, &i2c_data) < 0) {
+    logger::last("Failed set blinking");
+  }
 }
 
 void Display::illuminate_segment(uint8_t segment, uint8_t digit) {

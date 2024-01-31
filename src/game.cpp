@@ -4,7 +4,14 @@
 
 using namespace std::chrono_literals;
 
-void Game::reset(unsigned int time_ms, unsigned int increment_ms) {
+void Game::ready() {
+  display.set_white("ALL");
+  display.set_black("SET");
+  display.blink_white(BLINK_RATE_NOBLINK);
+  display.blink_black(BLINK_RATE_NOBLINK);
+}
+
+void Game::start(unsigned int time_ms, unsigned int increment_ms) {
   time_white_ms = time_black_ms = time_ms;
   this->increment_ms = increment_ms;
   white_turn = true;
@@ -16,6 +23,10 @@ void Game::reset(unsigned int time_ms, unsigned int increment_ms) {
 
   std::thread clock_update_thread(&Game::update_clock, this);
   clock_update_thread.detach();
+}
+
+void Game::stop() {
+  playing = false;
 }
 
 void Game::switch_clock() {
@@ -32,6 +43,7 @@ void Game::update_clock() {
         time_white_ms -= millis;
       } else {
         time_white_ms = 0;
+        playing = false;
       }
       display.set_white(format_time(time_white_ms));
     } else {
@@ -39,6 +51,7 @@ void Game::update_clock() {
         time_black_ms -= millis;
       } else {
         time_black_ms = 0;
+        playing = false;
       }
       display.set_black(format_time(time_black_ms));
     }
