@@ -30,7 +30,12 @@ int main() {
       if (command_parser.recognised(speech)) {
         if (!game.playing) {
           video_capture.start_game();
-          game.start(command_parser.getTime(), command_parser.getIncrement());
+          game.start(
+            command_parser.getTime(), command_parser.getIncrement(),
+            [&]() {
+              video_capture.stop_game();
+            }
+          );
         } else {
           logger::info("Not starting new %d+%dms game as there is game in progress",
             command_parser.getTime(), command_parser.getIncrement());

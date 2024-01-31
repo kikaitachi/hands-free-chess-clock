@@ -197,6 +197,11 @@ void VideoCapture::start_game() {
   bg_sub->apply(img_perspective, mask, 1);
 }
 
+void VideoCapture::stop_game() {
+  std::lock_guard<std::mutex> guard(frame_mutex);
+  bg_sub.reset();
+}
+
 void VideoCapture::capture_frames() {
   cv::VideoCapture cap;
   int deviceID = 0;  // 0 = open default camera
@@ -238,7 +243,7 @@ void VideoCapture::capture_frames() {
         img_perspective, colored
       };
       cv::hconcat(images, 2, bg_sub);
-      cv::imwrite("images/bg_sub" + std::to_string(i) + ".jpg", bg_sub);
+      //cv::imwrite("images/bg_sub" + std::to_string(i) + ".jpg", bg_sub);
       i++;
     }
     frame_mutex.unlock();
@@ -246,6 +251,6 @@ void VideoCapture::capture_frames() {
       logger::warn("Blank frame grabbed");
     }
     // Increase chance for start_game to get the lock
-    std::this_thread::sleep_for(2ms);
+    std::this_thread::sleep_for(1ms);
   }
 }

@@ -12,6 +12,7 @@ class VideoCapture {
     std::function<void()> on_move_finish
   );
   void start_game();
+  void stop_game();
 
  private:
   cv::Mat frame;

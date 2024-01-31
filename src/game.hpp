@@ -3,13 +3,17 @@
 
 #include "display.hpp"
 #include <chrono>
+#include <functional>
 
 class Game {
  public:
   bool playing = false;
 
   void ready();
-  void start(unsigned int time_ms, unsigned int increment_ms);
+  void start(
+    unsigned int time_ms, unsigned int increment_ms,
+    std::function<void()> on_game_over
+  );
   void stop();
   void switch_clock();
 
@@ -22,7 +26,8 @@ class Game {
   std::chrono::steady_clock::time_point last_clock_change;
 
   std::string format_time(unsigned int time_ms);
-  void update_clock();
+  void update_clock(std::function<void()> on_game_over);
+  void stop_blinking();
 };
 
 #endif  // GAME_H_

@@ -4,24 +4,32 @@
 
 using namespace std::chrono_literals;
 
-void Game::ready() {
-  display.set_white("ALL");
-  display.set_black("SET");
+void Game::stop_blinking() {
   display.blink_white(BLINK_RATE_NOBLINK);
   display.blink_black(BLINK_RATE_NOBLINK);
 }
 
-void Game::start(unsigned int time_ms, unsigned int increment_ms) {
+void Game::ready() {
+  display.set_white("ALL");
+  display.set_black("SET");
+  stop_blinking();
+}
+
+void Game::start(
+    unsigned int time_ms, unsigned int increment_ms,
+    std::function<void()> on_game_over
+  ) {
   time_white_ms = time_black_ms = time_ms;
   this->increment_ms = increment_ms;
   white_turn = true;
   playing = true;
   last_clock_change = std::chrono::steady_clock::now();
   std::string time = format_time(time_ms);
+  stop_blinking();
   display.set_white(time);
   display.set_black(time);
 
-  std::thread clock_update_thread(&Game::update_clock, this);
+  std::thread clock_update_thread(&Game::update_clock, this, on_game_over);
   clock_update_thread.detach();
 }
 
@@ -33,7 +41,7 @@ void Game::switch_clock() {
   white_turn = !white_turn;
 }
 
-void Game::update_clock() {
+void Game::update_clock(std::function<void()> on_game_over) {
   while (playing) {
     std::this_thread::sleep_for(100ms);
     std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
@@ -44,6 +52,8 @@ void Game::update_clock() {
       } else {
         time_white_ms = 0;
         playing = false;
+        display.blink_white(BLINK_RATE_1HZ);
+        on_game_over();
       }
       display.set_white(format_time(time_white_ms));
     } else {
@@ -52,6 +62,8 @@ void Game::update_clock() {
       } else {
         time_black_ms = 0;
         playing = false;
+        display.blink_black(BLINK_RATE_1HZ);
+        on_game_over();
       }
       display.set_black(format_time(time_black_ms));
     }
