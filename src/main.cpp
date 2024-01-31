@@ -12,7 +12,15 @@ int main() {
   CommandParser command_parser;
   SpeechToText speech_to_text;
   AudioCapture audio_capture(speech_to_text.getSampleRate(), "plughw:DEV=0,CARD=C920");
-  VideoCapture video_capture;
+  VideoCapture video_capture(
+    [&]() {
+      logger::info("Move started");
+    },
+    [&]() {
+      logger::info("Move finished");
+      game.switch_clock();
+    }
+  );
   speech_to_text.start([&](const std::string speech) {
     logger::info("Speech: %s", speech.c_str());
     if (command_parser.recognised(speech)) {

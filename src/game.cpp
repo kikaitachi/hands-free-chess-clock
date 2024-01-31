@@ -18,6 +18,10 @@ void Game::reset(unsigned int time_ms, unsigned int increment_ms) {
   clock_update_thread.detach();
 }
 
+void Game::switch_clock() {
+  white_turn = !white_turn;
+}
+
 void Game::update_clock() {
   while (playing) {
     std::this_thread::sleep_for(100ms);

@@ -1,12 +1,16 @@
 #ifndef VIDEO_CAPTURE_H_
 #define VIDEO_CAPTURE_H_
 
+#include <functional>
 #include <mutex>
 #include <opencv2/opencv.hpp>
 
 class VideoCapture {
  public:
-  VideoCapture();
+  VideoCapture(
+    std::function<void()> on_move_start,
+    std::function<void()> on_move_finish
+  );
   void start_game();
 
  private:
@@ -14,6 +18,9 @@ class VideoCapture {
   cv::Mat perspective_transform;
   cv::Ptr<cv::BackgroundSubtractor> bg_sub;
   std::mutex frame_mutex;
+  std::function<void()> on_move_start;
+  std::function<void()> on_move_finish;
+  bool moving = false;
 
   void capture_frames();
 };

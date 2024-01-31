@@ -9,6 +9,7 @@ class Game {
   bool playing = false;
 
   void reset(unsigned int time_ms, unsigned int increment_ms);
+  void switch_clock();
 
  private:
   unsigned int time_white_ms;

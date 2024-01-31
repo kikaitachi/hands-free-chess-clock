@@ -62,7 +62,11 @@ cv::Point line_intersection(Line line1, Line line2) {
   return cv::Point((int)x, (int)y);
 }
 
-VideoCapture::VideoCapture() {
+VideoCapture::VideoCapture(
+    std::function<void()> on_move_start,
+    std::function<void()> on_move_finish
+  )
+    : on_move_start(on_move_start), on_move_finish(on_move_finish) {
   std::filesystem::create_directories("images");
   // Always keep video capture running, otherwise camera will not be focused
   // for a few frames on startup
@@ -188,6 +192,8 @@ void VideoCapture::start_game() {
   cv::imwrite("images/start_game_perspective.jpg", img_perspective);
 
   bg_sub = cv::createBackgroundSubtractorMOG2(500, 32, true);
+  cv::Mat mask;
+  bg_sub->apply(img_perspective, mask, 1);
 }
 
 void VideoCapture::capture_frames() {
@@ -212,6 +218,19 @@ void VideoCapture::capture_frames() {
       );
       cv::Mat mask;
       bg_sub->apply(img_perspective, mask, -1);
+      double total_changes = cv::sum(mask).dot(cv::Scalar::ones());
+      if (moving) {
+        if (total_changes < 1500000) {
+          moving = false;
+          on_move_finish();
+        }
+      } else {
+        if (total_changes > 2000000) {
+          moving = true;
+          on_move_start();
+        }
+      }
+      logger::info("Mask sum: %f", total_changes);
       cv::Mat colored;
       cv::cvtColor(mask, colored, cv::COLOR_GRAY2BGR);
       cv::Mat bg_sub;
