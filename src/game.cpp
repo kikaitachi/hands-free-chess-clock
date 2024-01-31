@@ -78,9 +78,16 @@ std::string Game::format_time(unsigned int time_ms) {
     result.insert(result.begin(), 4 - result.size(), ' ');
     return result;
   }
-  std::string minutes = std::to_string(time_ms / 1000 / 60);
-  minutes.insert(minutes.begin(), 2 - minutes.size(), ' ');
+  if (time_ms / 1000 > 9) {
+    // Show minutes and seconds
+    std::string minutes = std::to_string(time_ms / 1000 / 60);
+    minutes.insert(minutes.begin(), 2 - minutes.size(), ' ');
+    std::string seconds = std::to_string(time_ms / 1000 % 60);
+    seconds.insert(seconds.begin(), 2 - seconds.size(), '0');
+    return minutes + ":" + seconds;
+  }
+  // Show only seconds
   std::string seconds = std::to_string(time_ms / 1000 % 60);
-  seconds.insert(seconds.begin(), 2 - seconds.size(), '0');
-  return minutes + ":" + seconds;
+  std::string deciseconds = std::to_string(time_ms / 100 % 10);
+  return seconds + "." + deciseconds;
 }
