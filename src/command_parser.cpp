@@ -24,6 +24,9 @@ CommandParser::CommandParser()
         std::regex_constants::ECMAScript | std::regex_constants::icase),
       stop_command_syntax(
         "stop the game",
+        std::regex_constants::ECMAScript | std::regex_constants::icase),
+      resume_command_syntax(
+        "continue game",
         std::regex_constants::ECMAScript | std::regex_constants::icase) {
 }
 
@@ -45,6 +48,8 @@ Command CommandParser::recognised(std::string text) {
     return START_GAME;
   } else if (std::regex_search(text, matches, stop_command_syntax)) {
     return STOP_GAME;
+  } else if (std::regex_search(text, matches, resume_command_syntax)) {
+    return RESUME_GAME;
   }
   return NO_COMMAND;
 }

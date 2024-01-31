@@ -22,8 +22,6 @@ void Game::start(
   time_white_ms = time_black_ms = time_ms;
   this->increment_ms = increment_ms;
   white_turn = true;
-  playing = true;
-  last_clock_change = std::chrono::steady_clock::now();
   std::string time = format_time(time_ms);
   stop_blinking();
   display.set_white(time);
@@ -37,11 +35,18 @@ void Game::stop() {
   playing = false;
 }
 
+void Game::resume(std::function<void()> on_game_over) {
+  std::thread clock_update_thread(&Game::update_clock, this, on_game_over);
+  clock_update_thread.detach();
+}
+
 void Game::switch_clock() {
   white_turn = !white_turn;
 }
 
 void Game::update_clock(std::function<void()> on_game_over) {
+  playing = true;
+  last_clock_change = std::chrono::steady_clock::now();
   while (playing) {
     std::this_thread::sleep_for(50ms);
     std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();

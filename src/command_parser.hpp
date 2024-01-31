@@ -8,6 +8,7 @@ enum Command {
   NO_COMMAND,
   START_GAME,
   STOP_GAME,
+  RESUME_GAME,
 };
 
 class CommandParser {
@@ -35,6 +36,7 @@ class CommandParser {
   unsigned int increment;
   std::regex start_command_syntax;
   std::regex stop_command_syntax;
+  std::regex resume_command_syntax;
 };
 
 #endif  // COMMAND_PARSER_H_

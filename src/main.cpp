@@ -46,6 +46,12 @@ int main() {
           game.stop();
           video_capture.stop_game();
           break;
+        case RESUME_GAME:
+          video_capture.resume_game();
+          game.resume([&]() {
+            video_capture.stop_game();
+          });
+          break;
         case NO_COMMAND:
           break;
       }

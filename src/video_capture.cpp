@@ -197,6 +197,20 @@ void VideoCapture::start_game() {
   bg_sub->apply(img_perspective, mask, 1);
 }
 
+void VideoCapture::resume_game() {
+  std::lock_guard<std::mutex> guard(frame_mutex);
+  float height = frame.size().height;
+  cv::Mat img_perspective;
+  cv::warpPerspective(
+      frame, img_perspective, perspective_transform,
+      {(int)height, (int)height}
+  );
+  bg_sub = cv::createBackgroundSubtractorMOG2(500, 32, true);
+  // Ensure that there are no changes in the inital frames
+  cv::Mat mask;
+  bg_sub->apply(img_perspective, mask, 1);
+}
+
 void VideoCapture::stop_game() {
   std::lock_guard<std::mutex> guard(frame_mutex);
   bg_sub.reset();

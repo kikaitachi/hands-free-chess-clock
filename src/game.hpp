@@ -15,6 +15,7 @@ class Game {
     std::function<void()> on_game_over
   );
   void stop();
+  void resume(std::function<void()> on_game_over);
   void switch_clock();
 
  private:
