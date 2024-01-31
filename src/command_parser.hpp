@@ -4,6 +4,12 @@
 #include <regex>
 #include <string>
 
+enum Command {
+  NO_COMMAND,
+  START_GAME,
+  STOP_GAME,
+};
+
 class CommandParser {
  public:
   CommandParser();
@@ -12,7 +18,7 @@ class CommandParser {
    * Return true if given text was recognised as a valid command.
    * Only then getTime & getIncrement methods return meaningful values.
    */
-  bool recognised(std::string text);
+  Command recognised(std::string text);
 
   /**
    * Get total time in milliseconds.
@@ -28,6 +34,7 @@ class CommandParser {
   unsigned int time;
   unsigned int increment;
   std::regex start_command_syntax;
+  std::regex stop_command_syntax;
 };
 
 #endif  // COMMAND_PARSER_H_

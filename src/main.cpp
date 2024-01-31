@@ -27,19 +27,27 @@ int main() {
     },
     [&](const std::string speech) {
       logger::info("Speech: %s", speech.c_str());
-      if (command_parser.recognised(speech)) {
-        if (!game.playing) {
-          video_capture.start_game();
-          game.start(
-            command_parser.getTime(), command_parser.getIncrement(),
-            [&]() {
-              video_capture.stop_game();
-            }
-          );
-        } else {
-          logger::info("Not starting new %d+%dms game as there is game in progress",
-            command_parser.getTime(), command_parser.getIncrement());
-        }
+      switch (command_parser.recognised(speech)) {
+        case START_GAME:
+          if (!game.playing) {
+            video_capture.start_game();
+            game.start(
+              command_parser.getTime(), command_parser.getIncrement(),
+              [&]() {
+                video_capture.stop_game();
+              }
+            );
+          } else {
+            logger::info("Not starting new %d+%dms game as there is game in progress",
+              command_parser.getTime(), command_parser.getIncrement());
+          }
+          break;
+        case STOP_GAME:
+          game.stop();
+          video_capture.stop_game();
+          break;
+        case NO_COMMAND:
+          break;
       }
     }
   );

@@ -21,10 +21,13 @@ static std::vector<std::string> numbers = {
 CommandParser::CommandParser()
     : start_command_syntax(
         "start ([0-9]+)(-minute| minute| minutes) game",
+        std::regex_constants::ECMAScript | std::regex_constants::icase),
+      stop_command_syntax(
+        "stop the game",
         std::regex_constants::ECMAScript | std::regex_constants::icase) {
 }
 
-bool CommandParser::recognised(std::string text) {
+Command CommandParser::recognised(std::string text) {
   for (int i = 0; i < numbers.size(); i++) {
     text = std::regex_replace(text, std::regex(numbers[i]), std::to_string(1));
   }
@@ -39,9 +42,11 @@ bool CommandParser::recognised(std::string text) {
       logger::error("%s can't be parsed as number: %s", number.c_str(), e.what());
     }
     increment = 0;
-    return true;
+    return START_GAME;
+  } else if (std::regex_search(text, matches, stop_command_syntax)) {
+    return STOP_GAME;
   }
-  return false;
+  return NO_COMMAND;
 }
 
 unsigned int CommandParser::getTime() {
