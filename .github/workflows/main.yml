@@ -11,15 +11,10 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install dependencies
         run: |
-          wget https://apt.llvm.org/llvm.sh
-          chmod +x llvm.sh
-          sudo ./llvm.sh 17 all
           sudo apt-get update
-          sudo apt-get install clang-tools-17 cmake ninja-build libasound2-dev libopencv-dev
+          sudo apt-get install g++ cmake ninja-build libasound2-dev libopencv-dev
       - name: Build
         run: |
-          export CC=/usr/bin/clang-17
-          export CXX=/usr/bin/clang++-17
           cmake -B build -G Ninja
           cmake --build build
           bash build/_deps/whisper.cpp-src/models/download-ggml-model.sh small.en
