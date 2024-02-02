@@ -27,7 +27,12 @@ int main() {
     },
     [&](const std::string speech) {
       logger::info("Speech: %s", speech.c_str());
-      switch (command_parser.recognised(speech)) {
+      Command command = command_parser.recognised(speech);
+      if (command != NO_COMMAND) {
+        // Ensure the same command will not be 'heard' multiple times
+        speech_to_text.clear_audio();
+      }
+      switch (command) {
         case START_GAME:
           if (!game.playing) {
             video_capture.start_game();

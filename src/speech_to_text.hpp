@@ -26,6 +26,7 @@ class SpeechToText {
     std::function<void(const std::string speech)> on_speech
   );
   void add_audio(const float *samples, int count);
+  void clear_audio();
 
  private:
   whisper_context* ctx;

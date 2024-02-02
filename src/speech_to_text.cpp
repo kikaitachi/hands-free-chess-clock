@@ -5,6 +5,7 @@ SpeechToText::SpeechToText() {
   struct whisper_context_params cparams;
   cparams.use_gpu = true;
   ctx = whisper_init_from_file_with_params("build/_deps/whisper.cpp-src/models/ggml-small.en.bin", cparams);
+  clear_audio();
 }
 
 unsigned int SpeechToText::getSampleRate() {
@@ -23,6 +24,11 @@ void SpeechToText::add_audio(const float *samples, int count) {
   std::lock_guard<std::mutex> guard(window_mutex);
   memmove(window, &window[count], (window_sample_count - count) * sizeof(float));
   memmove(&window[window_sample_count - count], samples, count * sizeof(float));
+}
+
+void SpeechToText::clear_audio() {
+  std::lock_guard<std::mutex> guard(window_mutex);
+  memset(window, 0, window_sample_count * sizeof(float));
 }
 
 void SpeechToText::infer(
