@@ -67,7 +67,7 @@ VideoCapture::VideoCapture(
     std::function<void()> on_move_finish
   )
     : on_move_start(on_move_start), on_move_finish(on_move_finish) {
-  std::filesystem::create_directories("images");
+  std::filesystem::create_directories("debug");
   // Always keep video capture running, otherwise camera will not be focused
   // for a few frames on startup
   std::thread video_thread(&VideoCapture::capture_frames, this);
@@ -77,18 +77,18 @@ VideoCapture::VideoCapture(
 void VideoCapture::start_game() {
   // Detect board
   std::lock_guard<std::mutex> guard(frame_mutex);
-  cv::imwrite("images/start_game_original.jpg", frame);
+  cv::imwrite("debug/start_game_original.jpg", frame);
   cv::Mat markers;
   frame.copyTo(markers);
   cv::Mat gray;
   cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
-  cv::imwrite("images/start_game_gray.jpg", gray);
+  cv::imwrite("debug/start_game_gray.jpg", gray);
   cv::Mat blurred;
   cv::medianBlur(gray, blurred, 5);
-  cv::imwrite("images/start_game_blurred.jpg", blurred);
+  cv::imwrite("debug/start_game_blurred.jpg", blurred);
   cv::Mat threshold;
   cv::adaptiveThreshold(blurred, threshold, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 11, 2);
-  cv::imwrite("images/start_game_threshold.jpg", threshold);
+  cv::imwrite("debug/start_game_threshold.jpg", threshold);
   std::vector<std::vector<cv::Point> > contours;
   std::vector<cv::Vec4i> hierarchy;
   cv::findContours(threshold, contours, hierarchy, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
@@ -167,7 +167,7 @@ void VideoCapture::start_game() {
   cv::Point final_top_right_point(top_right_point.x - distance_top / 2, top_left_point.y);
   cv::circle(markers, final_top_right_point, 10, {255, 0, 255}, -1);
 
-  cv::imwrite("images/start_game_markers.jpg", markers);
+  cv::imwrite("debug/start_game_markers.jpg", markers);
 
   std::vector<cv::Point2f> points_from({
     final_bottom_left_point,
@@ -189,7 +189,7 @@ void VideoCapture::start_game() {
       frame, img_perspective, perspective_transform,
       {(int)height, (int)height}
   );
-  cv::imwrite("images/start_game_perspective.jpg", img_perspective);
+  cv::imwrite("debug/start_game_perspective.jpg", img_perspective);
 
   bg_sub = cv::createBackgroundSubtractorMOG2(500, 32, true);
   // Ensure that there are no changes in the inital frames
@@ -239,6 +239,7 @@ void VideoCapture::capture_frames() {
       cv::Mat mask;
       bg_sub->apply(img_perspective, mask, -1);
       double total_changes = cv::sum(mask).dot(cv::Scalar::ones());
+      logger::debug("Background subtraction change: %f", total_changes);
       if (moving) {
         if (total_changes < 1500000) {
           moving = false;
@@ -257,7 +258,7 @@ void VideoCapture::capture_frames() {
         img_perspective, colored
       };
       cv::hconcat(images, 2, bg_sub);
-      //cv::imwrite("images/bg_sub" + std::to_string(i) + ".jpg", bg_sub);
+      //cv::imwrite("debug/bg_sub" + std::to_string(i) + ".jpg", bg_sub);
       i++;
     }
     frame_mutex.unlock();

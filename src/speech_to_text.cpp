@@ -1,5 +1,6 @@
 #include "speech_to_text.hpp"
 #include "logger.hpp"
+#include <chrono>
 
 SpeechToText::SpeechToText() {
   struct whisper_context_params cparams;
@@ -41,7 +42,7 @@ void SpeechToText::infer(
   params.suppress_non_speech_tokens = true;
   params.language = "en";
   for ( ; ; ) {
-    logger::debug("Whisper start");
+    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
     float window_copy[window_sample_count];
     window_mutex.lock();
     memcpy(window_copy, window, window_sample_count * sizeof(float));
@@ -52,10 +53,12 @@ void SpeechToText::infer(
     }
     const int n_segments = whisper_full_n_segments(ctx);
     std::string result;
-    logger::debug("Got %d segments", n_segments);
     for (int i = 0; i < n_segments; i++) {
       result += whisper_full_get_segment_text(ctx, i);
     }
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    unsigned int millis = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
+    logger::debug("Recognised '%s' in %dms", result.c_str(), millis);
     if (!loaded) {
       loaded = true;
       on_ready();
