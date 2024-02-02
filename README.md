@@ -9,24 +9,14 @@ Install build tools dependencies:
 sudo apt-get install g++ cmake ninja-build libasound2-dev libopencv-dev
 ```
 
-Create build configuration (you need to run this only once):
+To build:
 ```
-cmake -B build -G Ninja
-```
-
-Build:
-```
-cmake --build build
+./build.sh
 ```
 
-Download Whisper model file (you need to run this only once):
+To run:
 ```
-bash build/_deps/whisper.cpp-src/models/download-ggml-model.sh small.en
-```
-
-Run:
-```
-build/bin/hands-free-chess-clock
+./run.sh
 ```
 
 ## Using

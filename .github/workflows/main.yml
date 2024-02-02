@@ -15,6 +15,4 @@ jobs:
           sudo apt-get install g++ cmake ninja-build libasound2-dev libopencv-dev
       - name: Build
         run: |
-          cmake -B build -G Ninja
-          cmake --build build
-          bash build/_deps/whisper.cpp-src/models/download-ggml-model.sh small.en
+          ./build.sh
