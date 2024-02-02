@@ -9,7 +9,7 @@ Install build tools dependencies:
 sudo apt-get install cmake ninja-build libasound2-dev libopencv-dev
 ```
 
-Create build configuration:
+Create build configuration (you need to run this only once):
 ```
 cmake -B build -G Ninja
 ```
@@ -17,6 +17,11 @@ cmake -B build -G Ninja
 Build:
 ```
 cmake --build build
+```
+
+Download Whisper model file (you need to run this only once):
+```
+bash build/_deps/whisper.cpp-src/models/download-ggml-model.sh small.en
 ```
 
 Run:
