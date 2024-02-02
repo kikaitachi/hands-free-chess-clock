@@ -11,8 +11,21 @@ class VideoCapture {
     std::function<void()> on_move_start,
     std::function<void()> on_move_finish
   );
+
+  /**
+   * Called when game starts. Assumption is that all pieces are on their
+   * initial squares.
+   */
   void start_game();
+
+  /**
+   * Resume stopped game.
+   */
   void resume_game();
+
+  /**
+   * Stop game either because it finished or because of user request.
+   */
   void stop_game();
 
  private:

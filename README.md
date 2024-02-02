@@ -2,6 +2,28 @@
 
 ![Last build result](https://github.com/kikaitachi/hands-free-chess-clock/workflows/CI/badge.svg)
 
+## Building & running
+
+Install dependencies:
+```
+sudo apt-get install cmake ninja libasound2-dev libopencv-dev
+```
+
+Create build configuration:
+```
+cmake -B build -G Ninja
+```
+
+Build:
+```
+cmake --build build
+```
+
+Run:
+```
+build/bin/hands-free-chess-clock
+```
+
 ## Credits
 
 This project directly or indirectly uses these open source projects:
