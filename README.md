@@ -24,6 +24,14 @@ Run:
 build/bin/hands-free-chess-clock
 ```
 
+## Using
+
+Clock is controlled by the following voice commands:
+* `start x minute(s) game` - starts a new game. All chess pieces must be at their initial squares. After starting game video camera will observe the board and automatically switch relevant clock after each move.
+* `stop the game` - will stop the clock.
+* `continue game` - will resume clock.
+* `switch the clock` - manually switch which clock is active. Intended for debugging only.
+
 ## Credits
 
 This project directly or indirectly uses these open source projects:
