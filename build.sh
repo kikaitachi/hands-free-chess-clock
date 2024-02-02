@@ -12,5 +12,5 @@ fi
 cmake --build "${build_dir}"
 
 if [ ! -f "${model_file}" ]; then
-  bash "${build_dir}/_deps/whisper.cpp-src/models/download-ggml-model.sh small.en"
+  bash "${build_dir}/_deps/whisper.cpp-src/models/download-ggml-model.sh" small.en
 fi
