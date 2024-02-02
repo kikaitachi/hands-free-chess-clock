@@ -6,7 +6,7 @@
 
 ## Building & running
 
-Install build tools dependencies:
+Install build tools and dependencies:
 ```
 sudo apt-get install g++ cmake ninja-build libasound2-dev libopencv-dev
 ```
