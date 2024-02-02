@@ -4,7 +4,7 @@
 
 ## Building & running
 
-Install dependencies:
+Install build tools dependencies:
 ```
 sudo apt-get install cmake ninja libasound2-dev libopencv-dev
 ```
