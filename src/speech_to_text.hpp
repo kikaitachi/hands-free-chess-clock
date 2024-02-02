@@ -20,12 +20,31 @@ class SpeechToText {
  public:
   SpeechToText();
 
+  /**
+   * Get sample rate. Only samples with this rate should be provided to
+   * add_audio method.
+   */
   unsigned int getSampleRate();
+
+  /**
+   * Start recognizing speech.
+   * on_ready will be called only once after the first recognition to inform
+   * that model is loaded and next recognition event will be faster.
+   * on_speech is called on every successful recognition event.
+   */
   void start(
     std::function<void()> on_ready,
     std::function<void(const std::string speech)> on_speech
   );
+
+  /**
+   * Add more audio to the sliding window.
+   */
   void add_audio(const float *samples, int count);
+
+  /**
+   * Zero whole sliding window.
+   */
   void clear_audio();
 
  private:

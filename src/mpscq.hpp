@@ -17,6 +17,9 @@ class Node {
 
 namespace mpscq {
 
+/**
+ * Multiple Producers Single Consumer queue.
+ */
 template <typename T>
 class Queue {
  public:
