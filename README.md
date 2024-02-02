@@ -2,6 +2,8 @@
 
 ![Last build result](https://github.com/kikaitachi/hands-free-chess-clock/workflows/CI/badge.svg)
 
+![Hands Free Chess Clock](clock.webp)
+
 ## Building & running
 
 Install build tools dependencies:
