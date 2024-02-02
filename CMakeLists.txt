@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.28)
+cmake_minimum_required(VERSION 3.25)
 
 project(hands-free-chess-clock LANGUAGES CXX VERSION 0.1.0)
 
