@@ -2,7 +2,12 @@
 #include "logger.hpp"
 #include <chrono>
 
+void log_callback(enum ggml_log_level level, const char * text, void * user_data) {
+  logger::debug(std::string(text, strlen(text) - 1));
+}
+
 SpeechToText::SpeechToText() {
+  whisper_log_set(log_callback, nullptr);
   struct whisper_context_params cparams;
   cparams.use_gpu = true;
   ctx = whisper_init_from_file_with_params("build/_deps/whisper.cpp-src/models/ggml-small.en.bin", cparams);
