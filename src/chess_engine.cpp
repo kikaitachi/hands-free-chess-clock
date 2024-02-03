@@ -16,4 +16,12 @@ Position::Position() {
     color[i] = i < 32;
     moved[i] = false;
   }
+  white_turn = true;
+  passing_pawn = 0;
+}
+
+std::forward_list<Move> Position::generate_possible_moves() {
+  std::forward_list<Move> moves;
+  // TODO: implement
+  return moves;
 }
