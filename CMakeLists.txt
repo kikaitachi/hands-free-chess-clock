@@ -24,6 +24,7 @@ target_sources(${PROJECT_NAME}
   PUBLIC
     src/main.cpp
     src/audio_capture.cpp
+    src/chess_engine.cpp
     src/command_parser.cpp
     src/display.cpp
     src/game.cpp
