@@ -4,6 +4,7 @@
 namespace chess {
 
 enum Figure {
+  Empty,
   King,
   Queen,
   Rook,
@@ -16,7 +17,7 @@ class Position {
  public:
   Position();
 
-  int figures[64];
+  int figure[64];
   bool color[64];
   bool moved[64];
 };

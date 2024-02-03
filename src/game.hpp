@@ -1,6 +1,7 @@
 #ifndef GAME_H_
 #define GAME_H_
 
+#include "chess_engine.hpp"
 #include "display.hpp"
 #include <chrono>
 #include <functional>
