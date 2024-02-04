@@ -2,6 +2,7 @@
 #include "game.hpp"
 #include "logger.hpp"
 #include <chrono>
+#include <list>
 #include <thread>
 
 using namespace std::chrono_literals;
@@ -43,7 +44,7 @@ bool Game::consider_move(SquareChange changes[64]) {
     chess::index2string(changes[4].index).c_str(),
     chess::index2string(changes[5].index).c_str());
   std::forward_list<chess::Move> moves = position.generate_legal_moves();
-  int candidates = 0;
+  std::list<chess::Move> candidates;
   for (auto & move : moves) {
     logger::info("Move: %s%s",
       chess::index2string(move.from).c_str(),
@@ -62,10 +63,14 @@ bool Game::consider_move(SquareChange changes[64]) {
       logger::info("Found candidate move: %s%s",
         chess::index2string(from).c_str(),
         chess::index2string(to).c_str());
-      candidates++;
+      candidates.push_back(move);
     }
   }
-  return candidates > 0;
+  if (candidates.size() == 1) {
+    position.move(candidates.front());
+    return true;
+  }
+  return false;
 }
 
 void Game::stop() {

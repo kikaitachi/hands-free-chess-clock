@@ -38,6 +38,7 @@ class Position {
 
   friend bool operator==(const Position& lhs, const Position& rhs) = default;
   std::forward_list<Move> generate_legal_moves();
+  void move(const Move& move);
 
   Figure pieces[64];
   bool color[64];

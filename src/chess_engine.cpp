@@ -67,30 +67,31 @@ std::forward_list<Move> Position::generate_possible_moves() {
       if (color[from] != white_turn) {
         continue;
       }
-      switch (piece) {
-        Pawn: {
-          int dir = color[from] ? -1 : 1;  // Direction of pawn move depending on color
-          int to = from + dir * 8;  // One square ahead
-          // Stroke to the right
-          if (x < 7 && (pieces[to + 1] != Empty && color[to + 1] != white_turn || from + 1 == passing_pawn)) {
-            moves.emplace_front(from, to + 1, Empty);
-          }
-          // Stroke to the left
-          if (x > 0 && (pieces[to - 1] != Empty && color[to - 1] != white_turn || from - 1 == passing_pawn)) {
-            moves.emplace_front(from, to - 1, Empty);
-          }
-          // Move one square forward
-          if (pieces[to] == Empty) {
-            moves.emplace_front(from, to, Empty);
-          }
-          // Move two squares forward
-          if (!moved[from] && pieces[to] == Empty && pieces[to + dir * 8] == Empty) {
-            moves.emplace_front(from, to + dir * 8, Empty);
-          }
-          break;
+      if (piece == Pawn) {
+        int dir = color[from] ? 1 : -1;  // Direction of pawn move depending on color
+        int to = from + dir * 8;  // One square ahead
+        // Stroke to the right
+        if (x < 7 && (pieces[to + 1] != Empty && color[to + 1] != white_turn || from + 1 == passing_pawn)) {
+          moves.emplace_front(from, to + 1, Empty);
+        }
+        // Stroke to the left
+        if (x > 0 && (pieces[to - 1] != Empty && color[to - 1] != white_turn || from - 1 == passing_pawn)) {
+          moves.emplace_front(from, to - 1, Empty);
+        }
+        // Move one square forward
+        if (pieces[to] == Empty) {
+          moves.emplace_front(from, to, Empty);
+        }
+        // Move two squares forward
+        if (!moved[from] && pieces[to] == Empty && pieces[to + dir * 8] == Empty) {
+          moves.emplace_front(from, to + dir * 8, Empty);
         }
       }
     }
   }
   return moves;
+}
+
+void Position::move(const Move& move) {
+  // TODO: implement
 }
