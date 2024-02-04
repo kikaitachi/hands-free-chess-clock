@@ -46,9 +46,6 @@ bool Game::consider_move(SquareChange changes[64]) {
   std::forward_list<chess::Move> moves = position.generate_legal_moves();
   std::list<chess::Move> candidates;
   for (auto & move : moves) {
-    logger::info("Move: %s%s",
-      chess::index2string(move.from).c_str(),
-      chess::index2string(move.to).c_str());
     int from = -1;
     int to = -1;
     for (int i = 0; i < 6; i++) {
@@ -59,10 +56,11 @@ bool Game::consider_move(SquareChange changes[64]) {
         to = move.to;
       }
     }
+    logger::info("Move: %s%s%s",
+      chess::index2string(move.from).c_str(),
+      chess::index2string(move.to).c_str(),
+      from != -1 && to != -1 ? " candidate" : "");
     if (from != -1 && to != -1) {
-      logger::info("Found candidate move: %s%s",
-        chess::index2string(from).c_str(),
-        chess::index2string(to).c_str());
       candidates.push_back(move);
     }
   }

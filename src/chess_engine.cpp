@@ -54,9 +54,28 @@ void Position::reset() {
 }
 
 std::forward_list<Move> Position::generate_legal_moves() {
-  std::forward_list<Move> possible_moves = generate_possible_moves(white_turn);
-  // TODO: filter out moves impossible because of checks and add promotions
-  return possible_moves;
+  std::forward_list<Move> legal_moves;
+  for (auto & move : generate_possible_moves(white_turn)) {
+    Position position(*this);
+    position.move(move);
+    bool allowed = !position.is_king_attacked();
+    // Disallow castling when king is under check or goes through checked cell
+    if (pieces[move.to] == King && abs(move.from - move.to) == 2) {
+      if (is_king_attacked()) {
+        allowed = false;
+      } else {
+        position = Position(*this);
+        position.move({move.from, (move.from + move.to) / 2, Empty});
+        if (position.is_king_attacked())
+          allowed = false;
+      }
+    }
+    if (allowed) {
+      // TODO: generate all possible promotions
+      legal_moves.push_front(move);
+    }
+  }
+  return legal_moves;
 }
 
 std::forward_list<Move> Position::generate_possible_moves(bool white_turn) {
