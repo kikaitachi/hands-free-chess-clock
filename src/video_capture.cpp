@@ -13,15 +13,8 @@
 
 using namespace std::chrono_literals;
 
-class SquareChange {
- public:
-  int x;
-  int y;
-  double change;
-};
-
 bool square_change_sorter(SquareChange const& lhs, SquareChange const& rhs) {
-    return lhs.change < rhs.change;
+    return lhs.change > rhs.change;
 }
 
 typedef std::pair<cv::Point, cv::Point> Line;
@@ -78,7 +71,7 @@ cv::Point line_intersection(Line line1, Line line2) {
 
 VideoCapture::VideoCapture(
     std::function<void()> on_move_start,
-    std::function<void()> on_move_finish
+    std::function<bool(SquareChange[64])> on_move_finish
   )
     : on_move_start(on_move_start), on_move_finish(on_move_finish) {
   // Always keep video capture running, otherwise camera will not be focused
@@ -256,11 +249,10 @@ void VideoCapture::capture_frames() {
       cv::Mat mask;
       bg_sub->apply(img_perspective, mask, -1);
       double total_changes = cv::sum(mask).dot(cv::Scalar::ones());
-      logger::debug("Background subtraction change: %f", total_changes);
+      //logger::debug("Background subtraction change: %f", total_changes);
       if (moving) {
         if (total_changes < 1500000) {
           moving = false;
-          on_move_finish();
 
           cv::Mat gray_perspective;
           cv::cvtColor(img_perspective, gray_perspective, cv::COLOR_BGR2GRAY);
@@ -282,24 +274,26 @@ void VideoCapture::capture_frames() {
           cv::cvtColor(diff, colored, cv::COLOR_GRAY2BGR);
 
           for (int j = 0; j < 6; j++) {
-            SquareChange change = changes[63 - j];
+            SquareChange change = changes[j];
             cv::rectangle(colored,
               {change.x * square_size, change.y * square_size},
               {change.x * square_size + square_size, change.y * square_size + square_size},
               {0, 0, 255}, 1, cv::LINE_AA);
           }
 
-          cv::Mat bg_sub;
-          cv::Mat images[] = {
-            img_perspective, colored
-          };
-          cv::hconcat(images, 2, bg_sub);
-          std::string move_number = std::to_string(i);
-          move_number.insert(move_number.begin(), 3 - move_number.size(), '0');
-          cv::imwrite("debug/move" + move_number + ".jpg", bg_sub);
-          last_move = img_perspective.clone();
-          cv::cvtColor(img_perspective, last_move, cv::COLOR_BGR2GRAY);
-          i++;
+          if (on_move_finish(changes)) {
+            cv::Mat bg_sub;
+            cv::Mat images[] = {
+              img_perspective, colored
+            };
+            cv::hconcat(images, 2, bg_sub);
+            std::string move_number = std::to_string(i);
+            move_number.insert(move_number.begin(), 3 - move_number.size(), '0');
+            cv::imwrite("debug/move" + move_number + ".jpg", bg_sub);
+            last_move = img_perspective.clone();
+            cv::cvtColor(img_perspective, last_move, cv::COLOR_BGR2GRAY);
+            i++;
+          }
         }
       } else {
         if (total_changes > 2000000) {

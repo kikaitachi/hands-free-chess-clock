@@ -6,6 +6,8 @@
 
 namespace chess {
 
+std::string coords2string(int row, int col);
+
 enum Figure {
   Empty,
   King,

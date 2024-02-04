@@ -5,11 +5,21 @@
 #include <mutex>
 #include <opencv2/opencv.hpp>
 
+/**
+ * How much given square changes between last move and suspected new move.
+ */
+class SquareChange {
+ public:
+  int x;
+  int y;
+  double change;
+};
+
 class VideoCapture {
  public:
   VideoCapture(
     std::function<void()> on_move_start,
-    std::function<void()> on_move_finish
+    std::function<bool(SquareChange[64])> on_move_finish
   );
 
   /**
@@ -35,7 +45,7 @@ class VideoCapture {
   cv::Ptr<cv::BackgroundSubtractor> bg_sub;
   std::mutex frame_mutex;
   std::function<void()> on_move_start;
-  std::function<void()> on_move_finish;
+  std::function<bool(SquareChange[64])> on_move_finish;
   bool moving = false;
 
   void capture_frames();

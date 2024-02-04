@@ -3,6 +3,7 @@
 
 #include "chess_engine.hpp"
 #include "display.hpp"
+#include "video_capture.hpp"
 #include <chrono>
 #include <functional>
 
@@ -15,6 +16,7 @@ class Game {
     unsigned int time_ms, unsigned int increment_ms,
     std::function<void()> on_game_over
   );
+  bool consider_move(SquareChange changes[64]);
   void stop();
   void resume(std::function<void()> on_game_over);
   void switch_clock();

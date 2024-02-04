@@ -1,11 +1,13 @@
 #include "chess_engine.hpp"
 
+std::string chess::coords2string(int row, int col) {
+  return std::string(1, 'a' + col) + std::to_string(row + 1);
+}
+
 using namespace chess;
 
 static std::string index2notation(int index) {
-  int row = index / 8;
-  int col = index % 8;
-  return std::to_string('a' + col) + std::to_string(row + 1);
+  return coords2string(index / 8, index % 8);
 }
 
 static std::string figure2notation(Figure figure) {

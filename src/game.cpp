@@ -1,4 +1,6 @@
+#include "chess_engine.hpp"
 #include "game.hpp"
+#include "logger.hpp"
 #include <chrono>
 #include <thread>
 
@@ -29,6 +31,17 @@ void Game::start(
 
   std::thread clock_update_thread(&Game::update_clock, this, on_game_over);
   clock_update_thread.detach();
+}
+
+bool Game::consider_move(SquareChange changes[64]) {
+  logger::info("6 best candidate squares: %s, %s, %s, %s, %s, %s",
+    chess::coords2string(changes[0].y, changes[0].x).c_str(),
+    chess::coords2string(changes[1].y, changes[1].x).c_str(),
+    chess::coords2string(changes[2].y, changes[2].x).c_str(),
+    chess::coords2string(changes[3].y, changes[3].x).c_str(),
+    chess::coords2string(changes[4].y, changes[4].x).c_str(),
+    chess::coords2string(changes[5].y, changes[5].x).c_str());
+  return true;
 }
 
 void Game::stop() {

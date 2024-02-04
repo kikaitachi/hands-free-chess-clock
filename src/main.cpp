@@ -16,9 +16,9 @@ int main() {
     [&]() {
       logger::info("Move started");
     },
-    [&]() {
+    [&](SquareChange changes[64]) {
       logger::info("Move finished");
-      game.switch_clock();
+      return game.consider_move(changes);
     }
   );
   speech_to_text.start(
