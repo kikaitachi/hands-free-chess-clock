@@ -1,4 +1,5 @@
 #include "chess_engine.hpp"
+#include <cmath>
 
 std::string chess::index2string(int index) {
   int row = index / 8;
@@ -93,5 +94,38 @@ std::forward_list<Move> Position::generate_possible_moves() {
 }
 
 void Position::move(const Move& move) {
-  // TODO: implement
+  passing_pawn = 0;
+  Figure piece = pieces[move.from];
+  if (piece == King) {
+    if (move.from - move.to == 2) {
+      // Queen side castling
+      pieces[move.to + 1] = Rook;
+      int rook_coord = move.from < 8 ? 0 : 8 * (8 - 1);
+      pieces[rook_coord] = Empty;
+      color[move.to + 1] = color[rook_coord];
+    } else if (move.to - move.from == 2) {
+      // King side castling
+      pieces[move.to - 1] = Rook;
+      int rook_coord = (move.from < 8 ? 8 : 64) - 1;
+      pieces[rook_coord] = Empty;
+      color[move.to - 1] = color[rook_coord];
+    }
+  } else if (piece == Pawn) {
+    // Set passing pawn coordinates
+    if (abs(move.from - move.to) == 8 * 2)
+      passing_pawn = move.to;
+    // Passing pawn stroke
+    else if (abs(move.from - move.to) != 8 && pieces[move.to] == Empty)
+      pieces[move.to + (move.from - move.to > 0 ? 8 : -8)] = Empty;
+    // Promotion
+    else if (move.to < 8 || move.to >= 8 * (8 - 1))
+      piece = move.promoted;
+  }
+  // Make move
+  pieces[move.to] = piece;
+  pieces[move.from] = Empty;
+  color[move.to] = color[move.from];
+  moved[move.from] = moved[move.to] = true;
+  // Switch turn
+  white_turn = !white_turn;
 }
