@@ -30,7 +30,7 @@ class Position {
   Position();
   friend bool operator==(const Position& lhs, const Position& rhs) = default;
 
-  int figure[64];
+  Figure pieces[64];
   bool color[64];
   bool moved[64];
   bool white_turn;
