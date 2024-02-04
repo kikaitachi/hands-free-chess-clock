@@ -30,6 +30,11 @@ std::string Move::to_string() {
 }
 
 Position::Position() {
+  reset();
+
+}
+
+void Position::reset() {
   pieces[0] = pieces[7] = pieces[56] = pieces[63] = Rook;
   pieces[1] = pieces[6] = pieces[57] = pieces[62] = Knight;
   pieces[2] = pieces[5] = pieces[58] = pieces[61] = Bishop;
@@ -45,6 +50,12 @@ Position::Position() {
   }
   white_turn = true;
   passing_pawn = 0;
+}
+
+std::forward_list<Move> Position::generate_legal_moves() {
+  std::forward_list<Move> possible_moves = generate_possible_moves();
+  // TODO: filter out moves impossible because of checks and add promotions
+  return possible_moves;
 }
 
 std::forward_list<Move> Position::generate_possible_moves() {

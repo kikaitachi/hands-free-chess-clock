@@ -26,6 +26,7 @@ class Game {
   unsigned int time_black_ms;
   unsigned int increment_ms;
   bool white_turn;
+  chess::Position position;
   Display display;
   std::chrono::steady_clock::time_point last_clock_change;
 

@@ -30,7 +30,14 @@ class Move {
 class Position {
  public:
   Position();
+
+  /**
+   * Set position to initial state.
+   */
+  void reset();
+
   friend bool operator==(const Position& lhs, const Position& rhs) = default;
+  std::forward_list<Move> generate_legal_moves();
 
   Figure pieces[64];
   bool color[64];

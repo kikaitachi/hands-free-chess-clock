@@ -24,6 +24,7 @@ void Game::start(
   time_white_ms = time_black_ms = time_ms;
   this->increment_ms = increment_ms;
   white_turn = true;
+  position.reset();
   std::string time = format_time(time_ms);
   stop_blinking();
   display.set_white(time);
@@ -41,7 +42,30 @@ bool Game::consider_move(SquareChange changes[64]) {
     chess::index2string(changes[3].index).c_str(),
     chess::index2string(changes[4].index).c_str(),
     chess::index2string(changes[5].index).c_str());
-  return true;
+  std::forward_list<chess::Move> moves = position.generate_legal_moves();
+  int candidates = 0;
+  for (auto & move : moves) {
+    logger::info("Move: %s%s",
+      chess::index2string(move.from).c_str(),
+      chess::index2string(move.to).c_str());
+    int from = -1;
+    int to = -1;
+    for (int i = 0; i < 6; i++) {
+      if (move.from == changes[i].index) {
+        from = move.from;
+      }
+      if (move.to == changes[i].index) {
+        to = move.to;
+      }
+    }
+    if (from != -1 && to != -1) {
+      logger::info("Found candidate move: %s%s",
+        chess::index2string(from).c_str(),
+        chess::index2string(to).c_str());
+      candidates++;
+    }
+  }
+  return candidates > 0;
 }
 
 void Game::stop() {
