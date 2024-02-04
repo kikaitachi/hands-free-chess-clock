@@ -54,12 +54,12 @@ void Position::reset() {
 }
 
 std::forward_list<Move> Position::generate_legal_moves() {
-  std::forward_list<Move> possible_moves = generate_possible_moves();
+  std::forward_list<Move> possible_moves = generate_possible_moves(white_turn);
   // TODO: filter out moves impossible because of checks and add promotions
   return possible_moves;
 }
 
-std::forward_list<Move> Position::generate_possible_moves() {
+std::forward_list<Move> Position::generate_possible_moves(bool white_turn) {
   std::forward_list<Move> moves;
   for (int y = 0; y < 8; y++) {
     for (int x = 0; x < 8; x++) {
@@ -91,6 +91,15 @@ std::forward_list<Move> Position::generate_possible_moves() {
     }
   }
   return moves;
+}
+
+bool Position::is_king_attacked() {
+  for (auto & move : generate_possible_moves(!white_turn)) {
+    if (pieces[move.to] == King && color[move.to] == white_turn) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void Position::move(const Move& move) {

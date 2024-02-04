@@ -50,7 +50,9 @@ class Position {
   /**
    * Does include moves prohibited by check.
    */
-  std::forward_list<Move> generate_possible_moves();
+  std::forward_list<Move> generate_possible_moves(bool white_turn);
+
+  bool is_king_attacked();
 };
 
 }
