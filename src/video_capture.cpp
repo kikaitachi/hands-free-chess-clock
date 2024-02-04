@@ -226,7 +226,7 @@ void VideoCapture::capture_frames() {
   }
   cap.set(cv::CAP_PROP_FRAME_WIDTH, 864);
   cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
-  for (int i = 0; ; ) {
+  for (int i = 1; ; ) {
     frame_mutex.lock();
     cap.read(frame);
     if (!bg_sub.empty()) {
@@ -244,6 +244,18 @@ void VideoCapture::capture_frames() {
         if (total_changes < 1500000) {
           moving = false;
           on_move_finish();
+
+          cv::Mat colored;
+          cv::cvtColor(mask, colored, cv::COLOR_GRAY2BGR);
+          cv::Mat bg_sub;
+          cv::Mat images[] = {
+            img_perspective, colored
+          };
+          cv::hconcat(images, 2, bg_sub);
+          std::string move_number = std::to_string(i);
+          move_number.insert(move_number.begin(), 3 - move_number.size(), '0');
+          cv::imwrite("debug/move" + move_number + ".jpg", bg_sub);
+          i++;
         }
       } else {
         if (total_changes > 2000000) {
@@ -251,15 +263,6 @@ void VideoCapture::capture_frames() {
           on_move_start();
         }
       }
-      cv::Mat colored;
-      cv::cvtColor(mask, colored, cv::COLOR_GRAY2BGR);
-      cv::Mat bg_sub;
-      cv::Mat images[] = {
-        img_perspective, colored
-      };
-      cv::hconcat(images, 2, bg_sub);
-      //cv::imwrite("debug/bg_sub" + std::to_string(i) + ".jpg", bg_sub);
-      i++;
     }
     frame_mutex.unlock();
     if (frame.empty()) {
