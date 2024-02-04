@@ -265,7 +265,7 @@ void VideoCapture::capture_frames() {
             for (int y = 0; y < 8; y++) {
               cv::Mat square = diff(cv::Rect(x * square_size, y * square_size, square_size, square_size));
               double sum = cv::sum(square).dot(cv::Scalar::ones());
-              changes[y * 8 + x] = {x, y, sum};
+              changes[y * 8 + x] = {x, y, (7 - x) * 8 + (7 - y), sum};
             }
           }
           std::sort(changes, changes + 64, &square_change_sorter);

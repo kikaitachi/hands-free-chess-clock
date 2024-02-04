@@ -35,12 +35,12 @@ void Game::start(
 
 bool Game::consider_move(SquareChange changes[64]) {
   logger::info("6 best candidate squares: %s, %s, %s, %s, %s, %s",
-    chess::coords2string(changes[0].y, changes[0].x).c_str(),
-    chess::coords2string(changes[1].y, changes[1].x).c_str(),
-    chess::coords2string(changes[2].y, changes[2].x).c_str(),
-    chess::coords2string(changes[3].y, changes[3].x).c_str(),
-    chess::coords2string(changes[4].y, changes[4].x).c_str(),
-    chess::coords2string(changes[5].y, changes[5].x).c_str());
+    chess::index2string(changes[0].index).c_str(),
+    chess::index2string(changes[1].index).c_str(),
+    chess::index2string(changes[2].index).c_str(),
+    chess::index2string(changes[3].index).c_str(),
+    chess::index2string(changes[4].index).c_str(),
+    chess::index2string(changes[5].index).c_str());
   return true;
 }
 

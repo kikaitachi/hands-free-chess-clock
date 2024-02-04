@@ -12,6 +12,7 @@ class SquareChange {
  public:
   int x;
   int y;
+  int index;
   double change;
 };
 

@@ -6,7 +6,7 @@
 
 namespace chess {
 
-std::string coords2string(int row, int col);
+std::string index2string(int index);
 
 enum Figure {
   Empty,

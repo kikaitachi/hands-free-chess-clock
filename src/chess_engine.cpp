@@ -1,14 +1,12 @@
 #include "chess_engine.hpp"
 
-std::string chess::coords2string(int row, int col) {
+std::string chess::index2string(int index) {
+  int row = index / 8;
+  int col = index % 8;
   return std::string(1, 'a' + col) + std::to_string(row + 1);
 }
 
 using namespace chess;
-
-static std::string index2notation(int index) {
-  return coords2string(index / 8, index % 8);
-}
 
 static std::string figure2notation(Figure figure) {
   switch (figure) {
@@ -28,7 +26,7 @@ static std::string figure2notation(Figure figure) {
 }
 
 std::string Move::to_string() {
-  return index2notation(from) + index2notation(to) + figure2notation(promoted);
+  return index2string(from) + index2string(to) + figure2notation(promoted);
 }
 
 Position::Position() {
