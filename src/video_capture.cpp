@@ -67,7 +67,6 @@ VideoCapture::VideoCapture(
     std::function<void()> on_move_finish
   )
     : on_move_start(on_move_start), on_move_finish(on_move_finish) {
-  std::filesystem::create_directories("debug");
   // Always keep video capture running, otherwise camera will not be focused
   // for a few frames on startup
   std::thread video_thread(&VideoCapture::capture_frames, this);
@@ -75,6 +74,8 @@ VideoCapture::VideoCapture(
 }
 
 void VideoCapture::start_game() {
+  std::filesystem::remove_all("debug");
+  std::filesystem::create_directories("debug");
   // Detect board
   std::lock_guard<std::mutex> guard(frame_mutex);
   cv::imwrite("debug/start_game_original.jpg", frame);
@@ -191,6 +192,8 @@ void VideoCapture::start_game() {
   );
   cv::imwrite("debug/start_game_perspective.jpg", img_perspective);
 
+  cv::cvtColor(img_perspective, last_move, cv::COLOR_BGR2GRAY);
+
   bg_sub = cv::createBackgroundSubtractorMOG2(500, 32, true);
   // Ensure that there are no changes in the inital frames
   cv::Mat mask;
@@ -245,8 +248,13 @@ void VideoCapture::capture_frames() {
           moving = false;
           on_move_finish();
 
+          cv::Mat gray_perspective;
+          cv::cvtColor(img_perspective, gray_perspective, cv::COLOR_BGR2GRAY);
+          cv::Mat diff;
+          cv::absdiff(last_move, gray_perspective, diff);
+
           cv::Mat colored;
-          cv::cvtColor(mask, colored, cv::COLOR_GRAY2BGR);
+          cv::cvtColor(diff, colored, cv::COLOR_GRAY2BGR);
           cv::Mat bg_sub;
           cv::Mat images[] = {
             img_perspective, colored
@@ -255,6 +263,8 @@ void VideoCapture::capture_frames() {
           std::string move_number = std::to_string(i);
           move_number.insert(move_number.begin(), 3 - move_number.size(), '0');
           cv::imwrite("debug/move" + move_number + ".jpg", bg_sub);
+          last_move = img_perspective.clone();
+          cv::cvtColor(img_perspective, last_move, cv::COLOR_BGR2GRAY);
           i++;
         }
       } else {
