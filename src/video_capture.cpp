@@ -8,7 +8,21 @@
 #include <thread>
 #include <utility>
 
+#define WIDTH 864
+#define HEIGHT 480
+
 using namespace std::chrono_literals;
+
+class SquareChange {
+ public:
+  int x;
+  int y;
+  double change;
+};
+
+bool square_change_sorter(SquareChange const& lhs, SquareChange const& rhs) {
+    return lhs.change < rhs.change;
+}
 
 typedef std::pair<cv::Point, cv::Point> Line;
 
@@ -227,8 +241,8 @@ void VideoCapture::capture_frames() {
     logger::error("Failed to open camera");
     return;
   }
-  cap.set(cv::CAP_PROP_FRAME_WIDTH, 864);
-  cap.set(cv::CAP_PROP_FRAME_HEIGHT, 480);
+  cap.set(cv::CAP_PROP_FRAME_WIDTH, WIDTH);
+  cap.set(cv::CAP_PROP_FRAME_HEIGHT, HEIGHT);
   for (int i = 1; ; ) {
     frame_mutex.lock();
     cap.read(frame);
@@ -253,8 +267,28 @@ void VideoCapture::capture_frames() {
           cv::Mat diff;
           cv::absdiff(last_move, gray_perspective, diff);
 
+          int square_size = HEIGHT / 8;
+          SquareChange changes[64];
+          for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+              cv::Mat square = diff(cv::Rect(x * square_size, y * square_size, square_size, square_size));
+              double sum = cv::sum(square).dot(cv::Scalar::ones());
+              changes[y * 8 + x] = {x, y, sum};
+            }
+          }
+          std::sort(changes, changes + 64, &square_change_sorter);
+
           cv::Mat colored;
           cv::cvtColor(diff, colored, cv::COLOR_GRAY2BGR);
+
+          for (int j = 0; j < 6; j++) {
+            SquareChange change = changes[63 - j];
+            cv::rectangle(colored,
+              {change.x * square_size, change.y * square_size},
+              {change.x * square_size + square_size, change.y * square_size + square_size},
+              {0, 0, 255}, 1, cv::LINE_AA);
+          }
+
           cv::Mat bg_sub;
           cv::Mat images[] = {
             img_perspective, colored
