@@ -2,6 +2,7 @@
 #define CHESS_ENGINE_H_
 
 #include <forward_list>
+#include <string>
 
 namespace chess {
 
@@ -20,6 +21,8 @@ class Move {
   int from;
   int to;
   Figure promoted;
+
+  std::string to_string();
 };
 
 class Position {
