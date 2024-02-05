@@ -106,6 +106,15 @@ std::forward_list<Move> Position::generate_possible_moves(bool white_turn) {
         if (!moved[from] && pieces[to] == Empty && pieces[to + dir * 8] == Empty) {
           moves.emplace_front(from, to + dir * 8, Empty);
         }
+      } else if (piece == King && !moved[from]) {
+        // Short castling
+        if (pieces[from + 1] == Empty && pieces[from + 2] == Empty && !moved[from + 3]) {
+          moves.emplace_front(from, from + 2, Empty);
+        }
+        // Long castling
+        if (pieces[from - 1] == Empty && pieces[from - 2] == Empty && pieces[from - 3] == Empty && !moved[from - 4]) {
+          moves.emplace_front(from, from - 2, Empty);
+        }
       }
     }
   }
