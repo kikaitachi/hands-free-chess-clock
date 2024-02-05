@@ -2,6 +2,7 @@
 #define CHESS_ENGINE_H_
 
 #include <forward_list>
+#include <list>
 #include <string>
 
 namespace chess {
@@ -16,6 +17,12 @@ enum Figure {
   Knight,
   Bishop,
   Pawn,
+};
+
+enum GameResult {
+  InProgress,
+  Draw,
+  Finished,
 };
 
 class Move {
@@ -38,13 +45,15 @@ class Position {
 
   friend bool operator==(const Position& lhs, const Position& rhs) = default;
   std::forward_list<Move> generate_legal_moves();
-  void move(const Move& move);
+
+  GameResult move(const Move& move);
 
   Figure pieces[64];
   bool color[64];
   bool moved[64];
   bool white_turn;
   int passing_pawn;
+  int move_number;
 
  private:
   /**
@@ -53,6 +62,8 @@ class Position {
   std::forward_list<Move> generate_possible_moves(bool white_turn);
 
   bool is_king_attacked();
+
+  std::list<Position> prev_positions;
 };
 
 }

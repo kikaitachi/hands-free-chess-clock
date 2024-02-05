@@ -80,6 +80,8 @@ void Position::reset() {
   }
   white_turn = true;
   passing_pawn = 0;
+  move_number = 1;
+  prev_positions.clear();
 }
 
 std::forward_list<Move> Position::generate_legal_moves() {
@@ -149,19 +151,22 @@ std::forward_list<Move> Position::generate_possible_moves(bool white_turn) {
         auto iterator = lookup_table.find(piece);
         if (iterator != lookup_table.end()) {
           for (auto & piece_move : iterator->second) {
-            // TODO: the whole path must be clear except for knight
             for (int i = 1; i <= piece_move.distance; i++) {
               int to_x = x + piece_move.x * i;
               if (to_x < 0 || to_x > 7) {
-                continue;
+                break;
               }
               int to_y = y + piece_move.y * i;
               if (to_y < 0 || to_y > 7) {
-                continue;
+                break;
               }
               int to = to_y * 8 + to_x;
               if (pieces[to] == Empty || color[to] != white_turn) {
                 moves.emplace_front(from, to, Empty);
+              }
+              if (pieces[to] != Empty) {
+                // Path is not clear for longer distance moves
+                break;
               }
             }
           }
@@ -181,9 +186,14 @@ bool Position::is_king_attacked() {
   return false;
 }
 
-void Position::move(const Move& move) {
-  passing_pawn = 0;
+GameResult Position::move(const Move& move) {
   Figure piece = pieces[move.from];
+  if (piece == Pawn || pieces[move.to] != Empty) {
+    prev_positions.clear();
+  } else {
+    prev_positions.push_front(*this);
+  }
+  passing_pawn = 0;
   if (piece == King) {
     if (move.from - move.to == 2) {
       // Queen side castling
@@ -216,4 +226,22 @@ void Position::move(const Move& move) {
   moved[move.from] = moved[move.to] = true;
   // Switch turn
   white_turn = !white_turn;
+  if (white_turn) {
+    move_number++;
+  }
+  // Checkmate or stalemate?
+  if (generate_legal_moves().empty()) {
+    return is_king_attacked() ? Finished : Draw;
+  }
+  // Draw by repetition?
+  for (auto & prev_position : prev_positions) {
+    if (prev_position == *this) {
+      return Draw;
+    }
+  }
+  // 50 moves rule
+  if (prev_positions.size() == 50) {
+    return Draw;
+  }
+  return InProgress;
 }
