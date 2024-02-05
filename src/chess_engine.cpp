@@ -1,5 +1,6 @@
 #include "chess_engine.hpp"
 #include <cmath>
+#include <map>
 
 std::string chess::index2string(int index) {
   int row = index / 8;
@@ -8,6 +9,34 @@ std::string chess::index2string(int index) {
 }
 
 using namespace chess;
+
+class PieceMove {
+ public:
+  int x;
+  int y;
+  int distance;
+};
+
+static std::map<Figure, std::forward_list<PieceMove>> lookup_table({
+  {Rook, {
+    { 1,  0, 8}, { 0,  1, 8}, { 0, -1, 8}, {-1,  0, 8},
+  }},
+  {Knight, {
+    { 1,  2, 1}, { 1, -2, 1}, { 2,  1, 1}, { 2, -1, 1},
+		{-1,  2, 1}, {-1, -2, 1}, {-2,  1, 1}, {-2, -1, 1},
+  }},
+  {Bishop, {
+    { 1,  1, 7}, { 1, -1, 7}, {-1, -1, 7}, {-1,  1, 7},
+  }},
+  {Queen, {
+    {-1, -1, 7}, {-1,  0, 7}, {-1,  1, 7}, { 0,  1, 7},
+    { 1,  1, 7}, { 1,  0, 7}, { 1, -1, 7}, { 0, -1, 7},
+  }},
+  {King, {
+    {-1, -1, 1}, {-1,  0, 1}, {-1,  1, 1}, { 0,  1, 1},
+    { 1,  1, 1}, { 1,  0, 1}, { 1, -1, 1}, { 0, -1, 1},
+  }},
+});
 
 static std::string figure2notation(Figure figure) {
   switch (figure) {
@@ -106,14 +135,36 @@ std::forward_list<Move> Position::generate_possible_moves(bool white_turn) {
         if (!moved[from] && pieces[to] == Empty && pieces[to + dir * 8] == Empty) {
           moves.emplace_front(from, to + dir * 8, Empty);
         }
-      } else if (piece == King && !moved[from]) {
-        // Short castling
-        if (pieces[from + 1] == Empty && pieces[from + 2] == Empty && !moved[from + 3]) {
-          moves.emplace_front(from, from + 2, Empty);
+      } else {
+        if (piece == King && !moved[from]) {
+          // Short castling
+          if (pieces[from + 1] == Empty && pieces[from + 2] == Empty && !moved[from + 3]) {
+            moves.emplace_front(from, from + 2, Empty);
+          }
+          // Long castling
+          if (pieces[from - 1] == Empty && pieces[from - 2] == Empty && pieces[from - 3] == Empty && !moved[from - 4]) {
+            moves.emplace_front(from, from - 2, Empty);
+          }
         }
-        // Long castling
-        if (pieces[from - 1] == Empty && pieces[from - 2] == Empty && pieces[from - 3] == Empty && !moved[from - 4]) {
-          moves.emplace_front(from, from - 2, Empty);
+        auto iterator = lookup_table.find(piece);
+        if (iterator != lookup_table.end()) {
+          for (auto & piece_move : iterator->second) {
+            // TODO: the whole path must be clear except for knight
+            for (int i = 1; i <= piece_move.distance; i++) {
+              int to_x = x + piece_move.x * i;
+              if (to_x < 0 || to_x > 7) {
+                continue;
+              }
+              int to_y = y + piece_move.y * i;
+              if (to_y < 0 || to_y > 7) {
+                continue;
+              }
+              int to = to_y * 8 + to_x;
+              if (pieces[to] == Empty || color[to] != white_turn) {
+                moves.emplace_front(from, to, Empty);
+              }
+            }
+          }
         }
       }
     }
