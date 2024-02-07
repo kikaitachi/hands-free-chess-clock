@@ -20,7 +20,7 @@ FetchContent_MakeAvailable(whisper.cpp)
 
 add_executable(${PROJECT_NAME})
 
-file(GLOB SRC_FILES src/*.cpp CONFIGURE_DEPENDS)
+file(GLOB SRC_FILES CONFIGURE_DEPENDS src/*.cpp)
 
 target_sources(${PROJECT_NAME} PUBLIC ${SRC_FILES})
 
