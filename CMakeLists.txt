@@ -20,19 +20,9 @@ FetchContent_MakeAvailable(whisper.cpp)
 
 add_executable(${PROJECT_NAME})
 
-target_sources(${PROJECT_NAME}
-  PUBLIC
-    src/main.cpp
-    src/audio_capture.cpp
-    src/chess_engine.cpp
-    src/command_parser.cpp
-    src/display.cpp
-    src/game.cpp
-    src/logger.cpp
-    src/mpscq.cpp
-    src/speech_to_text.cpp
-    src/video_capture.cpp
-)
+file(GLOB SRC_FILES src/*.cpp CONFIGURE_DEPENDS)
+
+target_sources(${PROJECT_NAME} PUBLIC ${SRC_FILES})
 
 target_link_libraries(${PROJECT_NAME}
   ${ALSA_LIBRARIES}
