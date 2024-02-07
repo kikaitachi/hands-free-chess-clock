@@ -231,17 +231,19 @@ GameResult Position::move(const Move& move) {
   }
   // Checkmate or stalemate?
   if (generate_legal_moves().empty()) {
-    return is_king_attacked() ? Finished : Draw;
+    if (is_king_attacked()) {
+      return {white_turn ? Winner::Black : Winner::White, "checkmate"};
+    return {Winner::Draw, "stalemate"};
   }
   // Draw by repetition?
   for (auto & prev_position : prev_positions) {
     if (prev_position == *this) {
-      return Draw;
+      return {Winner::Draw, "repetition"};
     }
   }
   // 50 moves rule
   if (prev_positions.size() == 50) {
-    return Draw;
+    return {Winner::Draw, "50 moves rules"};
   }
-  return InProgress;
+  return {Winner::None};
 }

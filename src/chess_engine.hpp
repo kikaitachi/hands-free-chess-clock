@@ -19,10 +19,17 @@ enum Figure {
   Pawn,
 };
 
-enum GameResult {
-  InProgress,
+enum class Winner {
+  None,
   Draw,
-  Finished,
+  White,
+  Black
+};
+
+class GameResult {
+ public:
+  Winner winner;
+  std::string reason;
 };
 
 class Move {
