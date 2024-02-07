@@ -233,6 +233,7 @@ GameResult Position::move(const Move& move) {
   if (generate_legal_moves().empty()) {
     if (is_king_attacked()) {
       return {white_turn ? Winner::Black : Winner::White, "checkmate"};
+    }
     return {Winner::Draw, "stalemate"};
   }
   // Draw by repetition?
