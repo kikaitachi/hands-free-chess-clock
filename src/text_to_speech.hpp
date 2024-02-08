@@ -5,10 +5,15 @@
 
 class TextToSpeech {
  public:
-  TextToSpeech(unsigned int sample_rate, std::string device);
+  TextToSpeech(std::string device);
+
+  void say(std::string text);
 
  private:
+  unsigned int sample_rate = 24000;
   AudioPlayback audio_playback;
+
+  void play(std::string text);
 };
 
 #endif  // TEXT_TO_SPEECH_H_

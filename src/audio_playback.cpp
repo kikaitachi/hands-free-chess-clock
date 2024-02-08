@@ -24,3 +24,7 @@ AudioPlayback::AudioPlayback(unsigned int sample_rate, std::string device) {
 AudioPlayback::~AudioPlayback() {
   snd_pcm_close(handle);
 }
+
+void AudioPlayback::play(char *buffer, int count) {
+  snd_pcm_writei(handle, buffer, count / 2);
+}

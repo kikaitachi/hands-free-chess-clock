@@ -8,6 +8,7 @@ class AudioPlayback {
  public:
   AudioPlayback(unsigned int sample_rate, std::string device);
   ~AudioPlayback();
+  void play(char *buffer, int count);
 
  private:
   snd_pcm_t *handle;
