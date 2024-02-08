@@ -1,5 +1,5 @@
-#ifndef AUDIO_CAPTURE_H_
-#define AUDIO_CAPTURE_H_
+#ifndef AUDIO_PLAYBACK_H_
+#define AUDIO_PLAYBACK_H_
 
 #include <alsa/asoundlib.h>
 #include <string>
@@ -13,4 +13,4 @@ class AudioPlayback {
   snd_pcm_t *handle;
 };
 
-#endif  // AUDIO_CAPTURE_H_
+#endif  // AUDIO_PLAYBACK_H_
