@@ -229,6 +229,7 @@ GameResult Position::move(const Move& move) {
   if (white_turn) {
     move_number++;
   }
+  // TODO: check for insufficient material to win
   // Checkmate or stalemate?
   if (generate_legal_moves().empty()) {
     if (is_king_attacked()) {
@@ -243,8 +244,8 @@ GameResult Position::move(const Move& move) {
     }
   }
   // 50 moves rule
-  if (prev_positions.size() == 50) {
-    return {Winner::Draw, "50 moves rules"};
+  if (prev_positions.size() == 100) {
+    return {Winner::Draw, "50 move rule"};
   }
   return {Winner::None};
 }

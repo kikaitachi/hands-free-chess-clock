@@ -29,7 +29,7 @@ enum class Winner {
 class GameResult {
  public:
   Winner winner;
-  std::string reason;
+  std::string message;
 };
 
 class Move {
