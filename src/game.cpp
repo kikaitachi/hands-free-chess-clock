@@ -7,6 +7,9 @@
 
 using namespace std::chrono_literals;
 
+Game::Game() : text_to_speech(16000, "default") {
+}
+
 void Game::stop_blinking() {
   display.blink_white(BLINK_RATE_NOBLINK);
   display.blink_black(BLINK_RATE_NOBLINK);

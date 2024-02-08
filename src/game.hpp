@@ -3,12 +3,14 @@
 
 #include "chess_engine.hpp"
 #include "display.hpp"
+#include "text_to_speech.hpp"
 #include "video_capture.hpp"
 #include <chrono>
 #include <functional>
 
 class Game {
  public:
+  Game();
   bool playing = false;
 
   void ready();
@@ -28,6 +30,7 @@ class Game {
   bool white_turn;
   chess::Position position;
   Display display;
+  TextToSpeech text_to_speech;
   std::chrono::steady_clock::time_point last_clock_change;
 
   std::string format_time(unsigned int time_ms);
