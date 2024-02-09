@@ -72,6 +72,9 @@ bool Game::consider_move(SquareChange changes[64]) {
   if (candidates.size() == 1) {
     chess::GameResult result = position.move(candidates.front());
     text_to_speech.say(result.message);
+    if (result.winner != chess::Winner::None) {
+      stop();
+    }
     return true;
   }
   return false;

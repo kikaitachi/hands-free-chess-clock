@@ -61,7 +61,6 @@ std::string Move::to_string() const {
 
 Position::Position() {
   reset();
-
 }
 
 void Position::reset() {
