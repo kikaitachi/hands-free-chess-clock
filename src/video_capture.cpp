@@ -208,7 +208,6 @@ void VideoCapture::start_game() {
 
 void VideoCapture::resume_game() {
   std::lock_guard<std::mutex> guard(frame_mutex);
-  float height = frame.size().height;
   cv::Mat img_perspective;
   cv::warpPerspective(
       frame, img_perspective, perspective_transform,
