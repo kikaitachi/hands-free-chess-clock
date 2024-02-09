@@ -38,7 +38,7 @@ class Move {
   int to;
   Figure promoted;
 
-  const std::string to_string();
+  std::string to_string() const;
 };
 
 class Position {

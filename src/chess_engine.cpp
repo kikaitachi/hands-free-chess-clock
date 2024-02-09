@@ -55,7 +55,7 @@ static std::string figure2notation(Figure figure) {
   }
 }
 
-const std::string Move::to_string() {
+std::string Move::to_string() const {
   return index2string(from) + index2string(to) + figure2notation(promoted);
 }
 
