@@ -8,8 +8,8 @@
 #include <thread>
 #include <utility>
 
-#define WIDTH 864
-#define HEIGHT 480
+#define VIDEO_WIDTH 864
+#define VIDEO_HEIGHT 480
 
 using namespace std::chrono_literals;
 
@@ -183,19 +183,18 @@ void VideoCapture::start_game() {
     final_top_right_point,
     final_bottom_right_point
   });
-  float height = markers.size().height;
   std::vector<cv::Point2f> points_to({
-    {0.0f, height},
+    {0.0f, VIDEO_HEIGHT},
     {0.0f, 0.0f},
-    {height, 0.0f},
-    {height, height}
+    {VIDEO_HEIGHT, 0.0f},
+    {VIDEO_HEIGHT, VIDEO_HEIGHT}
   });
   perspective_transform = cv::getPerspectiveTransform(points_from, points_to);
 
   cv::Mat img_perspective;
   cv::warpPerspective(
       frame, img_perspective, perspective_transform,
-      {(int)height, (int)height}
+      {VIDEO_HEIGHT, VIDEO_HEIGHT}
   );
   cv::imwrite("debug/start_game_perspective.jpg", img_perspective);
 
@@ -213,7 +212,7 @@ void VideoCapture::resume_game() {
   cv::Mat img_perspective;
   cv::warpPerspective(
       frame, img_perspective, perspective_transform,
-      {(int)height, (int)height}
+      {VIDEO_HEIGHT, VIDEO_HEIGHT}
   );
   bg_sub = cv::createBackgroundSubtractorMOG2(500, 32, true);
   // Ensure that there are no changes in the inital frames
@@ -234,17 +233,16 @@ void VideoCapture::capture_frames() {
     logger::error("Failed to open camera");
     return;
   }
-  cap.set(cv::CAP_PROP_FRAME_WIDTH, WIDTH);
-  cap.set(cv::CAP_PROP_FRAME_HEIGHT, HEIGHT);
+  cap.set(cv::CAP_PROP_FRAME_WIDTH, VIDEO_WIDTH);
+  cap.set(cv::CAP_PROP_FRAME_HEIGHT, VIDEO_HEIGHT);
   for (int i = 1; ; ) {
     frame_mutex.lock();
     cap.read(frame);
     if (!bg_sub.empty()) {
-      int height = frame.size().height;
       cv::Mat img_perspective;
       cv::warpPerspective(
           frame, img_perspective, perspective_transform,
-          {height, height}
+          {VIDEO_HEIGHT, VIDEO_HEIGHT}
       );
       cv::Mat mask;
       bg_sub->apply(img_perspective, mask, -1);
@@ -259,7 +257,7 @@ void VideoCapture::capture_frames() {
           cv::Mat diff;
           cv::absdiff(last_move, gray_perspective, diff);
 
-          int square_size = HEIGHT / 8;
+          int square_size = VIDEO_HEIGHT / 8;
           SquareChange changes[64];
           for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
