@@ -36,6 +36,8 @@ void Game::start(
 
   std::thread clock_update_thread(&Game::update_clock, this, on_game_over);
   clock_update_thread.detach();
+
+  text_to_speech.say("game on");
 }
 
 bool Game::consider_move(SquareChange changes[64]) {
@@ -68,7 +70,8 @@ bool Game::consider_move(SquareChange changes[64]) {
     }
   }
   if (candidates.size() == 1) {
-    position.move(candidates.front());
+    chess::GameResult result = position.move(candidates.front());
+    text_to_speech.say(result.message);
     return true;
   }
   return false;
@@ -101,6 +104,7 @@ void Game::update_clock(std::function<void()> on_game_over) {
         time_white_ms = 0;
         playing = false;
         display.blink_white(BLINK_RATE_1HZ);
+        text_to_speech.say("time is up");
         on_game_over();
       }
       display.set_white(format_time(time_white_ms));
@@ -111,6 +115,7 @@ void Game::update_clock(std::function<void()> on_game_over) {
         time_black_ms = 0;
         playing = false;
         display.blink_black(BLINK_RATE_1HZ);
+        text_to_speech.say("time is up");
         on_game_over();
       }
       display.set_black(format_time(time_black_ms));

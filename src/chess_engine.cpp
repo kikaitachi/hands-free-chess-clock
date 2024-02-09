@@ -55,7 +55,7 @@ static std::string figure2notation(Figure figure) {
   }
 }
 
-std::string Move::to_string() {
+const std::string Move::to_string() {
   return index2string(from) + index2string(to) + figure2notation(promoted);
 }
 
@@ -247,5 +247,5 @@ GameResult Position::move(const Move& move) {
   if (prev_positions.size() == 100) {
     return {Winner::Draw, "50 move rule"};
   }
-  return {Winner::None};
+  return {Winner::None, move.to_string().substr(0, 4)};
 }
