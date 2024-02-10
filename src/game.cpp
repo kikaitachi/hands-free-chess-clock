@@ -69,10 +69,11 @@ std::string Game::consider_move(SquareChange changes[64]) {
     }
     bool candidate = from != -1 && to != -1;
     bool has_shadow = false;
+    int score = candidate ? 10 : 0;
     if (to != -1) {
       int x = to % 8;
       if (x == 7) {
-        has_shadow = true;
+        score += 1;
       } else {
         int shadow_to = to + 1;
         for (int i = 0; i < 6; i++) {
@@ -83,18 +84,19 @@ std::string Game::consider_move(SquareChange changes[64]) {
         }
       }
     }
-    logger::info("Move: %s%s%s", move.to_string().c_str(),
-      candidate ? " candidate" : "", has_shadow ? " has shadow" : "");
+    if (has_shadow) {
+      score += 5;
+    } else {
+      score -= 5;
+    }
+    logger::info("Move: %s %d %s", move.to_string().c_str(),
+      score, candidate ? " candidate" : "");
     if (candidate) {
-      int score = 1;
-      if (has_shadow) {
-        score++;
-      }
       candidates.insert({score, move});
     }
   }
   if (candidates.size() > 0) {
-    chess::Move most_likely_move = candidates.begin()->second;
+    chess::Move most_likely_move = candidates.rbegin()->second;
     chess::GameResult result = position.move(most_likely_move);
     text_to_speech.say(result.message);
     if (result.winner != chess::Winner::None) {
