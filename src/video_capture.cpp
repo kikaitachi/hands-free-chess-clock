@@ -100,7 +100,7 @@ void VideoCapture::start_game() {
   std::vector<std::vector<cv::Point> > contours;
   std::vector<cv::Vec4i> hierarchy;
 
-  cv::findContours(threshold, contours, hierarchy, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+  cv::findContours(threshold, contours, hierarchy, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
   cv::Mat img_contours;
   frame.copyTo(img_contours);
   cv::drawContours(img_contours, contours, -1, {0, 0, 255}, 1, cv::LINE_AA);

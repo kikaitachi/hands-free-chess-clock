@@ -2,8 +2,8 @@
 #include "game.hpp"
 #include "logger.hpp"
 #include <chrono>
-#include <list>
 #include <thread>
+#include <vector>
 
 using namespace std::chrono_literals;
 
@@ -55,7 +55,7 @@ std::string Game::consider_move(SquareChange changes[64]) {
     chess::index2string(changes[4].index).c_str(),
     chess::index2string(changes[5].index).c_str());
   std::forward_list<chess::Move> moves = position.generate_legal_moves();
-  std::list<chess::Move> candidates;
+  std::vector<chess::Move> candidates;
   for (auto & move : moves) {
     int from = -1;
     int to = -1;
@@ -68,8 +68,24 @@ std::string Game::consider_move(SquareChange changes[64]) {
       }
     }
     bool candidate = from != -1 && to != -1;
-    logger::info("Move: %s%s", move.to_string().c_str(), candidate ? " candidate" : "");
-    if (candidate) {
+    bool has_shadow = false;
+    if (to != -1) {
+      int x = to % 8;
+      if (x == 7) {
+        has_shadow = true;
+      } else {
+        int shadow_to = to + 1;
+        for (int i = 0; i < 6; i++) {
+          if (changes[i].index == shadow_to) {
+            has_shadow = true;
+            break;
+          }
+        }
+      }
+    }
+    logger::info("Move: %s%s%s", move.to_string().c_str(),
+      candidate ? " candidate" : "", has_shadow ? " has shadow" : "");
+    if (candidate && has_shadow) {
       candidates.push_back(move);
     }
   }
