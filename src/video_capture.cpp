@@ -95,7 +95,7 @@ void VideoCapture::start_game() {
   cv::medianBlur(gray, blurred, 5);
   cv::imwrite("debug/start_game_blurred.jpg", blurred);
   cv::Mat threshold;
-  cv::adaptiveThreshold(blurred, threshold, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 11, 2);
+  cv::adaptiveThreshold(blurred, threshold, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 5, 2);
   cv::imwrite("debug/start_game_threshold.jpg", threshold);
   std::vector<std::vector<cv::Point> > contours;
   std::vector<cv::Vec4i> hierarchy;
@@ -140,7 +140,7 @@ void VideoCapture::start_game() {
         }
       }
       std::sort(line_lengths.begin(), line_lengths.end());
-      if (horizontal_lines.size() == 2 && line_lengths[0] > line_lengths[3] * 0.45) {
+      if (horizontal_lines.size() == 2 /*&& line_lengths[0] > line_lengths[3] * 0.45*/) {
         std::sort(horizontal_lines.begin(), horizontal_lines.end(), line_top);
         if (!topmost_line || !line_top.operator()(topmost_line.value(), horizontal_lines[0])) {
           topmost_line = horizontal_lines[0];
@@ -157,7 +157,7 @@ void VideoCapture::start_game() {
         if (!rightmost_line || line_right.operator()(rightmost_line.value(), vertical_lines[1])) {
           rightmost_line = vertical_lines[1];
         }
-        cv::polylines(markers, approx, true, {0, 255, 0}, 5, cv::LINE_AA);
+        cv::polylines(markers, approx, true, {0, 255, 0}, 1, cv::LINE_AA);
         polygon_colors.push_back({0, 255, 0});
       } else {
         polygon_colors.push_back({0, 0, 255});
@@ -176,25 +176,25 @@ void VideoCapture::start_game() {
   cv::line(markers, rightmost_line.value().first, rightmost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
 
   cv::Point bottom_left_point = line_intersection(leftmost_line.value(), bottommost_line.value());
-  cv::circle(markers, bottom_left_point, 10, {0, 0, 255}, -1);
+  cv::circle(markers, bottom_left_point, 8, {0, 0, 255}, -1);
   cv::Point bottom_right_point = line_intersection(rightmost_line.value(), bottommost_line.value());
-  cv::circle(markers, bottom_right_point, 10, {0, 0, 255}, -1);
+  cv::circle(markers, bottom_right_point, 8, {0, 0, 255}, -1);
   cv::Point top_left_point = line_intersection(leftmost_line.value(), topmost_line.value());
-  cv::circle(markers, top_left_point, 10, {0, 0, 255}, -1);
+  cv::circle(markers, top_left_point, 8, {0, 0, 255}, -1);
   cv::Point top_right_point = line_intersection(rightmost_line.value(), topmost_line.value());
-  cv::circle(markers, top_right_point, 10, {0, 0, 255}, -1);
+  cv::circle(markers, top_right_point, 8, {0, 0, 255}, -1);
 
   int distance_bottom = bottom_left_point.x - bottom_right_point.x;
   cv::Point final_bottom_left_point(bottom_left_point.x + distance_bottom / 2, bottom_left_point.y);
-  cv::circle(markers, final_bottom_left_point, 10, {255, 0, 255}, -1);
+  cv::circle(markers, final_bottom_left_point, 8, {255, 0, 255}, -1);
   cv::Point final_bottom_right_point(bottom_right_point.x - distance_bottom / 2, bottom_left_point.y);
-  cv::circle(markers, final_bottom_right_point, 10, {255, 0, 255}, -1);
+  cv::circle(markers, final_bottom_right_point, 8, {255, 0, 255}, -1);
 
   int distance_top = top_left_point.x - top_right_point.x;
   cv::Point final_top_left_point(top_left_point.x + distance_top / 2, top_left_point.y);
-  cv::circle(markers, final_top_left_point, 10, {255, 0, 255}, -1);
+  cv::circle(markers, final_top_left_point, 8, {255, 0, 255}, -1);
   cv::Point final_top_right_point(top_right_point.x - distance_top / 2, top_left_point.y);
-  cv::circle(markers, final_top_right_point, 10, {255, 0, 255}, -1);
+  cv::circle(markers, final_top_right_point, 8, {255, 0, 255}, -1);
 
   cv::imwrite("debug/start_game_markers.jpg", markers);
 
