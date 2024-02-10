@@ -20,7 +20,7 @@ class VideoCapture {
  public:
   VideoCapture(
     std::function<void()> on_move_start,
-    std::function<bool(SquareChange[64])> on_move_finish
+    std::function<std::string(SquareChange[64])> on_move_finish
   );
 
   /**
@@ -46,7 +46,7 @@ class VideoCapture {
   cv::Ptr<cv::BackgroundSubtractor> bg_sub;
   std::mutex frame_mutex;
   std::function<void()> on_move_start;
-  std::function<bool(SquareChange[64])> on_move_finish;
+  std::function<std::string(SquareChange[64])> on_move_finish;
   bool moving = false;
 
   void capture_frames();

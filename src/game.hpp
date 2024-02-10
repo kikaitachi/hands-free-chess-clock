@@ -15,7 +15,7 @@ class Game {
 
   void ready();
   void start(unsigned int time_ms, unsigned int increment_ms);
-  bool consider_move(SquareChange changes[64]);
+  std::string consider_move(SquareChange changes[64]);
   void stop();
   void resume();
   void switch_clock();

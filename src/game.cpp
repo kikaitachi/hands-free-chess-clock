@@ -46,7 +46,7 @@ void Game::start(unsigned int time_ms, unsigned int increment_ms) {
   video_capture.start_game();
 }
 
-bool Game::consider_move(SquareChange changes[64]) {
+std::string Game::consider_move(SquareChange changes[64]) {
   logger::info("6 best candidate squares: %s, %s, %s, %s, %s, %s",
     chess::index2string(changes[0].index).c_str(),
     chess::index2string(changes[1].index).c_str(),
@@ -74,16 +74,17 @@ bool Game::consider_move(SquareChange changes[64]) {
     }
   }
   if (candidates.size() > 0) {  // TODO: find better selection method than first
-    chess::GameResult result = position.move(candidates.front());
+    chess::Move most_likely_move = candidates.front();
+    chess::GameResult result = position.move(most_likely_move);
     text_to_speech.say(result.message);
     if (result.winner != chess::Winner::None) {
       stop();
     } else {
       switch_clock();
     }
-    return true;
+    return most_likely_move.to_string();
   }
-  return false;
+  return "";
 }
 
 void Game::on_game_over() {

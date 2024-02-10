@@ -71,7 +71,7 @@ cv::Point line_intersection(Line line1, Line line2) {
 
 VideoCapture::VideoCapture(
     std::function<void()> on_move_start,
-    std::function<bool(SquareChange[64])> on_move_finish
+    std::function<std::string(SquareChange[64])> on_move_finish
   )
     : on_move_start(on_move_start), on_move_finish(on_move_finish) {
   // Always keep video capture running, otherwise camera will not be focused
@@ -278,7 +278,8 @@ void VideoCapture::capture_frames() {
               {0, 0, 255}, 1, cv::LINE_AA);
           }
 
-          if (on_move_finish(changes)) {
+          std::string move = on_move_finish(changes);
+          if (!move.empty()) {
             cv::Mat bg_sub;
             cv::Mat images[] = {
               img_perspective, colored
@@ -286,7 +287,7 @@ void VideoCapture::capture_frames() {
             cv::hconcat(images, 2, bg_sub);
             std::string move_number = std::to_string(i);
             move_number.insert(move_number.begin(), 3 - move_number.size(), '0');
-            cv::imwrite("debug/move" + move_number + ".jpg", bg_sub);
+            cv::imwrite("debug/move" + move_number + "-" + move + ".jpg", bg_sub);
             last_move = img_perspective.clone();
             cv::cvtColor(img_perspective, last_move, cv::COLOR_BGR2GRAY);
             i++;
