@@ -26,5 +26,11 @@ AudioPlayback::~AudioPlayback() {
 }
 
 void AudioPlayback::play(char *buffer, int count) {
-  snd_pcm_writei(handle, buffer, count / 2);
+  snd_pcm_sframes_t frames = snd_pcm_writei(handle, buffer, count / 2);
+  if (frames < 0) {
+    frames = snd_pcm_recover(handle, frames, 0);
+  }
+  if (frames < 0) {
+    logger::error("snd_pcm_writei failed: %s", snd_strerror(frames));
+  }
 }
