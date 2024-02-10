@@ -106,6 +106,11 @@ void VideoCapture::start_game() {
   cv::drawContours(img_contours, contours, -1, {0, 0, 255}, 1, cv::LINE_AA);
   cv::imwrite("debug/start_game_contours.jpg", img_contours);
 
+  cv::Mat img_polygons;
+  frame.copyTo(img_polygons);
+  std::vector<std::vector<cv::Point>> polygons;
+  std::vector<cv::Scalar> polygon_colors;
+
   std::optional<Line> topmost_line;
   std::optional<Line> bottommost_line;
   std::optional<Line> leftmost_line;
@@ -114,6 +119,7 @@ void VideoCapture::start_game() {
     cv::Mat approx;
     approxPolyDP(contour, approx, 20, true);
     if (approx.size().height == 4 && cv::isContourConvex(approx)) {
+      polygons.push_back(approx);
       std::vector<Line> horizontal_lines;
       std::vector<Line> vertical_lines;
       std::vector<double> line_lengths;
@@ -152,9 +158,18 @@ void VideoCapture::start_game() {
           rightmost_line = vertical_lines[1];
         }
         cv::polylines(markers, approx, true, {0, 255, 0}, 5, cv::LINE_AA);
+        polygon_colors.push_back({0, 255, 0});
+      } else {
+        polygon_colors.push_back({0, 0, 255});
       }
     }
   }
+
+  for (int i = 0; i < polygons.size(); i++) {
+    cv::polylines(img_polygons, {polygons[i]}, true, polygon_colors[i], 1, cv::LINE_AA);
+  }
+  cv::imwrite("debug/start_game_polygons.jpg", img_polygons);
+
   cv::line(markers, topmost_line.value().first, topmost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
   cv::line(markers, bottommost_line.value().first, bottommost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
   cv::line(markers, leftmost_line.value().first, leftmost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
