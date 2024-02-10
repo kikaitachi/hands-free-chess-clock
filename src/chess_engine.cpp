@@ -84,7 +84,7 @@ void Position::reset() {
 }
 
 std::forward_list<Move> Position::generate_legal_moves() {
-  std::forward_list<Move> legal_moves;
+  /*std::forward_list<Move> legal_moves;
   for (auto & move : generate_possible_moves(white_turn)) {
     Position position(*this);
     position.move(move);
@@ -105,7 +105,8 @@ std::forward_list<Move> Position::generate_legal_moves() {
       legal_moves.push_front(move);
     }
   }
-  return legal_moves;
+  return legal_moves;*/
+  return generate_possible_moves(white_turn);
 }
 
 std::forward_list<Move> Position::generate_possible_moves(bool white_turn) {

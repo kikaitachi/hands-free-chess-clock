@@ -61,19 +61,19 @@ bool Game::consider_move(SquareChange changes[64]) {
         to = move.to;
       }
     }
-    logger::info("Move: %s%s%s",
-      chess::index2string(move.from).c_str(),
-      chess::index2string(move.to).c_str(),
-      from != -1 && to != -1 ? " candidate" : "");
-    if (from != -1 && to != -1) {
+    bool candidate = from != -1 && to != -1;
+    logger::info("Move: %s%s", move.to_string().c_str(), candidate ? " candidate" : "");
+    if (candidate) {
       candidates.push_back(move);
     }
   }
-  if (candidates.size() == 1) {
+  if (candidates.size() > 0) {  // TODO: find better selection method than first
     chess::GameResult result = position.move(candidates.front());
     text_to_speech.say(result.message);
     if (result.winner != chess::Winner::None) {
       stop();
+    } else {
+      switch_clock();
     }
     return true;
   }
