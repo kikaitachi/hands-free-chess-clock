@@ -1,7 +1,11 @@
 #include "audio_playback.hpp"
 #include "logger.hpp"
 
-AudioPlayback::AudioPlayback(unsigned int sample_rate, std::string device) {
+AudioPlayback::AudioPlayback(unsigned int sample_rate, std::string device)
+    : sample_rate(sample_rate), device(device) {
+}
+
+void AudioPlayback::open() {
   int err;
   if ((err = snd_pcm_open(&handle, device.c_str(), SND_PCM_STREAM_PLAYBACK, 0)) < 0) {
     logger::error("Can't open playback device '%s': %s",
@@ -21,11 +25,16 @@ AudioPlayback::AudioPlayback(unsigned int sample_rate, std::string device) {
   }
 }
 
-AudioPlayback::~AudioPlayback() {
+void AudioPlayback::close() {
+  int err = snd_pcm_drain(handle);
+  if (err < 0) {
+    logger::error("snd_pcm_drain failed: %s", snd_strerror(err));
+  }
   snd_pcm_close(handle);
 }
 
 void AudioPlayback::play(char *buffer, int count) {
+  logger::info("snd_pcm_state: %d", snd_pcm_state(handle));
   snd_pcm_sframes_t frames = snd_pcm_writei(handle, buffer, count / 2);
   if (frames < 0) {
     frames = snd_pcm_recover(handle, frames, 0);
