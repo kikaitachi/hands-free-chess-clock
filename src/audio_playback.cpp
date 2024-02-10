@@ -34,7 +34,6 @@ void AudioPlayback::close() {
 }
 
 void AudioPlayback::play(char *buffer, int count) {
-  logger::info("snd_pcm_state: %d", snd_pcm_state(handle));
   snd_pcm_sframes_t frames = snd_pcm_writei(handle, buffer, count / 2);
   if (frames < 0) {
     frames = snd_pcm_recover(handle, frames, 0);
