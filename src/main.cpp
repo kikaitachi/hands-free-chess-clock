@@ -3,7 +3,6 @@
 #include "game.hpp"
 #include "logger.hpp"
 #include "speech_to_text.hpp"
-#include "video_capture.hpp"
 
 #include <string>
 
@@ -12,15 +11,6 @@ int main() {
   CommandParser command_parser;
   SpeechToText speech_to_text;
   AudioCapture audio_capture(speech_to_text.getSampleRate(), "plughw:DEV=0,CARD=C920");
-  VideoCapture video_capture(
-    [&]() {
-      logger::info("Move started");
-    },
-    [&](SquareChange changes[64]) {
-      logger::info("Move finished");
-      return game.consider_move(changes);
-    }
-  );
   speech_to_text.start(
     [&]() {
       game.ready();
@@ -34,13 +24,7 @@ int main() {
       switch (command) {
         case START_GAME:
           if (!game.playing) {
-            video_capture.start_game();
-            game.start(
-              command_parser.getTime(), command_parser.getIncrement(),
-              [&]() {
-                video_capture.stop_game();
-              }
-            );
+            game.start(command_parser.getTime(), command_parser.getIncrement());
           } else {
             logger::info("Not starting new %d+%dms game as there is game in progress",
               command_parser.getTime(), command_parser.getIncrement());
@@ -48,13 +32,9 @@ int main() {
           break;
         case STOP_GAME:
           game.stop();
-          video_capture.stop_game();
           break;
         case RESUME_GAME:
-          video_capture.resume_game();
-          game.resume([&]() {
-            video_capture.stop_game();
-          });
+          game.resume();
           break;
         case SWITCH_CLOCK:
           game.switch_clock();

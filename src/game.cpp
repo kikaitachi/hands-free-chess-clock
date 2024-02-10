@@ -7,7 +7,15 @@
 
 using namespace std::chrono_literals;
 
-Game::Game() : text_to_speech("default") {
+Game::Game() : text_to_speech("default"), video_capture(
+    [&]() {
+      logger::info("Move started");
+    },
+    [&](SquareChange changes[64]) {
+      logger::info("Move finished");
+      return consider_move(changes);
+    }
+  ) {
 }
 
 void Game::stop_blinking() {
@@ -21,10 +29,7 @@ void Game::ready() {
   stop_blinking();
 }
 
-void Game::start(
-    unsigned int time_ms, unsigned int increment_ms,
-    std::function<void()> on_game_over
-  ) {
+void Game::start(unsigned int time_ms, unsigned int increment_ms) {
   time_white_ms = time_black_ms = time_ms;
   this->increment_ms = increment_ms;
   white_turn = true;
@@ -34,10 +39,11 @@ void Game::start(
   display.set_white(time);
   display.set_black(time);
 
-  std::thread clock_update_thread(&Game::update_clock, this, on_game_over);
+  std::thread clock_update_thread(&Game::update_clock, this);
   clock_update_thread.detach();
 
   text_to_speech.say("game on");
+  video_capture.start_game();
 }
 
 bool Game::consider_move(SquareChange changes[64]) {
@@ -80,22 +86,28 @@ bool Game::consider_move(SquareChange changes[64]) {
   return false;
 }
 
+void Game::on_game_over() {
+  playing = false;
+  video_capture.stop_game();
+}
+
 void Game::stop() {
   playing = false;
   text_to_speech.say("stopped");
 }
 
-void Game::resume(std::function<void()> on_game_over) {
+void Game::resume() {
   text_to_speech.say("resumed");
-  std::thread clock_update_thread(&Game::update_clock, this, on_game_over);
+  std::thread clock_update_thread(&Game::update_clock, this);
   clock_update_thread.detach();
+  video_capture.resume_game();
 }
 
 void Game::switch_clock() {
   white_turn = !white_turn;
 }
 
-void Game::update_clock(std::function<void()> on_game_over) {
+void Game::update_clock() {
   playing = true;
   last_clock_change = std::chrono::steady_clock::now();
   while (playing) {
@@ -107,7 +119,6 @@ void Game::update_clock(std::function<void()> on_game_over) {
         time_white_ms -= millis;
       } else {
         time_white_ms = 0;
-        playing = false;
         display.blink_white(BLINK_RATE_1HZ);
         text_to_speech.say("time is up");
         on_game_over();
@@ -118,7 +129,6 @@ void Game::update_clock(std::function<void()> on_game_over) {
         time_black_ms -= millis;
       } else {
         time_black_ms = 0;
-        playing = false;
         display.blink_black(BLINK_RATE_1HZ);
         text_to_speech.say("time is up");
         on_game_over();

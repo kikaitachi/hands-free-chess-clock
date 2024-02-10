@@ -14,13 +14,10 @@ class Game {
   bool playing = false;
 
   void ready();
-  void start(
-    unsigned int time_ms, unsigned int increment_ms,
-    std::function<void()> on_game_over
-  );
+  void start(unsigned int time_ms, unsigned int increment_ms);
   bool consider_move(SquareChange changes[64]);
   void stop();
-  void resume(std::function<void()> on_game_over);
+  void resume();
   void switch_clock();
 
  private:
@@ -31,11 +28,13 @@ class Game {
   chess::Position position;
   Display display;
   TextToSpeech text_to_speech;
+  VideoCapture video_capture;
   std::chrono::steady_clock::time_point last_clock_change;
 
   std::string format_time(unsigned int time_ms);
-  void update_clock(std::function<void()> on_game_over);
+  void update_clock();
   void stop_blinking();
+  void on_game_over();
 };
 
 #endif  // GAME_H_
