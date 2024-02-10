@@ -131,11 +131,13 @@ Display::Display() {
     logger::last("Failed to setup dimming");
   }
 
-  blink_white(BLINK_RATE_1HZ);
-  blink_black(BLINK_RATE_NOBLINK);
-
+  blink_white(BLINK_RATE_0_5HZ);
   set_white("WAIT");
   set_black("");
+
+  std::this_thread::sleep_for(1s);
+  blink_black(BLINK_RATE_0_5HZ);
+  set_black("WAIT");
 }
 
 void Display::set_white(std::string text) {
