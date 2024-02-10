@@ -82,9 +82,11 @@ bool Game::consider_move(SquareChange changes[64]) {
 
 void Game::stop() {
   playing = false;
+  text_to_speech.say("stopped");
 }
 
 void Game::resume(std::function<void()> on_game_over) {
+  text_to_speech.say("resumed");
   std::thread clock_update_thread(&Game::update_clock, this, on_game_over);
   clock_update_thread.detach();
 }
