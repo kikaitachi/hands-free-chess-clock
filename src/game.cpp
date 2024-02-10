@@ -68,23 +68,43 @@ std::string Game::consider_move(SquareChange changes[64]) {
       }
     }
     bool candidate = from != -1 && to != -1;
-    bool has_shadow = false;
-    int score = candidate ? 10 : 0;
+    int score = candidate ? 20 : 0;
+    bool dest_shadow = false;
     if (to != -1) {
       int x = to % 8;
       if (x == 7) {
         score += 1;
       } else {
-        int shadow_to = to + 1;
+        int shadow = to + 1;
         for (int i = 0; i < 6; i++) {
-          if (changes[i].index == shadow_to) {
-            has_shadow = true;
+          if (changes[i].index == shadow) {
+            dest_shadow = true;
             break;
           }
         }
       }
     }
-    if (has_shadow) {
+    if (dest_shadow) {
+      score += 5;
+    } else {
+      score -= 5;
+    }
+    bool src_shadow = false;
+    if (from != -1) {
+      int x = from % 8;
+      if (x == 7) {
+        score += 1;
+      } else {
+        int shadow = from + 1;
+        for (int i = 0; i < 6; i++) {
+          if (changes[i].index == shadow) {
+            src_shadow = true;
+            break;
+          }
+        }
+      }
+    }
+    if (src_shadow) {
       score += 5;
     } else {
       score -= 5;
