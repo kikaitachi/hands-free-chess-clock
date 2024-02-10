@@ -2,8 +2,8 @@
 #include "game.hpp"
 #include "logger.hpp"
 #include <chrono>
+#include <map>
 #include <thread>
-#include <vector>
 
 using namespace std::chrono_literals;
 
@@ -55,7 +55,7 @@ std::string Game::consider_move(SquareChange changes[64]) {
     chess::index2string(changes[4].index).c_str(),
     chess::index2string(changes[5].index).c_str());
   std::forward_list<chess::Move> moves = position.generate_legal_moves();
-  std::vector<chess::Move> candidates;
+  std::map<int, chess::Move> candidates;
   for (auto & move : moves) {
     int from = -1;
     int to = -1;
@@ -85,12 +85,16 @@ std::string Game::consider_move(SquareChange changes[64]) {
     }
     logger::info("Move: %s%s%s", move.to_string().c_str(),
       candidate ? " candidate" : "", has_shadow ? " has shadow" : "");
-    if (candidate && has_shadow) {
-      candidates.push_back(move);
+    if (candidate) {
+      int score = 1;
+      if (has_shadow) {
+        score++;
+      }
+      candidates.insert({score, move});
     }
   }
-  if (candidates.size() > 0) {  // TODO: find better selection method than first
-    chess::Move most_likely_move = candidates.front();
+  if (candidates.size() > 0) {
+    chess::Move most_likely_move = candidates.begin()->second;
     chess::GameResult result = position.move(most_likely_move);
     text_to_speech.say(result.message);
     if (result.winner != chess::Winner::None) {
