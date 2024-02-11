@@ -59,3 +59,10 @@ target_link_libraries(
 
 include(GoogleTest)
 gtest_discover_tests(unit_tests)
+
+add_custom_command(
+     TARGET unit_tests
+     COMMENT "Run tests"
+     POST_BUILD
+     COMMAND unit_tests
+)
