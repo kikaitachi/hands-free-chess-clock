@@ -301,24 +301,21 @@ void VideoCapture::capture_frames() {
 
           std::string move = on_move_finish(changes);
           if (!move.empty()) {
-            cv::Mat bg_sub;
-            cv::Mat images[] = {
-              img_perspective, colored
-            };
-            cv::hconcat(images, 2, bg_sub);
             std::string move_number = std::to_string(i);
             move_number.insert(move_number.begin(), 3 - move_number.size(), '0');
-            cv::imwrite("debug/move" + move_number + "-" + move + ".jpg", bg_sub);
+            save_differences(img_perspective, colored,
+              "debug/move" + move_number + "-" + move + ".jpg");
             last_move = img_perspective.clone();
             cv::cvtColor(img_perspective, last_move, cv::COLOR_BGR2GRAY);
             i++;
+          } else {
+            save_differences(img_perspective, colored,
+              "debug/move_last_failed.jpg");
           }
         }
-      } else {
-        if (total_changes > 2000000) {
-          moving = true;
-          on_move_start();
-        }
+      } else if (total_changes > 2000000) {
+        moving = true;
+        on_move_start();
       }
     }
     frame_mutex.unlock();
@@ -328,4 +325,14 @@ void VideoCapture::capture_frames() {
     // Increase chance for start_game to get the lock
     std::this_thread::sleep_for(1ms);
   }
+}
+
+void VideoCapture::save_differences(cv::Mat& img_perspective, cv::Mat& colored, std::string file_name) {
+  cv::Mat bg_sub;
+  cv::Mat images[] = {
+    img_perspective, colored
+  };
+  cv::hconcat(images, 2, bg_sub);
+  cv::imwrite(file_name, bg_sub);
+  cv::cvtColor(img_perspective, last_move, cv::COLOR_BGR2GRAY);
 }

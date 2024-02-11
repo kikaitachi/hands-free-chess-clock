@@ -50,6 +50,7 @@ class VideoCapture {
   bool moving = false;
 
   void capture_frames();
+  void save_differences(cv::Mat& img_perspective, cv::Mat& colored, std::string file_name);
 };
 
 
