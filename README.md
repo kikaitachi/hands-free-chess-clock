@@ -1,6 +1,6 @@
 # Hands Free Chess Clock
 
-![Last build result](https://github.com/kikaitachi/hands-free-chess-clock/workflows/CI/badge.svg)
+[![Last build result](https://github.com/kikaitachi/hands-free-chess-clock/workflows/CI/badge.svg)](https://github.com/kikaitachi/hands-free-chess-clock/actions)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 
 ## Example hardware
