@@ -34,3 +34,28 @@ target_link_libraries(${PROJECT_NAME}
   ${OpenCV_LIBS}
   whisper
 )
+
+include(FetchContent)
+FetchContent_Declare(
+  googletest
+  URL https://github.com/google/googletest/archive/03597a01ee50ed33e9dfd640b249b4be3799d395.zip
+)
+FetchContent_MakeAvailable(googletest)
+
+enable_testing()
+
+add_executable(
+  unit_tests
+  src/chess_engine.cpp
+  test/unit_tests.cpp
+)
+target_link_libraries(
+  unit_tests
+  GTest::gtest_main
+  ${ALSA_LIBRARIES}
+  ${OpenCV_LIBS}
+  whisper
+)
+
+include(GoogleTest)
+gtest_discover_tests(unit_tests)

@@ -1,5 +1,6 @@
 #include "chess_engine.hpp"
 #include <cmath>
+#include <forward_list>
 #include <map>
 
 std::string chess::index2string(int index) {
@@ -83,7 +84,7 @@ void Position::reset() {
   prev_positions.clear();
 }
 
-std::forward_list<Move> Position::generate_legal_moves() {
+std::list<Move> Position::generate_legal_moves() {
   /*std::forward_list<Move> legal_moves;
   for (auto & move : generate_possible_moves(white_turn)) {
     Position position(*this);
@@ -109,8 +110,8 @@ std::forward_list<Move> Position::generate_legal_moves() {
   return generate_possible_moves(white_turn);
 }
 
-std::forward_list<Move> Position::generate_possible_moves(bool white_turn) {
-  std::forward_list<Move> moves;
+std::list<Move> Position::generate_possible_moves(bool white_turn) {
+  std::list<Move> moves;
   for (int y = 0; y < 8; y++) {
     for (int x = 0; x < 8; x++) {
       int from = y * 8 + x;

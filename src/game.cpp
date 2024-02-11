@@ -54,7 +54,7 @@ std::string Game::consider_move(SquareChange changes[64]) {
     chess::index2string(changes[3].index).c_str(),
     chess::index2string(changes[4].index).c_str(),
     chess::index2string(changes[5].index).c_str());
-  std::forward_list<chess::Move> moves = position.generate_legal_moves();
+  std::list<chess::Move> moves = position.generate_legal_moves();
   std::map<int, chess::Move> candidates;
   for (auto & move : moves) {
     int from = -1;

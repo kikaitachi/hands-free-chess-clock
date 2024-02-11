@@ -1,7 +1,6 @@
 #ifndef CHESS_ENGINE_H_
 #define CHESS_ENGINE_H_
 
-#include <forward_list>
 #include <list>
 #include <string>
 
@@ -51,7 +50,7 @@ class Position {
   void reset();
 
   friend bool operator==(const Position& lhs, const Position& rhs) = default;
-  std::forward_list<Move> generate_legal_moves();
+  std::list<Move> generate_legal_moves();
 
   GameResult move(const Move& move);
 
@@ -66,7 +65,7 @@ class Position {
   /**
    * Does include moves prohibited by check.
    */
-  std::forward_list<Move> generate_possible_moves(bool white_turn);
+  std::list<Move> generate_possible_moves(bool white_turn);
 
   bool is_king_attacked();
 
