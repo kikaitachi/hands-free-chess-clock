@@ -18,7 +18,6 @@ class Game {
   std::string consider_move(SquareChange changes[64]);
   void stop();
   void resume();
-  void switch_clock();
 
  private:
   unsigned int time_white_ms;
@@ -32,6 +31,7 @@ class Game {
   std::chrono::steady_clock::time_point last_clock_change;
 
   std::string format_time(unsigned int time_ms);
+  void switch_clock();
   void update_clock();
   void stop_blinking();
   void on_game_over();

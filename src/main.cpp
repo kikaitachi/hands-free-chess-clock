@@ -36,9 +36,6 @@ int main() {
         case RESUME_GAME:
           game.resume();
           break;
-        case SWITCH_CLOCK:
-          game.switch_clock();
-          break;
         case NO_COMMAND:
           break;
       }

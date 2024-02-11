@@ -9,7 +9,6 @@ enum Command {
   START_GAME,
   STOP_GAME,
   RESUME_GAME,
-  SWITCH_CLOCK,
 };
 
 class CommandParser {

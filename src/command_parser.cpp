@@ -27,9 +27,6 @@ CommandParser::CommandParser()
         std::regex_constants::ECMAScript | std::regex_constants::icase),
       resume_command_syntax(
         "continue game",
-        std::regex_constants::ECMAScript | std::regex_constants::icase),
-      switch_command_syntax(
-        "switch the clock",
         std::regex_constants::ECMAScript | std::regex_constants::icase) {
 }
 
@@ -53,8 +50,6 @@ Command CommandParser::recognised(std::string text) {
     return STOP_GAME;
   } else if (std::regex_search(text, matches, resume_command_syntax)) {
     return RESUME_GAME;
-  } else if (std::regex_search(text, matches, switch_command_syntax)) {
-    return SWITCH_CLOCK;
   }
   return NO_COMMAND;
 }
