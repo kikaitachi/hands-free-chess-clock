@@ -3,6 +3,10 @@
 [![Last build result](https://github.com/kikaitachi/hands-free-chess-clock/workflows/CI/badge.svg)](https://github.com/kikaitachi/hands-free-chess-clock/actions)
 [![Conventional Commits](https://img.shields.io/badge/Conventional%20Commits-1.0.0-%23FE5196?logo=conventionalcommits&logoColor=white)](https://conventionalcommits.org)
 
+A chess clock which doesn't need to be touched. It listens to voice commands
+to start a game and automatically switches which clock is stopped and which is
+running by watching a game using camera.
+
 ## Example hardware
 
 ![Hands Free Chess Clock](clock.webp)
