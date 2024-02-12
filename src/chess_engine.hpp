@@ -70,6 +70,8 @@ class Position {
   bool is_king_attacked();
 
   std::list<Position> prev_positions;
+
+  void make_move(const Move& move);
 };
 
 }

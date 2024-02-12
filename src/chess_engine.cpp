@@ -85,10 +85,10 @@ void Position::reset() {
 }
 
 std::list<Move> Position::generate_legal_moves() {
-  /*std::forward_list<Move> legal_moves;
+  std::list<Move> legal_moves;
   for (auto & move : generate_possible_moves(white_turn)) {
     Position position(*this);
-    position.move(move);
+    position.make_move(move);
     bool allowed = !position.is_king_attacked();
     // Disallow castling when king is under check or goes through checked cell
     if (pieces[move.to] == King && abs(move.from - move.to) == 2) {
@@ -106,8 +106,7 @@ std::list<Move> Position::generate_legal_moves() {
       legal_moves.push_front(move);
     }
   }
-  return legal_moves;*/
-  return generate_possible_moves(white_turn);
+  return legal_moves;
 }
 
 std::list<Move> Position::generate_possible_moves(bool white_turn) {
@@ -187,7 +186,7 @@ bool Position::is_king_attacked() {
   return false;
 }
 
-GameResult Position::move(const Move& move) {
+void Position::make_move(const Move& move) {
   Figure piece = pieces[move.from];
   if (piece == Pawn || pieces[move.to] != Empty) {
     prev_positions.clear();
@@ -230,6 +229,10 @@ GameResult Position::move(const Move& move) {
   if (white_turn) {
     move_number++;
   }
+}
+
+GameResult Position::move(const Move& move) {
+  make_move(move);
   // TODO: check for insufficient material to win
   // Checkmate or stalemate?
   if (generate_legal_moves().empty()) {
