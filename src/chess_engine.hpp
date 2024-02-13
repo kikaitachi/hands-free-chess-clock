@@ -67,7 +67,7 @@ class Position {
    */
   std::list<Move> generate_possible_moves(bool white_turn);
 
-  bool is_king_attacked();
+  bool is_king_attacked(bool white_turn);
 
   std::list<Position> prev_positions;
 

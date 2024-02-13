@@ -89,15 +89,15 @@ std::list<Move> Position::generate_legal_moves() {
   for (auto & move : generate_possible_moves(white_turn)) {
     Position position(*this);
     position.make_move(move);
-    bool allowed = !position.is_king_attacked();
+    bool allowed = !position.is_king_attacked(white_turn);
     // Disallow castling when king is under check or goes through checked cell
     if (pieces[move.to] == King && abs(move.from - move.to) == 2) {
-      if (is_king_attacked()) {
+      if (is_king_attacked(white_turn)) {
         allowed = false;
       } else {
         position = Position(*this);
         position.move({move.from, (move.from + move.to) / 2, Empty});
-        if (position.is_king_attacked())
+        if (position.is_king_attacked(white_turn))
           allowed = false;
       }
     }
@@ -177,7 +177,7 @@ std::list<Move> Position::generate_possible_moves(bool white_turn) {
   return moves;
 }
 
-bool Position::is_king_attacked() {
+bool Position::is_king_attacked(bool white_turn) {
   for (auto & move : generate_possible_moves(!white_turn)) {
     if (pieces[move.to] == King && color[move.to] == white_turn) {
       return true;
@@ -236,7 +236,7 @@ GameResult Position::move(const Move& move) {
   // TODO: check for insufficient material to win
   // Checkmate or stalemate?
   if (generate_legal_moves().empty()) {
-    if (is_king_attacked()) {
+    if (is_king_attacked(white_turn)) {
       return {white_turn ? Winner::Black : Winner::White, "checkmate"};
     }
     return {Winner::Draw, "stalemate"};
