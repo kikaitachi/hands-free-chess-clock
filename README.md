@@ -38,12 +38,12 @@ Install build tools and dependencies:
 sudo apt-get install g++ cmake ninja-build libasound2-dev libopencv-dev
 ```
 
-To build:
+Build (and run unit tests):
 ```
 ./build.sh
 ```
 
-To run:
+Run:
 ```
 ./run.sh
 ```
