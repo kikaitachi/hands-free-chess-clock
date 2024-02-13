@@ -82,6 +82,7 @@ void Position::reset() {
   passing_pawn = 0;
   move_number = 1;
   prev_positions.clear();
+  prev_positions.push_front(*this);
 }
 
 std::list<Move> Position::generate_legal_moves() {
@@ -242,14 +243,23 @@ GameResult Position::move(const Move& move) {
     return {Winner::Draw, "stalemate"};
   }
   // Draw by repetition?
+  int count = 0;
   for (auto & prev_position : prev_positions) {
-    if (prev_position == *this) {
-      return {Winner::Draw, "repetition"};
+    if (prev_position.equal(*this)) {
+      count++;
     }
+  }
+  if (count == 3) {
+    return {Winner::Draw, "repetition"};
   }
   // 50 moves rule
   if (prev_positions.size() == 100) {
     return {Winner::Draw, "50 move rule"};
   }
   return {Winner::None, move.to_string().substr(0, 4)};
+}
+
+bool Position::equal(const Position& other) {
+  return pieces == other.pieces &&
+    color == other.color;
 }

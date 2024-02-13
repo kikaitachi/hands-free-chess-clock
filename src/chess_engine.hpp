@@ -1,6 +1,7 @@
 #ifndef CHESS_ENGINE_H_
 #define CHESS_ENGINE_H_
 
+#include <array>
 #include <list>
 #include <string>
 
@@ -49,14 +50,15 @@ class Position {
    */
   void reset();
 
-  friend bool operator==(const Position& lhs, const Position& rhs) = default;
   std::list<Move> generate_legal_moves();
 
   GameResult move(const Move& move);
 
-  Figure pieces[64];
-  bool color[64];
-  bool moved[64];
+  bool equal(const Position& other);
+
+  std::array<Figure, 64> pieces;
+  std::array<bool, 64> color;
+  std::array<bool, 64> moved;
   bool white_turn;
   int passing_pawn;
   int move_number;

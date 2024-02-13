@@ -54,3 +54,39 @@ TEST(PositionTest, ScholarsMate) {
   EXPECT_EQ(result.winner, chess::Winner::White);
   EXPECT_EQ(result.message, "checkmate");
 }
+
+TEST(PositionTest, Repetition) {
+  chess::Position position;
+
+  chess::GameResult result = position.move(move("b1c3"));
+  EXPECT_EQ(result.winner, chess::Winner::None);
+  EXPECT_EQ(result.message, "b1c3");
+
+  result = position.move(move("b8c6"));
+  EXPECT_EQ(result.winner, chess::Winner::None);
+  EXPECT_EQ(result.message, "b8c6");
+
+  result = position.move(move("c3b1"));
+  EXPECT_EQ(result.winner, chess::Winner::None);
+  EXPECT_EQ(result.message, "c3b1");
+
+  result = position.move(move("c6b8"));
+  EXPECT_EQ(result.winner, chess::Winner::None);
+  EXPECT_EQ(result.message, "c6b8");
+
+  result = position.move(move("b1c3"));
+  EXPECT_EQ(result.winner, chess::Winner::None);
+  EXPECT_EQ(result.message, "b1c3");
+
+  result = position.move(move("b8c6"));
+  EXPECT_EQ(result.winner, chess::Winner::None);
+  EXPECT_EQ(result.message, "b8c6");
+
+  result = position.move(move("c3b1"));
+  EXPECT_EQ(result.winner, chess::Winner::None);
+  EXPECT_EQ(result.message, "c3b1");
+
+  result = position.move(move("c6b8"));
+  EXPECT_EQ(result.winner, chess::Winner::Draw);
+  EXPECT_EQ(result.message, "repetition");
+}
