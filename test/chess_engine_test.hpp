@@ -84,3 +84,41 @@ TEST(PositionTest, Stalemate) {
     {"c8e6", chess::Winner::Draw, "stalemate"},
   });
 }
+
+TEST(PositionTest, InsufficientMaterial) {
+  test_game({
+    {"e2e4"},
+    {"d7d5"},
+    {"e4d5"},
+    {"d8d5"},
+    {"f1d3"},
+    {"d5a2"},
+    {"d3h7"},
+    {"a2b1"},
+    {"h7g8"},
+    {"b1c2"},
+    {"g8f7"},
+    {"e8f7"},
+    {"a1a7"},
+    {"c2c1"},
+    {"a7b7"},
+    {"h8h2"},
+    {"b7b8"},
+    {"h2g2"},
+    {"d1c1"},
+    {"g2g1"},
+    {"h1g1"},
+    {"a8b8"},
+    {"c1c7"},
+    {"b8b2"},
+    {"c7c8"},
+    {"b2d2"},
+    {"c8f8"},
+    {"f7f8"},
+    {"g1g7"},
+    {"d2f2"},
+    {"g7e7"},
+    {"g8e7"},
+    {"e1f2", chess::Winner::Draw, "insufficient material"},
+  });
+}
