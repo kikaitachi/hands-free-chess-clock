@@ -234,7 +234,15 @@ void Position::make_move(const Move& move) {
 
 GameResult Position::move(const Move& move) {
   make_move(move);
-  // TODO: check for insufficient material to win
+  int piece_count = 0;
+  for (auto& piece : pieces) {
+    if (piece != Figure::Empty) {
+      piece_count++;
+    }
+  }
+  if (piece_count == 2) {
+    return {Winner::Draw, "insufficient material"};
+  }
   // Checkmate or stalemate?
   if (generate_legal_moves().empty()) {
     if (is_king_attacked(white_turn)) {
