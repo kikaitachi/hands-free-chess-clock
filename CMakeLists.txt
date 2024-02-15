@@ -13,6 +13,7 @@ endif()
 
 find_package(ALSA REQUIRED)
 include_directories(${ALSA_INCLUDE_DIRS})
+
 find_package(OpenCV REQUIRED)
 include_directories(${OpenCV_INCLUDE_DIRS})
 
@@ -22,6 +23,10 @@ FetchContent_Declare(whisper.cpp
   GIT_TAG v1.5.4
 )
 FetchContent_MakeAvailable(whisper.cpp)
+
+set(ONNXRUNTIME_ROOTDIR "$ENV{HOME}/onnxruntime-linux-x64-1.17.0")
+include_directories("${ONNXRUNTIME_ROOTDIR}/include")
+set(onnxruntime_lib ${ONNXRUNTIME_ROOTDIR}/lib/libonnxruntime.so)
 
 add_executable(${PROJECT_NAME})
 
@@ -33,6 +38,7 @@ target_link_libraries(${PROJECT_NAME}
   ${ALSA_LIBRARIES}
   ${OpenCV_LIBS}
   whisper
+  ${onnxruntime_lib}
 )
 
 include(FetchContent)
