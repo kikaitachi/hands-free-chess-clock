@@ -13,6 +13,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install g++ cmake ninja-build libasound2-dev libopencv-dev
+          wget -qO- https://github.com/microsoft/onnxruntime/releases/download/v1.17.0/onnxruntime-linux-x64-1.17.0.tgz | tar xvz -C ~/
       - name: Build
         run: |
           ./build.sh
