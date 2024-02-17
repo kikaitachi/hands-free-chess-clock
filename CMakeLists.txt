@@ -24,9 +24,8 @@ FetchContent_Declare(whisper.cpp
 )
 FetchContent_MakeAvailable(whisper.cpp)
 
-set(ONNXRUNTIME_ROOTDIR "$ENV{HOME}/onnxruntime-linux-x64-1.17.0")
-include_directories("${ONNXRUNTIME_ROOTDIR}/include")
-set(onnxruntime_lib ${ONNXRUNTIME_ROOTDIR}/lib/libonnxruntime.so)
+include_directories("/usr/local/include/onnxruntime")
+set(onnxruntime_lib /usr/local/lib/libonnxruntime.so)
 
 add_executable(${PROJECT_NAME})
 

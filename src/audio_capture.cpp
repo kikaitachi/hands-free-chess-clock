@@ -1,4 +1,5 @@
 #include "audio_capture.hpp"
+#include <onnxruntime_cxx_api.h>
 
 AudioCapture::AudioCapture(unsigned int sample_rate, std::string device)
     : sample_rate(sample_rate) {
@@ -44,6 +45,17 @@ void AudioCapture::start(std::function<void(float* samples, unsigned int count)>
     fprintf(stderr, "Can't prepare audio interface for use (%s)\n", snd_strerror(err));
     exit(1);
   }
+
+  Ort::AllocatorWithDefaultOptions allocator;
+  Ort::MemoryInfo memory_info = Ort::MemoryInfo::CreateCpu(OrtArenaAllocator, OrtMemTypeCPU);
+  Ort::SessionOptions session_options;
+  session_options.SetIntraOpNumThreads(1);
+  session_options.SetInterOpNumThreads(1);
+  session_options.SetGraphOptimizationLevel(GraphOptimizationLevel::ORT_ENABLE_ALL);
+  Ort::Env env;
+  std::shared_ptr<Ort::Session> session = std::make_shared<Ort::Session>(
+    env, "models/silero_en_v5.onnx", session_options);
+
   unsigned int sample_count = sample_rate * 1;
   char buffer[snd_pcm_format_width(format) / 8 * channels * sample_count];
   for ( ; ; ) {
