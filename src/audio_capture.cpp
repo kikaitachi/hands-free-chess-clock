@@ -70,7 +70,18 @@ void AudioCapture::start(std::function<void(std::vector<float>& audio, int start
         logger::info("Speech finished");
         for (auto& speech : vad.speeches) {
           logger::info("Adding speech %d-%d to queue", speech.start, speech.end);
-          handler(audio, speech.start - 2000, audio.size());
+          // Bad results with short audio, pad until at least 24000 samples if available
+          if (speech.end - speech.start < 24000) {
+            speech.start = speech.end - 24000;
+            if (speech.start < 0) {
+              speech.start = 0;
+              speech.end = 24000;
+              if (speech.end > audio.size()) {
+                speech.end = audio.size();
+              }
+            }
+          }
+          handler(audio, speech.start, speech.end);
         }
         vad.reset();
         audio.clear();
