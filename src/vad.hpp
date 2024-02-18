@@ -69,6 +69,7 @@ class VoiceActivityDetector {
   int64_t window_size_samples;  // Assign when init, support 256 512 768 for 8k; 512 1024 1536 for 16k.
 
   VoiceActivityDetector(int sample_rate);
+  void reset();
   void predict(std::vector<float>& input);
 
  public:  // TODO: make private

@@ -41,7 +41,10 @@ VoiceActivityDetector::VoiceActivityDetector(int sample_rate)
   sr.resize(1);
   sr[0] = sample_rate;
 
-  // Reset
+  reset();
+}
+
+void VoiceActivityDetector::reset() {
   std::memset(_h.data(), 0.0f, _h.size() * sizeof(float));
   std::memset(_c.data(), 0.0f, _c.size() * sizeof(float));
   triggered = false;

@@ -40,7 +40,7 @@ AudioCapture::AudioCapture(unsigned int sample_rate, std::string device)
   snd_pcm_hw_params_free(hw_params);
 }
 
-void AudioCapture::start(std::function<void(float* samples, unsigned int count)> handler) {
+void AudioCapture::start(std::function<void(std::vector<float>& audio, int start, int end)> handler) {
   int err;
   if ((err = snd_pcm_prepare(capture_handle)) < 0) {
     fprintf(stderr, "Can't prepare audio interface for use (%s)\n", snd_strerror(err));
@@ -51,6 +51,7 @@ void AudioCapture::start(std::function<void(float* samples, unsigned int count)>
   unsigned int sample_count = vad.window_size_samples;
 
   char buffer[snd_pcm_format_width(format) / 8 * channels * sample_count];
+  std::vector<float> audio;
   for ( ; ; ) {
     if ((err = snd_pcm_readi(capture_handle, buffer, sample_count)) != sample_count) {
       logger::error("Read from audio interface failed: %s", snd_strerror(err));
@@ -59,6 +60,7 @@ void AudioCapture::start(std::function<void(float* samples, unsigned int count)>
 
     std::vector<float> input;
     input.assign((float*)buffer, (float*)buffer + sizeof(buffer) / 4);
+    audio.insert(audio.end(), input.begin(), input.end());
     bool triggered = vad.triggered;
     vad.predict(input);
     if (triggered != vad.triggered) {
@@ -66,9 +68,13 @@ void AudioCapture::start(std::function<void(float* samples, unsigned int count)>
         logger::info("Speech started");
       } else {
         logger::info("Speech finished");
+        for (auto& speech : vad.speeches) {
+          logger::info("Adding speech %d-%d to queue", speech.start, speech.end);
+          handler(audio, speech.start - 2000, audio.size());
+        }
+        vad.reset();
+        audio.clear();
       }
     }
-
-    handler((float*)buffer, sample_count);
   }
 }

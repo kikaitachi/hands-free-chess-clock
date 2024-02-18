@@ -11,7 +11,7 @@ class AudioCapture {
  public:
   AudioCapture(unsigned int sample_rate, std::string device);
 
-  void start(std::function<void(float* samples, unsigned int count)> handler);
+  void start(std::function<void(std::vector<float>& audio, int start, int end)> handler);
  private:
   snd_pcm_t *capture_handle;
   snd_pcm_hw_params_t *hw_params;

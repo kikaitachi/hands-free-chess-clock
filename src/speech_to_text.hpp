@@ -4,12 +4,12 @@
 #include <chrono>
 #include <cstring>
 #include <functional>
-#include <mutex>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
 #include <vector>
 #include <thread>
+#include "mpscq.hpp"
 #include "whisper.h"
 
 using namespace std::chrono_literals;
@@ -38,20 +38,13 @@ class SpeechToText {
   );
 
   /**
-   * Add more audio to the sliding window.
+   * Add more audio.
    */
-  void add_audio(const float *samples, int count);
-
-  /**
-   * Zero whole sliding window.
-   */
-  void clear_audio();
+  void add_audio(std::vector<float>& audio, int start, int end);
 
  private:
   whisper_context* ctx;
-  float window[window_sample_count];
-  std::mutex window_mutex;
-  bool loaded = false;
+  mpscq::Queue<std::vector<float>> queue;
 
   void infer(
     std::function<void()> on_ready,

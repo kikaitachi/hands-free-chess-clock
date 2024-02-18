@@ -17,10 +17,6 @@ int main() {
     },
     [&](const std::string speech) {
       Command command = command_parser.recognised(speech);
-      if (command != NO_COMMAND) {
-        // Ensure the same command will not be 'heard' multiple times
-        speech_to_text.clear_audio();
-      }
       switch (command) {
         case START_GAME:
           if (!game.playing) {
@@ -41,8 +37,8 @@ int main() {
       }
     }
   );
-  audio_capture.start([&](const float *samples, int count) {
-    speech_to_text.add_audio(samples, count);
+  audio_capture.start([&](std::vector<float>& audio, int start, int end) {
+    speech_to_text.add_audio(audio, start, end);
   });
   return 0;
 }
