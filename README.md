@@ -5,7 +5,7 @@
 
 A chess clock which doesn't need to be touched. It listens to voice commands
 to start a game and automatically switches which clock is stopped and which is
-running by watching a game using camera.
+running by watching a game using the camera.
 
 ## Example hardware
 
@@ -51,7 +51,7 @@ Run:
 ## Using
 
 Clock is controlled by the following voice commands:
-* `start x minute(s) game` - starts a new game. All chess pieces must be at their initial squares. After starting game video camera will observe the board and automatically switch relevant clock after each move.
+* `start x minute(s) game [with y second increment]` - starts a new game. All chess pieces must be at their initial squares. After starting game video camera will observe the board and automatically switch relevant clock after each move.
 * `stop the game` - will stop the clock.
 * `continue game` - will resume clock.
 

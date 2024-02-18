@@ -147,6 +147,13 @@ void Game::resume() {
 }
 
 void Game::switch_clock() {
+  if (white_turn) {
+    time_white_ms += increment_ms;
+    display.set_white(format_time(time_white_ms));
+  } else {
+    time_black_ms += increment_ms;
+    display.set_black(format_time(time_black_ms));
+  }
   white_turn = !white_turn;
 }
 

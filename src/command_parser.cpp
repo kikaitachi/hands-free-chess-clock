@@ -20,7 +20,7 @@ static std::vector<std::string> numbers = {
 
 CommandParser::CommandParser()
     : start_command_syntax(
-        "start ([0-9]+)(-minute| minute| minutes) game",
+        "start ([0-9]+)(?:-minute| minute| minutes) game(?: with ([0-9]+)(?:-second| second| seconds) increment)?",
         std::regex_constants::ECMAScript | std::regex_constants::icase),
       stop_command_syntax(
         "stop the game",
@@ -43,8 +43,20 @@ Command CommandParser::recognised(std::string text) {
       time = std::stoi(number) * 60 * 1000;
     } catch (std::exception e) {
       logger::error("%s can't be parsed as number: %s", number.c_str(), e.what());
+      return NO_COMMAND;
     }
-    increment = 0;
+    if (matches.size() > 2) {
+      number = matches[2].str();
+      logger::debug("Increment part: %s", number.c_str());
+      try {
+        increment = std::stoi(number) * 1000;
+      } catch (std::exception e) {
+        logger::error("%s can't be parsed as number: %s", number.c_str(), e.what());
+        return NO_COMMAND;
+      }
+    } else {
+      increment = 0;
+    }
     return START_GAME;
   } else if (std::regex_search(text, matches, stop_command_syntax)) {
     return STOP_GAME;
