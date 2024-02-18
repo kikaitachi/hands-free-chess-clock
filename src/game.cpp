@@ -7,7 +7,7 @@
 
 using namespace std::chrono_literals;
 
-Game::Game() : text_to_speech("default"), video_capture(
+Game::Game() : text_to_speech(24000, "default"), video_capture(
     [&]() {
       logger::info("Move started");
     },
