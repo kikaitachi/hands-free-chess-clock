@@ -36,7 +36,7 @@ Command CommandParser::recognised(std::string text) {
   }
   std::smatch matches;
   if (std::regex_search(text, matches, start_command_syntax)) {
-    logger::debug("Match found");
+    logger::debug("%d matches found", matches.size());
     std::string number = matches[1].str();
     logger::debug("Time part: %s", number.c_str());
     try {
@@ -45,17 +45,18 @@ Command CommandParser::recognised(std::string text) {
       logger::error("%s can't be parsed as number: %s", number.c_str(), e.what());
       return NO_COMMAND;
     }
+    increment = 0;
     if (matches.size() > 2) {
       number = matches[2].str();
       logger::debug("Increment part: %s", number.c_str());
-      try {
-        increment = std::stoi(number) * 1000;
-      } catch (std::exception e) {
-        logger::error("%s can't be parsed as number: %s", number.c_str(), e.what());
-        return NO_COMMAND;
+      if (!number.empty()) {
+        try {
+          increment = std::stoi(number) * 1000;
+        } catch (std::exception e) {
+          logger::error("%s can't be parsed as number: %s", number.c_str(), e.what());
+          return NO_COMMAND;
+        }
       }
-    } else {
-      increment = 0;
     }
     return START_GAME;
   } else if (std::regex_search(text, matches, stop_command_syntax)) {
