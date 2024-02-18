@@ -257,7 +257,20 @@ void VideoCapture::capture_frames() {
   cap.set(cv::CAP_PROP_FRAME_HEIGHT, VIDEO_HEIGHT);
   for (int i = 1; ; ) {
     frame_mutex.lock();
-    cap.read(frame);
+    for ( ; ; ) {
+      cap.read(frame);
+      cv::Mat laplacian;
+      cv::Laplacian(frame, laplacian, CV_64F);
+      cv::Scalar mean, stddev;
+      cv::meanStdDev(laplacian, mean, stddev);
+      double variance = stddev.val[0] * stddev.val[0];
+      if (variance < 100) {
+        cv::imwrite("debug/blurry.jpg", frame);
+        logger::info("Rejecting blurry image with variance: %f", variance);
+      } else {
+        break;
+      }
+    }
     if (!bg_sub.empty()) {
       cv::Mat img_perspective;
       cv::warpPerspective(
@@ -276,6 +289,9 @@ void VideoCapture::capture_frames() {
           cv::cvtColor(img_perspective, gray_perspective, cv::COLOR_BGR2GRAY);
           cv::Mat diff;
           cv::absdiff(last_move, gray_perspective, diff);
+          cv::Mat blurred;
+          cv::medianBlur(diff, blurred, 5);
+          cv::adaptiveThreshold(blurred, diff, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY_INV, 5, 2);
 
           int square_size = VIDEO_HEIGHT / 8;
           SquareChange changes[64];

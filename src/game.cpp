@@ -59,16 +59,21 @@ std::string Game::consider_move(SquareChange changes[64]) {
   for (auto & move : moves) {
     int from = -1;
     int to = -1;
+    int score = 0;
     for (int i = 0; i < 6; i++) {
       if (move.from == changes[i].index) {
         from = move.from;
+        score += (5 - i) * 2;
       }
       if (move.to == changes[i].index) {
         to = move.to;
+        score += (5 - i) * 2;
       }
     }
     bool candidate = from != -1 && to != -1;
-    int score = candidate ? 20 : 0;
+    if (candidate) {
+      score += 20;
+    }
     bool dest_shadow = false;
     if (to != -1) {
       int x = to % 8;
