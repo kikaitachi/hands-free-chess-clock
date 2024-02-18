@@ -61,6 +61,7 @@ This project directly or indirectly uses these open source projects:
 * [Advanced Linux Sound Architecture project](https://github.com/alsa-project/alsa-lib)
 * [Bluetooth Audio ALSA Backend](https://github.com/arkq/bluez-alsa) (to enable BT on Jetson [see](https://docs.nvidia.com/jetson/archives/r34.1/DeveloperGuide/text/SD/Communications/EnablingBluetoothAudio.html))
 * [CMake](https://github.com/Kitware/CMake)
+* [Open Neural Network Exchange Runtime](https://github.com/microsoft/onnxruntime)
 * [Open Source Computer Vision Library](https://github.com/opencv/opencv)
 * [Silero Voice Activity Detector](https://github.com/snakers4/silero-vad)
 * [SparkFun Alphanumeric Display Library](https://github.com/sparkfun/SparkFun_Alphanumeric_Display_Arduino_Library)
