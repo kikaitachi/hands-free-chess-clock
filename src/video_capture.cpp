@@ -248,7 +248,7 @@ void VideoCapture::stop_game() {
 void VideoCapture::capture_frames() {
   cv::VideoCapture cap;
   int deviceID = 0;  // 0 = open default camera
-  cap.open(deviceID);
+  cap.open(deviceID, cv::CAP_V4L2);
   if (!cap.isOpened()) {
     logger::error("Failed to open camera");
     return;
