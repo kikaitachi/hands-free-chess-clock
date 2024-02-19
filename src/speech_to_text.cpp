@@ -43,8 +43,7 @@ void SpeechToText::infer(
     queue.drain([&](auto entry) {
       std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
       if (whisper_full(ctx, params, entry->data(), entry->size()) != 0) {
-          fprintf(stderr, "Whisper failed to process audio\n");
-          exit(1);
+          logger::error("Whisper failed to process audio");
       }
       const int n_segments = whisper_full_n_segments(ctx);
       std::string result;

@@ -6,36 +6,36 @@ AudioCapture::AudioCapture(unsigned int sample_rate, std::string device)
     : sample_rate(sample_rate) {
   int err;
   if ((err = snd_pcm_open(&capture_handle, device.c_str(), SND_PCM_STREAM_CAPTURE, 0)) < 0) {
-    fprintf(stderr, "Can't open audio device %s (%s)\n", device.c_str(), snd_strerror(err));
-    exit(1);
+    logger::error("Can't open audio device %s (%s)", device.c_str(), snd_strerror(err));
+    return;
   }
   if ((err = snd_pcm_hw_params_malloc(&hw_params)) < 0) {
-    fprintf(stderr, "Can't allocate hardware parameter structure (%s)\n", snd_strerror(err));
-    exit(1);
+    logger::error("Can't allocate hardware parameter structure (%s)", snd_strerror(err));
+    return;
   }
   if ((err = snd_pcm_hw_params_any(capture_handle, hw_params)) < 0) {
-    fprintf(stderr, "Can't initialize hardware parameter structure (%s)\n", snd_strerror(err));
-    exit(1);
+    logger::error("Can't initialize hardware parameter structure (%s)", snd_strerror(err));
+    return;
   }
   if ((err = snd_pcm_hw_params_set_access(capture_handle, hw_params, SND_PCM_ACCESS_RW_INTERLEAVED)) < 0) {
-    fprintf(stderr, "Can't set access type (%s)\n", snd_strerror(err));
-    exit(1);
+    logger::error("Can't set access type (%s)", snd_strerror(err));
+    return;
   }
   if ((err = snd_pcm_hw_params_set_format(capture_handle, hw_params, format)) < 0) {
-    fprintf(stderr, "Can't set sample format (%s)\n", snd_strerror(err));
-    exit(1);
+    logger::error("Can't set sample format (%s)", snd_strerror(err));
+    return;
   }
   if ((err = snd_pcm_hw_params_set_rate(capture_handle, hw_params, sample_rate, 0)) < 0) {
-    fprintf (stderr, "Can't set sample rate (%s)\n", snd_strerror(err));
-    exit(1);
+    logger::error("Can't set sample rate (%s)", snd_strerror(err));
+    return;
   }
   if ((err = snd_pcm_hw_params_set_channels(capture_handle, hw_params, channels)) < 0) {
-    fprintf(stderr, "Can't set channel count (%s)\n", snd_strerror(err));
-    exit(1);
+    logger::error("Can't set channel count (%s)", snd_strerror(err));
+    return;
   }
   if ((err = snd_pcm_hw_params(capture_handle, hw_params)) < 0) {
-    fprintf(stderr, "Can't set parameters (%s)\n", snd_strerror(err));
-    exit(1);
+    logger::error("Can't set parameters (%s)", snd_strerror(err));
+    return;
   }
   snd_pcm_hw_params_free(hw_params);
 }
@@ -43,8 +43,8 @@ AudioCapture::AudioCapture(unsigned int sample_rate, std::string device)
 void AudioCapture::start(std::function<void(std::vector<float>& audio, int start, int end)> handler) {
   int err;
   if ((err = snd_pcm_prepare(capture_handle)) < 0) {
-    fprintf(stderr, "Can't prepare audio interface for use (%s)\n", snd_strerror(err));
-    exit(1);
+    logger::error("Can't prepare audio interface for use (%s)", snd_strerror(err));
+    return;
   }
 
   VoiceActivityDetector vad(sample_rate);
@@ -55,7 +55,7 @@ void AudioCapture::start(std::function<void(std::vector<float>& audio, int start
   for ( ; ; ) {
     if ((err = snd_pcm_readi(capture_handle, buffer, sample_count)) != sample_count) {
       logger::error("Read from audio interface failed: %s", snd_strerror(err));
-      exit(1);
+      return;
     }
 
     std::vector<float> input;
