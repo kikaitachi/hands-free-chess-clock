@@ -6,11 +6,19 @@
 
 #include <string>
 
-int main() {
-  Game game;
+int main(int argc, char** argv) {
+  std::string audio_input = "default";
+  if (argc > 1) {
+    audio_input = std::string(argv[1]);
+  }
+  std::string audio_output = "default";
+  if (argc > 2) {
+    audio_input = std::string(argv[2]);
+  }
+  Game game(audio_output);
   CommandParser command_parser;
   SpeechToText speech_to_text;
-  AudioCapture audio_capture(speech_to_text.getSampleRate(), "plughw:DEV=0,CARD=C920");
+  AudioCapture audio_capture(speech_to_text.getSampleRate(), audio_input);
   speech_to_text.start(
     [&]() {
       game.ready();

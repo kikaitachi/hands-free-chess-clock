@@ -10,7 +10,7 @@
 
 class Game {
  public:
-  Game();
+  Game(std::string device);
   bool playing = false;
 
   void ready();

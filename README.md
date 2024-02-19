@@ -45,8 +45,10 @@ Build (and run unit tests):
 
 Run:
 ```
-./run.sh
+./run.sh [audio_input [audio_output]]
 ```
+Where `audio_input` is ALSA capture device name, for example `plughw:DEV=0,CARD=C920` and
+`audio_output` is ALSA playback device name. Both default to `default` if not specified.
 
 ## Using
 

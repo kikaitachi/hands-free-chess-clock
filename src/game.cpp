@@ -7,15 +7,16 @@
 
 using namespace std::chrono_literals;
 
-Game::Game() : text_to_speech(24000, "default"), video_capture(
-    [&]() {
-      logger::info("Move started");
-    },
-    [&](SquareChange changes[64]) {
-      logger::info("Move finished");
-      return consider_move(changes);
-    }
-  ) {
+Game::Game(std::string device)
+    : text_to_speech(24000, device), video_capture(
+      [&]() {
+        logger::info("Move started");
+      },
+      [&](SquareChange changes[64]) {
+        logger::info("Move finished");
+        return consider_move(changes);
+      }
+    ) {
 }
 
 void Game::stop_blinking() {
