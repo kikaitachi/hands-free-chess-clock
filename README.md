@@ -55,6 +55,11 @@ Clock is controlled by the following voice commands:
 * `stop the game` - will stop the clock.
 * `continue game` - will resume clock.
 
+## Future work
+
+* Improve promotion experience. Most of hobby chess sets don't have spare queens so players might put something else to represent queen which could be recognized as under promotion. Solution potentially could be adding a new voice command `promoting to piece_name`.
+* Put camera on at least 1 axis gimbal so it can find chess board automatically if it is out of view.
+
 ## Credits
 
 This project directly or indirectly uses these open source projects:
