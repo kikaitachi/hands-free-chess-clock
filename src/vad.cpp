@@ -32,7 +32,6 @@ VoiceActivityDetector::VoiceActivityDetector(int sample_rate)
   min_silence_samples = sr_per_ms * min_silence_duration_ms;
   min_silence_samples_at_max_speech = sr_per_ms * 98;
 
-  input.resize(window_size_samples);
   input_node_dims[0] = 1;
   input_node_dims[1] = window_size_samples;
 
@@ -60,9 +59,8 @@ void VoiceActivityDetector::reset() {
 void VoiceActivityDetector::predict(std::vector<float>& data) {
   // Infer
   // Create ort tensors
-  input.assign(data.begin(), data.end());
   Ort::Value input_ort = Ort::Value::CreateTensor<float>(
-      memory_info, input.data(), input.size(), input_node_dims, 2);
+      memory_info, data.data(), data.size(), input_node_dims, 2);
   Ort::Value sr_ort = Ort::Value::CreateTensor<int64_t>(
       memory_info, sr.data(), sr.size(), sr_node_dims, 1);
   Ort::Value h_ort = Ort::Value::CreateTensor<float>(

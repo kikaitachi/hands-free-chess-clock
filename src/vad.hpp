@@ -74,7 +74,6 @@ class VoiceActivityDetector {
   std::vector<Ort::Value> ort_inputs;
 
   std::vector<const char *> input_node_names = {"input", "sr", "h", "c"};
-  std::vector<float> input;
   std::vector<int64_t> sr;
   unsigned int size_hc = 2 * 1 * 64; // It's FIXED.
   std::vector<float> _h;
