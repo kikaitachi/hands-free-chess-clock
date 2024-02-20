@@ -48,18 +48,15 @@ void AudioCapture::start(std::function<void(std::vector<float>& audio, int start
   }
 
   VoiceActivityDetector vad(sample_rate);
-  unsigned int sample_count = vad.window_size_samples;
 
-  char buffer[snd_pcm_format_width(format) / 8 * channels * sample_count];
   std::vector<float> audio;
+  std::vector<float> input(vad.window_size_samples);
   for ( ; ; ) {
-    if ((err = snd_pcm_readi(capture_handle, buffer, sample_count)) != sample_count) {
+    if ((err = snd_pcm_readi(capture_handle, input.data(), input.size() * 4)) != input.size() * 4) {
       logger::error("Read from audio interface failed: %s", snd_strerror(err));
       return;
     }
 
-    std::vector<float> input;
-    input.assign((float*)buffer, (float*)buffer + sizeof(buffer) / 4);
     audio.insert(audio.end(), input.begin(), input.end());
     bool triggered = vad.triggered;
     vad.predict(input);
