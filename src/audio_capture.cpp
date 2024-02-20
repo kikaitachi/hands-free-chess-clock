@@ -52,7 +52,7 @@ void AudioCapture::start(std::function<void(std::vector<float>& audio, int start
   std::vector<float> audio;
   std::vector<float> input(vad.window_size_samples);
   for ( ; ; ) {
-    if ((err = snd_pcm_readi(capture_handle, input.data(), input.size() * 4)) != input.size() * 4) {
+    if ((err = snd_pcm_readi(capture_handle, input.data(), input.size())) != input.size()) {
       logger::error("Read from audio interface failed: %s", snd_strerror(err));
       return;
     }
