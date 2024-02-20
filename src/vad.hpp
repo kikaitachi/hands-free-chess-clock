@@ -3,7 +3,6 @@
 
 #include "onnxruntime_cxx_api.h"
 
-#include <cstdarg>
 #include <vector>
 
 class timestamp_t {
@@ -29,38 +28,6 @@ class timestamp_t {
   bool operator==(const timestamp_t& a) const
   {
       return (start == a.start && end == a.end);
-  };
-  std::string c_str()
-  {
-      //return std::format("timestamp {:08d}, {:08d}", start, end);
-      return format("{start:%08d,end:%08d}", start, end);
-  };
-
-private:
-  std::string format(const char* fmt, ...) {
-      char buf[256];
-
-      va_list args;
-      va_start(args, fmt);
-      const auto r = std::vsnprintf(buf, sizeof buf, fmt, args);
-      va_end(args);
-
-      if (r < 0)
-          // conversion failed
-          return {};
-
-      const size_t len = r;
-      if (len < sizeof buf)
-          // we fit in the buffer
-          return { buf, len };
-
-      // C++17: Create a string and write to its underlying array
-      std::string s(len, '\0');
-      va_start(args, fmt);
-      std::vsnprintf(s.data(), len + 1, fmt, args);
-      va_end(args);
-
-      return s;
   };
 };
 
