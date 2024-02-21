@@ -215,3 +215,9 @@ std::string Game::format_time(unsigned int time_ms) {
   std::string deciseconds = std::to_string(time_ms / 100 % 10);
   return "  " + seconds + "." + deciseconds;
 }
+
+void Game::shutdown() {
+  stop_blinking();
+  display.set_white("TURN");
+  display.set_black("OFF");
+}

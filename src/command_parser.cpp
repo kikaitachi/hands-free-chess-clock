@@ -27,6 +27,9 @@ CommandParser::CommandParser()
         std::regex_constants::ECMAScript | std::regex_constants::icase),
       resume_command_syntax(
         "continue game",
+        std::regex_constants::ECMAScript | std::regex_constants::icase),
+      shutdown_command_syntax(
+        "shut ?down",
         std::regex_constants::ECMAScript | std::regex_constants::icase) {
 }
 

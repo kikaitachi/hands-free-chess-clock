@@ -4,6 +4,7 @@
 #include "logger.hpp"
 #include "speech_to_text.hpp"
 
+#include <cstdlib>
 #include <string>
 
 int main(int argc, char** argv) {
@@ -39,6 +40,10 @@ int main(int argc, char** argv) {
           break;
         case RESUME_GAME:
           game.resume();
+          break;
+        case SHUTDOWN:
+          game.shutdown();
+          std::system("sudo halt");
           break;
         case NO_COMMAND:
           break;

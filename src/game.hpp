@@ -18,6 +18,7 @@ class Game {
   std::string consider_move(SquareChange changes[64]);
   void stop();
   void resume();
+  void shutdown();
 
  private:
   unsigned int time_white_ms;
