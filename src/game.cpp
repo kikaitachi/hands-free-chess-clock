@@ -126,7 +126,7 @@ std::string Game::consider_move(SquareChange changes[64]) {
     chess::GameResult result = position.move(most_likely_move);
     text_to_speech.say(result.message);
     if (result.winner != chess::Winner::None) {
-      stop();
+      playing = false;
     } else {
       switch_clock();
     }
