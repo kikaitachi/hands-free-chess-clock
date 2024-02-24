@@ -66,6 +66,8 @@ Command CommandParser::recognised(std::string text) {
     return STOP_GAME;
   } else if (std::regex_search(text, matches, resume_command_syntax)) {
     return RESUME_GAME;
+  } else if (std::regex_search(text, matches, shutdown_command_syntax)) {
+    return SHUTDOWN;
   }
   return NO_COMMAND;
 }

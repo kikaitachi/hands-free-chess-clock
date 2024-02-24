@@ -63,7 +63,7 @@ Clock is controlled by the following voice commands:
 * `start x minute(s) game [with y second increment]` - starts a new game. All chess pieces must be at their initial squares. After starting game video camera will observe the board and automatically switch relevant clock after each move.
 * `stop the game` - will stop the clock.
 * `continue game` - will resume clock.
-* `shutdown` - will halt computer running the clock. Handy when you don't have keyboard or remote terminal for a safe shutdown.
+* `shutdown` - will halt computer running the clock. Handy when you don't have keyboard or remote terminal for a safe shutdown. /etc/sudoers file must be [modified accordingly](https://askubuntu.com/questions/168879/shutdown-from-terminal-without-entering-password).
 
 ## Future work
 
