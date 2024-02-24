@@ -66,6 +66,12 @@ level get_level() {
   return current_level;
 }
 
+static bool synchronous_logging = true;
+
+void configure(bool synchronous) {
+  synchronous_logging = synchronous;
+}
+
 #define log(level, message)          \
   va_list argptr;                    \
   va_start(argptr, format);          \
@@ -75,7 +81,11 @@ level get_level() {
 void log_entry(const char level, const std::string format, va_list argptr) {
   char message[1024];
   int len = vsnprintf(message, sizeof(message), format.c_str(), argptr);
-  entries.push(new LogEntry(level, std::string(message, len)));
+  if (synchronous_logging) {
+    LogEntry(level, std::string(message, len)).print();
+  } else {
+    entries.push(new LogEntry(level, std::string(message, len)));
+  }
 }
 
 void debug(const std::string format, ...) {

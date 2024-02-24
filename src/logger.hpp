@@ -5,6 +5,11 @@
 
 namespace logger {
   /**
+   * Configure logger.
+   */
+  void configure(bool synchronous);
+
+  /**
    * Log a message with a debug level.
    */
   void debug(const std::string format, ...);
