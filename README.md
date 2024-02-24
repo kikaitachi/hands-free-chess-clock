@@ -11,7 +11,14 @@ running by watching a game using the camera.
 
 ![Hands Free Chess Clock](clock.webp)
 
-Main components used to build clock are listed in [AI Innovation Challenge](https://www.hackster.io/contests/SparkFun-NVIDIA-AI-Innovation-Challenge) contest page.
+Components:
+* [NVIDIA Jetson Orin Nano Developer Kit](https://marketplace.nvidia.com/en-us/robotics-edge/)
+* [SparkFun Qwiic Alphanumeric Display - Purple](https://www.sparkfun.com/products/16918)
+* [SparkFun Qwiic Cable - 100mm](https://www.sparkfun.com/products/14427)
+* [Logitech C920 HD WebCam](https://www.logitech.com/en-gb/products/webcams/c920-pro-hd-webcam.960-001055.html)
+* [Mini External USB Stereo Speaker](https://www.sparkfun.com/products/18343)
+* Frame is made mostly from [eitech](https://www.eitech.de/) construction set parts, rubber feet are from old printer rollers, camera mounting plate is 3D printed
+
 
 ## Project goals
 
