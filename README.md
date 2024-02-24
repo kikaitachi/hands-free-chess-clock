@@ -9,7 +9,7 @@ running by watching a game using the camera.
 
 ## Example hardware
 
-![Hands Free Chess Clock](clock.webp)
+[<img src="clock.webp">](https://youtu.be/G-w0O12VTRc)
 
 Components:
 * [NVIDIA Jetson Orin Nano Developer Kit](https://marketplace.nvidia.com/en-us/robotics-edge/)
