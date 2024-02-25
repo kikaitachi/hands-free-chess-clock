@@ -317,8 +317,8 @@ void VideoCapture::capture_frames() {
 
           std::string move = on_move_finish(changes);
           std::string move_number = std::to_string(i);
+          move_number.insert(move_number.begin(), 3 - move_number.size(), '0');
           if (!move.empty()) {
-            move_number.insert(move_number.begin(), 3 - move_number.size(), '0');
             save_differences(img_perspective, colored,
               "debug/move" + move_number + "-" + move + ".jpg");
             last_move = img_perspective.clone();
