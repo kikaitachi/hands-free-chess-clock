@@ -4,13 +4,14 @@
 #include "chess_engine.hpp"
 #include "display.hpp"
 #include "text_to_speech.hpp"
+#include "uci.hpp"
 #include "video_capture.hpp"
 #include <chrono>
 #include <functional>
 
 class Game {
  public:
-  Game(std::string device);
+  Game(std::string device, UniversalChessInterface& uci);
   bool playing = false;
 
   void ready();
@@ -19,8 +20,10 @@ class Game {
   void stop();
   void resume();
   void shutdown();
+  void best_move();
 
  private:
+  UniversalChessInterface& uci;
   unsigned int time_white_ms;
   unsigned int time_black_ms;
   unsigned int increment_ms;

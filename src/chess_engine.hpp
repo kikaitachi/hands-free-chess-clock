@@ -63,6 +63,11 @@ class Position {
   int passing_pawn;
   int move_number;
 
+  /**
+   * All moves made leading to this position.
+   */
+  std::list<Move> moves;
+
  private:
   /**
    * Does include moves prohibited by check.
@@ -71,6 +76,10 @@ class Position {
 
   bool is_king_attacked(bool white_turn);
 
+  /**
+   * Used only for determine game ending conditions doesn't contain all
+   * previous positions.
+   */
   std::list<Position> prev_positions;
 
   void make_move(const Move& move);

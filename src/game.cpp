@@ -7,8 +7,8 @@
 
 using namespace std::chrono_literals;
 
-Game::Game(std::string device)
-    : text_to_speech(24000, device), video_capture(
+Game::Game(std::string device, UniversalChessInterface& uci)
+    : text_to_speech(24000, device), uci(uci), video_capture(
       [&]() {
         logger::info("Move started");
       },
@@ -220,4 +220,10 @@ void Game::shutdown() {
   stop_blinking();
   display.set_white("TURN");
   display.set_black("OFF");
+}
+
+void Game::best_move() {
+  std::string move = uci.best_move(position);
+  logger::info("Best move from UCI: %s", move.c_str());
+  text_to_speech.say(move);
 }

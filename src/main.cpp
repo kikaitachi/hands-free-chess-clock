@@ -21,8 +21,8 @@ int main(int argc, char** argv) {
   if (argc > 3) {
     uci_engine = std::string(argv[3]);
   }
-  Game game(audio_output);
   UniversalChessInterface uci(uci_engine);
+  Game game(audio_output, uci);
   CommandParser command_parser;
   SpeechToText speech_to_text;
   AudioCapture audio_capture(speech_to_text.getSampleRate(), audio_input);
@@ -52,7 +52,7 @@ int main(int argc, char** argv) {
           std::system("sudo halt");
           break;
         case BEST_MOVE:
-          // TODO: implement
+          game.best_move();
           break;
         case NO_COMMAND:
           break;

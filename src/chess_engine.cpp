@@ -233,6 +233,7 @@ void Position::make_move(const Move& move) {
 }
 
 GameResult Position::move(const Move& move) {
+  moves.push_back(move);
   make_move(move);
   int piece_count = 0;
   for (auto& piece : pieces) {
