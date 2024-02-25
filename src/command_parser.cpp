@@ -30,6 +30,9 @@ CommandParser::CommandParser()
         std::regex_constants::ECMAScript | std::regex_constants::icase),
       shutdown_command_syntax(
         "shut ?down",
+        std::regex_constants::ECMAScript | std::regex_constants::icase),
+      best_move_command_syntax(
+        "please tell best move",
         std::regex_constants::ECMAScript | std::regex_constants::icase) {
 }
 
@@ -68,6 +71,8 @@ Command CommandParser::recognised(std::string text) {
     return RESUME_GAME;
   } else if (std::regex_search(text, matches, shutdown_command_syntax)) {
     return SHUTDOWN;
+  } else if (std::regex_search(text, matches, best_move_command_syntax)) {
+    return BEST_MOVE;
   }
   return NO_COMMAND;
 }

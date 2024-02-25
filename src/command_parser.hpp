@@ -10,6 +10,7 @@ enum Command {
   STOP_GAME,
   RESUME_GAME,
   SHUTDOWN,
+  BEST_MOVE,
 };
 
 class CommandParser {
@@ -39,6 +40,7 @@ class CommandParser {
   std::regex stop_command_syntax;
   std::regex resume_command_syntax;
   std::regex shutdown_command_syntax;
+  std::regex best_move_command_syntax;
 };
 
 #endif  // COMMAND_PARSER_H_

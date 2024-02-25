@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
   }
   std::string audio_output = "default";
   if (argc > 2) {
-    audio_input = std::string(argv[2]);
+    audio_output = std::string(argv[2]);
   }
   Game game(audio_output);
   CommandParser command_parser;
@@ -44,6 +44,9 @@ int main(int argc, char** argv) {
         case SHUTDOWN:
           game.shutdown();
           std::system("sudo halt");
+          break;
+        case BEST_MOVE:
+          // TODO: implement
           break;
         case NO_COMMAND:
           break;

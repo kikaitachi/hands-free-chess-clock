@@ -1,8 +1,34 @@
 #include "audio_playback.hpp"
 #include "logger.hpp"
 
+char* replace_char(char* str, char find, char replace) {
+  char *current_pos = strchr(str,find);
+  while (current_pos) {
+    *current_pos = replace;
+    current_pos = strchr(current_pos,find);
+  }
+  return str;
+}
+
 AudioPlayback::AudioPlayback(unsigned int sample_rate, std::string device)
     : sample_rate(sample_rate), device(device) {
+  void** hints;
+  snd_device_name_hint(-1, "pcm", &hints);
+  for (int i = 0; ; i++) {
+    if (hints[i] == nullptr) {
+      break;
+    }
+    char* name = snd_device_name_get_hint(hints[i], "NAME");
+    char* desc = snd_device_name_get_hint(hints[i], "DESC");
+    char* ioid = snd_device_name_get_hint(hints[i], "IOID");
+    if (ioid != nullptr) {
+      logger::debug("%s sound device: %s - %s", ioid, name, replace_char(desc, '\n', ' '));
+      free(ioid);
+    }
+    free(name);
+    free(desc);
+  }
+  snd_device_name_free_hint(hints);
 }
 
 void AudioPlayback::open() {

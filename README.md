@@ -54,8 +54,7 @@ Run:
 ```
 ./run.sh [audio_input [audio_output]]
 ```
-Where `audio_input` is ALSA capture device name, for example `plughw:DEV=0,CARD=C920` and
-`audio_output` is ALSA playback device name. Both default to `default` if not specified.
+Where `audio_input` is ALSA capture device name, for example, `plughw:DEV=0,CARD=C920` and `audio_output` is ALSA playback device name, for example, `plughw:CARD=UACDemoV10,DEV=0`. Both default to `default` if not specified.
 
 ## Using
 
