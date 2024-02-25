@@ -3,6 +3,7 @@
 #include "game.hpp"
 #include "logger.hpp"
 #include "speech_to_text.hpp"
+#include "uci.hpp"
 
 #include <cstdlib>
 #include <string>
@@ -16,7 +17,12 @@ int main(int argc, char** argv) {
   if (argc > 2) {
     audio_output = std::string(argv[2]);
   }
+  std::string uci_engine = "stockfish";
+  if (argc > 3) {
+    uci_engine = std::string(argv[3]);
+  }
   Game game(audio_output);
+  UniversalChessInterface uci(uci_engine);
   CommandParser command_parser;
   SpeechToText speech_to_text;
   AudioCapture audio_capture(speech_to_text.getSampleRate(), audio_input);

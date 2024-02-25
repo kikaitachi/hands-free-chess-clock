@@ -22,7 +22,7 @@ AudioPlayback::AudioPlayback(unsigned int sample_rate, std::string device)
     char* desc = snd_device_name_get_hint(hints[i], "DESC");
     char* ioid = snd_device_name_get_hint(hints[i], "IOID");
     if (ioid != nullptr) {
-      logger::debug("%s sound device: %s - %s", ioid, name, replace_char(desc, '\n', ' '));
+      logger::debug("%s audio device: %s - %s", ioid, name, replace_char(desc, '\n', ' '));
       free(ioid);
     }
     free(name);

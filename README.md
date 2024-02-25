@@ -42,8 +42,10 @@ directory in bug reports to help diagnosing the root cause of the bug.
 
 Install build tools and dependencies:
 ```
-sudo apt-get install g++ cmake ninja-build libasound2-dev libopencv-dev
+sudo apt-get install g++ cmake ninja-build libasound2-dev libopencv-dev stockfish
 ```
+
+`stockfish` is not needed for main functionality. It is used only if you want training mode to find out the best move. It also can be replaced by any UCI compatible engine, see bellow.
 
 Build (and run unit tests):
 ```
@@ -52,9 +54,10 @@ Build (and run unit tests):
 
 Run:
 ```
-./run.sh [audio_input [audio_output]]
+./run.sh [audio_input [audio_output [uci_engine]]]
 ```
-Where `audio_input` is ALSA capture device name, for example, `plughw:DEV=0,CARD=C920` and `audio_output` is ALSA playback device name, for example, `plughw:CARD=UACDemoV10,DEV=0`. Both default to `default` if not specified.
+Where `audio_input` is ALSA capture device name, for example, `plughw:DEV=0,CARD=C920`.`audio_output` is ALSA playback device name, for example, `plughw:CARD=UACDemoV10,DEV=0`. Both audio parameters defaults to `default` if not specified.
+The last `uci_engine` parameter specifies executable supporting [Universal Chess Interface (UCI)](https://en.wikipedia.org/wiki/Universal_Chess_Interface). If not specified defaults to [stockfish](https://github.com/official-stockfish/Stockfish).
 
 ## Using
 
@@ -63,6 +66,7 @@ Clock is controlled by the following voice commands:
 * `stop the game` - will stop the clock.
 * `continue game` - will resume clock.
 * `shutdown` - will halt computer running the clock. Handy when you don't have keyboard or remote terminal for a safe shutdown. /etc/sudoers file must be [modified accordingly](https://askubuntu.com/questions/168879/shutdown-from-terminal-without-entering-password).
+* `please tell best move` - will use external chess engine to evaluate current position and will tell what it thinks the best move is.
 
 ## Future work
 
