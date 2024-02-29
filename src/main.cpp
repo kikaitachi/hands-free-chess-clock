@@ -2,6 +2,7 @@
 #include "command_parser.hpp"
 #include "game.hpp"
 #include "logger.hpp"
+#include "process.hpp"
 #include "speech_to_text.hpp"
 #include "uci.hpp"
 
@@ -21,8 +22,14 @@ int main(int argc, char** argv) {
   if (argc > 3) {
     uci_engine = std::string(argv[3]);
   }
+
+  char *const piper_argv[] = {
+    "piper/piper", "--model", "models/en_US-amy-medium.onnx", "-q", "--output_raw", nullptr
+  };
+  Process piper(piper_argv[0], piper_argv);
+
   UniversalChessInterface uci(uci_engine);
-  Game game(audio_output, uci);
+  Game game(audio_output, uci, piper);
   CommandParser command_parser;
   SpeechToText speech_to_text;
   AudioCapture audio_capture(speech_to_text.getSampleRate(), audio_input);

@@ -11,7 +11,7 @@
 
 class Game {
  public:
-  Game(std::string device, UniversalChessInterface& uci);
+  Game(std::string device, UniversalChessInterface& uci, Process& piper);
   bool playing = false;
 
   void ready();
