@@ -10,13 +10,17 @@ piper_json="${piper_onnx}.json"
 
 mkdir -p models
 if [ ! -f "${silero_model}" ]; then
-  curl -s -S https://raw.githubusercontent.com/snakers4/silero-vad/master/files/silero_vad.onnx > "${silero_model}"
+  curl -s -S -L https://raw.githubusercontent.com/snakers4/silero-vad/master/files/silero_vad.onnx > "${silero_model}"
 fi
 if [ ! -f "${piper_onnx}" ]; then
-  curl -s -S https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/amy/medium/en_US-amy-medium.onnx > "${piper_onnx}"
+  curl -s -S -L https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/amy/medium/en_US-amy-medium.onnx > "${piper_onnx}"
 fi
 if [ ! -f "${piper_json}" ]; then
-  curl -s -S https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/amy/medium/en_US-amy-medium.onnx.json > "${piper_json}"
+  curl -s -S -L https://huggingface.co/rhasspy/piper-voices/resolve/v1.0.0/en/en_US/amy/medium/en_US-amy-medium.onnx.json > "${piper_json}"
+fi
+
+if [ ! -d "piper" ]; then
+  curl -s -S -L "https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_linux_$(arch).tar.gz" | tar -xz
 fi
 
 if [ ! -d "${build_dir}" ]; then
