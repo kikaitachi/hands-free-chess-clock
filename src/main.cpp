@@ -49,7 +49,9 @@ int main(int argc, char** argv) {
           break;
         case SHUTDOWN:
           game.shutdown();
-          std::system("sudo shutdown now");
+          if (std::system("sudo shutdown now") == -1) {
+            logger::last("Failed to shutdown");
+          }
           break;
         case BEST_MOVE:
           game.best_move();
