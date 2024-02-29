@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
           break;
         case SHUTDOWN:
           game.shutdown();
-          std::system("sudo halt");
+          std::system("sudo shutdown now");
           break;
         case BEST_MOVE:
           game.best_move();
