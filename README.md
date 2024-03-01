@@ -57,7 +57,7 @@ Run:
 ./run.sh [audio_input [audio_output [uci_engine]]]
 ```
 Where `audio_input` is ALSA capture device name, for example, `plughw:DEV=0,CARD=C920`.`audio_output` is ALSA playback device name, for example, `plughw:CARD=UACDemoV10,DEV=0`. Both audio parameters defaults to `default` if not specified.
-The last `uci_engine` parameter specifies executable supporting [Universal Chess Interface (UCI)](https://en.wikipedia.org/wiki/Universal_Chess_Interface). If not specified defaults to [stockfish](https://github.com/official-stockfish/Stockfish).
+The last `uci_engine` parameter specifies executable (with full path) supporting [Universal Chess Interface (UCI)](https://en.wikipedia.org/wiki/Universal_Chess_Interface). If not specified defaults to [/usr/games/stockfish](https://github.com/official-stockfish/Stockfish).
 
 ## Using
 

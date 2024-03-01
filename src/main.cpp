@@ -22,7 +22,7 @@ int main(int argc, char** argv) {
   if (argc > 3) {
     uci_engine = argv[3];
   } else {
-    uci_engine = "stockfish";
+    uci_engine = "/usr/games/stockfish";
   }
 
   char const *uci_engine_argv[] = {
