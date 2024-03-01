@@ -80,6 +80,7 @@ This project directly or indirectly uses these open source projects:
 * [CMake](https://github.com/Kitware/CMake)
 * [Open Neural Network Exchange Runtime](https://github.com/microsoft/onnxruntime)
 * [Open Source Computer Vision Library](https://github.com/opencv/opencv)
+* [Piper](https://github.com/rhasspy/piper)
 * [Silero Voice Activity Detector](https://github.com/snakers4/silero-vad)
 * [SparkFun Alphanumeric Display Library](https://github.com/sparkfun/SparkFun_Alphanumeric_Display_Arduino_Library)
 * [whisper.cpp](https://github.com/ggerganov/whisper.cpp)
