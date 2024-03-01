@@ -2,7 +2,7 @@
 #include "process.hpp"
 #include <unistd.h>
 
-Process::Process(const char *path, char *const argv[]) {
+Process::Process(const char *path, char const *argv[]) {
   int stdin_pipe[2], stdout_pipe[2];
   if (pipe(stdin_pipe) == -1) {
     logger::last("Failed to create stdin pipe for process %s", path);
@@ -33,7 +33,7 @@ Process::Process(const char *path, char *const argv[]) {
       dup2(stdout_pipe[1], 1);
       close(stdout_pipe[1]);
     }
-    if (execv(path, argv) == -1) {
+    if (execv(path, const_cast<char**>(argv)) == -1) {
       logger::last("Failed to execute process %s", path);
     }
   }

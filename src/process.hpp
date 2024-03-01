@@ -3,7 +3,7 @@
 
 class Process {
  public:
-  Process(const char *path, char *const argv[]);
+  Process(const char *path, char const *argv[]);
 
   int read_fd;
   int write_fd;

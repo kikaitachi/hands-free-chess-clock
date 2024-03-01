@@ -23,7 +23,7 @@ int main(int argc, char** argv) {
     uci_engine = std::string(argv[3]);
   }
 
-  char *const piper_argv[] = {
+  char const *piper_argv[] = {
     "piper/piper", "--model", "models/en_US-amy-medium.onnx", "-q", "--output_raw", nullptr
   };
   Process piper(piper_argv[0], piper_argv);
