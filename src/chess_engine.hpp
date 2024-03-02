@@ -3,6 +3,7 @@
 
 #include <array>
 #include <list>
+#include <optional>
 #include <string>
 
 namespace chess {
@@ -39,10 +40,15 @@ class Move {
   Figure promoted;
 
   std::string to_string() const;
+
+  bool operator==(const Move &right) const;
 };
 
 class Position {
  public:
+  /**
+   * Create a new position with all chess pieces their initial positions.
+   */
   Position();
 
   /**
@@ -50,11 +56,26 @@ class Position {
    */
   void reset();
 
+  /**
+   * Return all legal moves in this position.
+   */
   std::list<Move> generate_legal_moves();
 
+  /**
+   * Make a legal move. Method doesn't validate move. If illegal move is
+   * provided behaviour is undefined.
+   */
   GameResult move(const Move& move);
 
+  /**
+   * Compare current position to the given one.
+   */
   bool equal(const Position& other);
+
+  /**
+   * Return previous position or nullopt if position is initial.
+   */
+  std::optional<Position> previous();
 
   std::array<Figure, 64> pieces;
   std::array<bool, 64> color;

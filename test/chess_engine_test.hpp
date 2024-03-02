@@ -36,6 +36,23 @@ TEST(PositionTest, InitialPosition) {
   EXPECT_EQ(position.generate_legal_moves().size(), 20);
 }
 
+TEST(PositionTest, Previous) {
+  chess::Position position1;
+
+  EXPECT_EQ(position1.previous(), std::nullopt);
+
+  position1.move(move("d2d4"));
+  position1.move(move("d7d5"));
+
+  chess::Position position2 = position1.previous().value();
+
+  chess::Position position3;
+  position3.move(move("d2d4"));
+
+  EXPECT_FALSE(position1.equal(position2));
+  EXPECT_TRUE(position2.equal(position3));
+}
+
 TEST(PositionTest, ScholarsMate) {
   test_game({
     {"e2e4"},

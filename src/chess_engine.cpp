@@ -60,6 +60,19 @@ std::string Move::to_string() const {
   return index2string(from) + index2string(to) + figure2notation(promoted);
 }
 
+bool Move::operator==(const Move &right) const {
+  if (to != right.to) {
+    return false;
+  }
+  if (from != right.from) {
+    return false;
+  }
+  if (promoted != right.promoted) {
+    return false;
+  }
+  return true;
+}
+
 Position::Position() {
   reset();
 }
@@ -271,4 +284,17 @@ GameResult Position::move(const Move& move) {
 bool Position::equal(const Position& other) {
   return pieces == other.pieces &&
     color == other.color;
+}
+
+std::optional<Position> Position::previous() {
+  if (moves.empty()) {
+    return std::nullopt;
+  }
+  Position position;
+  for (auto& move : moves) {
+    if (move != moves.back()) {
+      position.move(move);
+    }
+  }
+  return std::optional(position);
 }
