@@ -50,14 +50,7 @@ void Game::start(unsigned int time_ms, unsigned int increment_ms) {
   video_capture.start_game();
 }
 
-std::string Game::consider_move(SquareChange changes[64]) {
-  logger::info("6 best candidate squares: %s, %s, %s, %s, %s, %s",
-    chess::index2string(changes[0].index).c_str(),
-    chess::index2string(changes[1].index).c_str(),
-    chess::index2string(changes[2].index).c_str(),
-    chess::index2string(changes[3].index).c_str(),
-    chess::index2string(changes[4].index).c_str(),
-    chess::index2string(changes[5].index).c_str());
+std::optional<chess::Move> Game::most_likely_move(chess::Position& position, SquareChange changes[64]) {
   std::list<chess::Move> moves = position.generate_legal_moves();
   std::map<int, chess::Move> candidates;
   for (auto & move : moves) {
@@ -125,15 +118,29 @@ std::string Game::consider_move(SquareChange changes[64]) {
     }
   }
   if (candidates.size() > 0) {
-    chess::Move most_likely_move = candidates.rbegin()->second;
-    chess::GameResult result = position.move(most_likely_move);
+    return candidates.rbegin()->second;
+  }
+  return std::nullopt;
+}
+
+std::string Game::consider_move(SquareChange changes[64]) {
+  logger::info("6 best candidate squares: %s, %s, %s, %s, %s, %s",
+    chess::index2string(changes[0].index).c_str(),
+    chess::index2string(changes[1].index).c_str(),
+    chess::index2string(changes[2].index).c_str(),
+    chess::index2string(changes[3].index).c_str(),
+    chess::index2string(changes[4].index).c_str(),
+    chess::index2string(changes[5].index).c_str());
+  std::optional<chess::Move> best_new_move = most_likely_move(position, changes);
+  if (best_new_move) {
+    chess::GameResult result = position.move(best_new_move.value());
     text_to_speech.say(result.message);
     if (result.winner != chess::Winner::None) {
       playing = false;
     } else {
       switch_clock();
     }
-    return most_likely_move.to_string();
+    return best_new_move.value().to_string();
   }
   return "";
 }

@@ -8,6 +8,7 @@
 #include "video_capture.hpp"
 #include <chrono>
 #include <functional>
+#include <optional>
 
 class Game {
  public:
@@ -39,6 +40,7 @@ class Game {
   void update_clock();
   void stop_blinking();
   void on_game_over();
+  std::optional<chess::Move> most_likely_move(chess::Position& position, SquareChange changes[64]);
 };
 
 #endif  // GAME_H_
