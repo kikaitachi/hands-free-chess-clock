@@ -48,6 +48,7 @@ class VideoCapture {
   std::function<void()> on_move_start;
   std::function<std::string(SquareChange[64])> on_move_finish;
   bool moving = false;
+  int ply_index;
 
   void capture_frames();
   void save_differences(cv::Mat& img_perspective, cv::Mat& colored, std::string file_name);

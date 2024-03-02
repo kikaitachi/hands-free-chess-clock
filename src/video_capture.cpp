@@ -229,6 +229,8 @@ void VideoCapture::start_game() {
   // Ensure that there are no changes in the inital frames
   cv::Mat mask;
   bg_sub->apply(img_perspective, mask, 1);
+
+  ply_index = 1;
 }
 
 void VideoCapture::resume_game() {
@@ -259,7 +261,7 @@ void VideoCapture::capture_frames() {
   }
   cap.set(cv::CAP_PROP_FRAME_WIDTH, VIDEO_WIDTH);
   cap.set(cv::CAP_PROP_FRAME_HEIGHT, VIDEO_HEIGHT);
-  for (int i = 1; ; ) {
+  for (; ; ) {
     frame_mutex.lock();
     for ( ; ; ) {
       cap.read(frame);
@@ -320,14 +322,14 @@ void VideoCapture::capture_frames() {
           }
 
           std::string move = on_move_finish(changes);
-          std::string move_number = std::to_string(i);
+          std::string move_number = std::to_string(ply_index);
           move_number.insert(move_number.begin(), 3 - move_number.size(), '0');
           if (!move.empty()) {
             save_differences(img_perspective, colored,
               "debug/move" + move_number + "-" + move + ".jpg");
             last_move = img_perspective.clone();
             cv::cvtColor(img_perspective, last_move, cv::COLOR_BGR2GRAY);
-            i++;
+            ply_index++;
           } else {
             save_differences(img_perspective, colored,
               "debug/move" + move_number + "-failed.jpg");
