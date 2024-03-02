@@ -38,3 +38,9 @@ Process::Process(const char *path, char const *argv[]) {
     }
   }
 }
+
+void Process::write_line(std::string line) {
+  if (write(write_fd, (line + "\n").c_str(), line.size() + 1) == -1) {
+    logger::last("Failed to write '%s' to process", line.c_str());
+  }
+}

@@ -11,9 +11,7 @@ TextToSpeech::TextToSpeech(unsigned int sample_rate, std::string device, Process
 }
 
 void TextToSpeech::say(std::string text) {
-  if (write(piper.write_fd, (text + "\n").c_str(), text.size() + 1) == -1) {
-    logger::last("Failed to write '%s' to piper", text.c_str());
-  }
+  piper.write_line(text);
 }
 
 void TextToSpeech::play() {
