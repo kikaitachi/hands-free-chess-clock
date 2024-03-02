@@ -84,6 +84,7 @@ void VideoCapture::start_game() {
   std::filesystem::remove_all("debug");
   std::filesystem::create_directories("debug");
   // Detect board
+  std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
   std::lock_guard<std::mutex> guard(frame_mutex);
   cv::imwrite("debug/start_game_original.jpg", frame);
   cv::Mat markers;
@@ -218,6 +219,9 @@ void VideoCapture::start_game() {
       {VIDEO_HEIGHT, VIDEO_HEIGHT}
   );
   cv::imwrite("debug/start_game_perspective.jpg", img_perspective);
+  std::chrono::steady_clock::time_point end_time = std::chrono::steady_clock::now();
+  logger::info("Detected chess board in %dms",
+    (int)std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count());
 
   cv::cvtColor(img_perspective, last_move, cv::COLOR_BGR2GRAY);
 
