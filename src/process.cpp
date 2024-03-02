@@ -35,6 +35,7 @@ Process::Process(const char *path, char const *argv[]) {
     }
     if (execv(path, const_cast<char**>(argv)) == -1) {
       logger::last("Failed to execute process %s", path);
+      exit(127);
     }
   }
 }
