@@ -32,7 +32,7 @@ CommandParser::CommandParser()
         "shut ?down",
         std::regex_constants::ECMAScript | std::regex_constants::icase),
       best_move_command_syntax(
-        "please tell(?: the)? best move",
+        "please tell best move",
         std::regex_constants::ECMAScript | std::regex_constants::icase) {
 }
 

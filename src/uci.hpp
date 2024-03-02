@@ -2,15 +2,27 @@
 #define UCI_H_
 
 #include "chess_engine.hpp"
-#include <string>
+#include "process.hpp"
+#include <functional>
 
 class UniversalChessInterface {
  public:
-  UniversalChessInterface(std::string executable);
-  std::string best_move(chess::Position& position);
+  UniversalChessInterface(
+    Process& process,
+    std::function<void(const std::string best_move)> on_best_move
+  );
+
+  /**
+   * Request to calculate the best move.
+   * Result will be returned via callback provided in constructor.
+   */
+  void best_move(chess::Position& position);
 
  private:
-  std::string executable;
+  Process& process;
+  std::function<void(const std::string best_move)> on_best_move;
+
+  void read();
 };
 
 #endif  // UCI_H_

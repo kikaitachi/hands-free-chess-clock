@@ -11,7 +11,7 @@
 
 class Game {
  public:
-  Game(std::string device, UniversalChessInterface& uci, Process& piper);
+  Game(std::string device, Process& uci, Process& piper);
   bool playing = false;
 
   void ready();
@@ -23,7 +23,7 @@ class Game {
   void best_move();
 
  private:
-  UniversalChessInterface& uci;
+  UniversalChessInterface uci;
   unsigned int time_white_ms;
   unsigned int time_black_ms;
   unsigned int increment_ms;
