@@ -298,8 +298,22 @@ void VideoCapture::capture_frames() {
           cv::Mat blurred;
           cv::medianBlur(diff, blurred, 5);
           cv::adaptiveThreshold(blurred, diff, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY_INV, 5, 2);
-
+          cv::Mat without_cell_boundaries = cv::Mat::zeros(
+            cv::Size(VIDEO_HEIGHT, VIDEO_HEIGHT), diff.type());
           int square_size = VIDEO_HEIGHT / 8;
+          int margin = 10;
+          for (int x = 0; x < 8; x++) {
+            for (int y = 0; y < 8; y++) {
+              logger::debug("BEFORE");
+              cv::Rect cell = cv::Rect(
+                x * square_size + margin / 2, y * square_size + margin / 2,
+                square_size - margin, square_size - margin);
+              diff(cell).copyTo(without_cell_boundaries(cell));
+              logger::debug("AFTER");
+            }
+          }
+          without_cell_boundaries.copyTo(diff);
+
           SquareChange changes[64];
           for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
