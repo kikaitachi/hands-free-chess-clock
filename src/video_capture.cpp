@@ -329,7 +329,11 @@ void VideoCapture::capture_frames() {
               "debug/move" + move_number + "-" + move + ".jpg");
             last_move = img_perspective.clone();
             cv::cvtColor(img_perspective, last_move, cv::COLOR_BGR2GRAY);
-            ply_index++;
+            if (move == "take back") {
+              ply_index--;
+            } else {
+              ply_index++;
+            }
           } else {
             save_differences(img_perspective, colored,
               "debug/move" + move_number + "-failed.jpg");

@@ -142,6 +142,15 @@ std::string Game::consider_move(SquareChange changes[64]) {
     }
     return best_new_move.value().to_string();
   }
+  std::optional<chess::Position> previous = position.previous();
+  if (previous) {
+    std::optional<chess::Move> take_back_move = most_likely_move(previous.value(), changes);
+    if (take_back_move) {
+      position = previous.value();
+      text_to_speech.say("Take back " + take_back_move.value().to_string());
+      return "take back";
+    }
+  }
   return "";
 }
 
