@@ -7,6 +7,7 @@ model_file="${build_dir}/_deps/whisper.cpp-src/models/ggml-small.en.bin"
 silero_model="models/silero_vad.onnx"
 piper_onnx="models/en_US-amy-medium.onnx"
 piper_json="${piper_onnx}.json"
+openings_dir="openings"
 
 mkdir -p models
 if [ ! -f "${silero_model}" ]; then
@@ -21,6 +22,13 @@ fi
 
 if [ ! -d "piper" ]; then
   curl -s -S -L "https://github.com/rhasspy/piper/releases/download/2023.11.14-2/piper_linux_$(arch).tar.gz" | tar -xz
+fi
+
+if [ ! -d "${openings_dir}" ]; then
+  mkdir -p "${openings_dir}"
+  for file in a b c d e; do
+    curl -s -S -L "https://raw.githubusercontent.com/lichess-org/chess-openings/master/${file}.tsv" > "${openings_dir}/${file}.tsv"
+  done
 fi
 
 if [ ! -d "${build_dir}" ]; then

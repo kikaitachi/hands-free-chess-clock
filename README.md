@@ -77,6 +77,7 @@ Clock is controlled by the following voice commands:
 
 This project directly or indirectly uses these open source projects:
 * [Advanced Linux Sound Architecture project](https://github.com/alsa-project/alsa-lib)
+* [Chess opening names](https://github.com/lichess-org/chess-openings)
 * [CMake](https://github.com/Kitware/CMake)
 * [Open Neural Network Exchange Runtime](https://github.com/microsoft/onnxruntime)
 * [Open Source Computer Vision Library](https://github.com/opencv/opencv)
