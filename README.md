@@ -83,6 +83,7 @@ This project directly or indirectly uses these open source projects:
 * [Piper](https://github.com/rhasspy/piper)
 * [Silero Voice Activity Detector](https://github.com/snakers4/silero-vad)
 * [SparkFun Alphanumeric Display Library](https://github.com/sparkfun/SparkFun_Alphanumeric_Display_Arduino_Library)
+* [Stockfish](https://github.com/official-stockfish/Stockfish)
 * [whisper.cpp](https://github.com/ggerganov/whisper.cpp)
 
 Thanks to [Nvidia](https://www.nvidia.com/) for providing [Jetson Orin Nano Developer Kit](https://developer.nvidia.com/embedded/learn/get-started-jetson-orin-nano-devkit) via [AI Innovation Challenge](https://www.hackster.io/contests/SparkFun-NVIDIA-AI-Innovation-Challenge) contest.
