@@ -12,7 +12,7 @@
 
 class Game {
  public:
-  Game(std::string device, Process& uci, Process& piper);
+  Game(std::string device, std::string command, Process& piper);
   bool playing = false;
 
   void ready();
@@ -25,7 +25,7 @@ class Game {
   void who_is_winning();
 
  private:
-  UniversalChessInterface uci;
+  std::unique_ptr<UniversalChessInterface> uci;
   unsigned int time_white_ms;
   unsigned int time_black_ms;
   unsigned int increment_ms;

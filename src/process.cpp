@@ -2,19 +2,19 @@
 #include "process.hpp"
 #include <unistd.h>
 
-Process::Process(const char *path, char const *argv[]) {
+Process::Process(char const *argv[]) {
   int stdin_pipe[2], stdout_pipe[2];
   if (pipe(stdin_pipe) == -1) {
-    logger::last("Failed to create stdin pipe for process %s", path);
+    logger::last("Failed to create stdin pipe for process %s", argv[0]);
     return;
   }
   if (pipe(stdout_pipe) == -1) {
-    logger::last("Failed to create stdout pipe for process %s", path);
+    logger::last("Failed to create stdout pipe for process %s", argv[0]);
     return;
   }
   pid_t child_pid = fork();
   if (child_pid == -1) {
-    logger::last("Failed to fork for process %s", path);
+    logger::last("Failed to fork for process %s", argv[0]);
     return;
   }
   if (child_pid != 0) {  // This is parent process
@@ -33,8 +33,8 @@ Process::Process(const char *path, char const *argv[]) {
       dup2(stdout_pipe[1], 1);
       close(stdout_pipe[1]);
     }
-    if (execv(path, const_cast<char**>(argv)) == -1) {
-      logger::last("Failed to execute process %s", path);
+    if (execv(argv[0], const_cast<char**>(argv)) == -1) {
+      logger::last("Failed to execute process %s", argv[0]);
       exit(127);
     }
   }

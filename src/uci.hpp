@@ -4,12 +4,13 @@
 #include "chess_engine.hpp"
 #include "process.hpp"
 #include <functional>
+#include <memory>
 #include <optional>
 
 class UniversalChessInterface {
  public:
   UniversalChessInterface(
-    Process& process,
+    char const *argv[],
     std::function<void(const std::string best_move)> on_best_move
   );
 
@@ -19,13 +20,28 @@ class UniversalChessInterface {
    */
   void best_move(chess::Position& position);
 
-  std::optional<double> score();
+  virtual std::optional<double> score();
+
+ protected:
+  Process process;
 
  private:
-  Process& process;
   std::function<void(const std::string best_move)> on_best_move;
 
   void read();
 };
+
+class Stockfish: public UniversalChessInterface {
+ public:
+  Stockfish(
+    char const *argv[],
+    std::function<void(const std::string best_move)> on_best_move
+  );
+  virtual std::optional<double> score() override;
+};
+
+std::unique_ptr<UniversalChessInterface> create_uci(
+  std::string command,
+  std::function<void(const std::string best_move)> on_best_move);
 
 #endif  // UCI_H_

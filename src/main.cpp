@@ -17,24 +17,19 @@ int main(int argc, char** argv) {
   if (argc > 2) {
     audio_output = std::string(argv[2]);
   }
-  char const *uci_engine;
+  std::string uci_engine;
   if (argc > 3) {
     uci_engine = argv[3];
   } else {
     uci_engine = "/usr/games/stockfish";
   }
 
-  char const *uci_engine_argv[] = {
-    uci_engine, nullptr
-  };
-  Process uci_process(uci_engine_argv[0], uci_engine_argv);
-
   char const *piper_argv[] = {
     "piper/piper", "--model", "models/en_US-amy-medium.onnx", "-q", "--output_raw", nullptr
   };
-  Process piper_process(piper_argv[0], piper_argv);
+  Process piper_process(piper_argv);
 
-  Game game(audio_output, uci_process, piper_process);
+  Game game(audio_output, uci_engine, piper_process);
   CommandParser command_parser;
   SpeechToText speech_to_text;
   AudioCapture audio_capture(speech_to_text.getSampleRate(), audio_input);

@@ -6,9 +6,9 @@
 using namespace std::chrono_literals;
 
 UniversalChessInterface::UniversalChessInterface(
-      Process& process,
+      char const *argv[],
       std::function<void(const std::string best_move)> on_best_move
-    ) : process(process), on_best_move(on_best_move) {
+    ) : process(argv), on_best_move(on_best_move) {
   std::thread read_thread(&UniversalChessInterface::read, this);
   read_thread.detach();
 }
@@ -44,4 +44,28 @@ void UniversalChessInterface::best_move(chess::Position& position) {
 
 std::optional<double> UniversalChessInterface::score() {
   return std::nullopt;
+}
+
+Stockfish::Stockfish(
+    char const *argv[],
+    std::function<void(const std::string best_move)> on_best_move
+  ) : UniversalChessInterface(argv, on_best_move) {
+}
+
+std::optional<double> Stockfish::score() {
+  process.write_line("eval");
+  // TODO: parse output
+  return std::nullopt;
+}
+
+std::unique_ptr<UniversalChessInterface> create_uci(
+    std::string command,
+    std::function<void(const std::string best_move)> on_best_move) {
+  char const *uci_engine_argv[] = {
+    command.c_str(), nullptr
+  };
+  if (command.ends_with("stockfish")) {
+    return std::make_unique<Stockfish>(uci_engine_argv, on_best_move);
+  }
+  return std::make_unique<UniversalChessInterface>(uci_engine_argv, on_best_move);
 }

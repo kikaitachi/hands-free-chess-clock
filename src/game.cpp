@@ -7,11 +7,11 @@
 
 using namespace std::chrono_literals;
 
-Game::Game(std::string device, Process& uci, Process& piper)
-    : text_to_speech(22050, device, piper), uci(uci, [&](std::string best_move) {
+Game::Game(std::string device, std::string command, Process& piper)
+    : text_to_speech(22050, device, piper), uci(create_uci(command, [&](std::string best_move) {
       logger::info("Best move from UCI: %s", best_move.c_str());
       text_to_speech.say("The best move is: " + best_move);
-    }), video_capture(
+    })), video_capture(
       [&]() {
         logger::info("Move started");
       },
@@ -242,11 +242,11 @@ void Game::shutdown() {
 }
 
 void Game::best_move() {
-  uci.best_move(position);
+  uci->best_move(position);
 }
 
 void Game::who_is_winning() {
-  std::optional<double> score = uci.score();
+  std::optional<double> score = uci->score();
   if (score) {
     double value = score.value();
     if (value == 0) {

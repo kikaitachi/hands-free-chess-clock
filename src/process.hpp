@@ -5,7 +5,7 @@
 
 class Process {
  public:
-  Process(const char *path, char const *argv[]);
+  Process(char const *argv[]);
   void write_line(std::string line);
 
   int read_fd;
