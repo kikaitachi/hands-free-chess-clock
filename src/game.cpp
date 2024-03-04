@@ -244,3 +244,21 @@ void Game::shutdown() {
 void Game::best_move() {
   uci.best_move(position);
 }
+
+void Game::who_is_winning() {
+  std::optional<double> score = uci.score();
+  if (score) {
+    double value = score.value();
+    if (value == 0) {
+      text_to_speech.say("dead equal");
+    } else if (fabs(value) < 0.4) {
+      text_to_speech.say("about equal");
+    } else if (fabs(value) < 1) {
+      text_to_speech.say("slightly favours " + std::string(value > 0 ? "white": "black"));
+    } else if (fabs(value) < 2) {
+      text_to_speech.say(std::string(value > 0 ? "white": "black") + " has an advantage");
+    } else {
+      text_to_speech.say(std::string(value > 0 ? "white": "black") + " has winning advantage");
+    }
+  }
+}

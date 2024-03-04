@@ -68,6 +68,9 @@ int main(int argc, char** argv) {
         case BEST_MOVE:
           game.best_move();
           break;
+        case WHO_IS_WINNING:
+          game.who_is_winning();
+          break;
         case NO_COMMAND:
           break;
       }

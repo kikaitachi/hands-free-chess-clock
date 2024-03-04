@@ -4,6 +4,7 @@
 #include "chess_engine.hpp"
 #include "process.hpp"
 #include <functional>
+#include <optional>
 
 class UniversalChessInterface {
  public:
@@ -17,6 +18,8 @@ class UniversalChessInterface {
    * Result will be returned via callback provided in constructor.
    */
   void best_move(chess::Position& position);
+
+  std::optional<double> score();
 
  private:
   Process& process;

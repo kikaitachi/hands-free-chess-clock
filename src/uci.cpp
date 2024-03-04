@@ -41,3 +41,7 @@ void UniversalChessInterface::best_move(chess::Position& position) {
   std::this_thread::sleep_for(1s);
   process.write_line("stop");
 }
+
+std::optional<double> UniversalChessInterface::score() {
+  return std::nullopt;
+}
