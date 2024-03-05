@@ -2,6 +2,7 @@
 #include "command_parser.hpp"
 #include "game.hpp"
 #include "logger.hpp"
+#include "openings.hpp"
 #include "process.hpp"
 #include "speech_to_text.hpp"
 
@@ -28,6 +29,8 @@ int main(int argc, char** argv) {
     "piper/piper", "--model", "models/en_US-amy-medium.onnx", "-q", "--output_raw", nullptr
   };
   Process piper_process(piper_argv);
+
+  Openings openings;
 
   Game game(audio_output, uci_engine, piper_process);
   CommandParser command_parser;
