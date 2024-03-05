@@ -24,6 +24,7 @@ class UniversalChessInterface {
 
  protected:
   Process process;
+  virtual void process_line(std::string line);
 
  private:
   std::function<void(const std::string best_move)> on_best_move;
@@ -38,6 +39,9 @@ class Stockfish: public UniversalChessInterface {
     std::function<void(const std::string best_move)> on_best_move
   );
   virtual std::optional<double> score() override;
+
+ protected:
+  virtual void process_line(std::string line) override;
 };
 
 std::unique_ptr<UniversalChessInterface> create_uci(

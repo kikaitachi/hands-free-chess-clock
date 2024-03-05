@@ -22,11 +22,15 @@ void UniversalChessInterface::read() {
       line = line.substr(0, line.size() - 1);
     }
     logger::debug("uci: %s", line.c_str());
-    if (line.starts_with("bestmove ")) {
-      on_best_move(line.substr(9, 4));
-    }
+    process_line(line);
   }
   fclose(input);
+}
+
+void UniversalChessInterface::process_line(std::string line) {
+  if (line.starts_with("bestmove ")) {
+    on_best_move(line.substr(9, 4));
+  }
 }
 
 void UniversalChessInterface::best_move(chess::Position& position) {
@@ -52,9 +56,16 @@ Stockfish::Stockfish(
   ) : UniversalChessInterface(argv, on_best_move) {
 }
 
+void Stockfish::process_line(std::string line) {
+  UniversalChessInterface::process_line(line);
+  if (line.starts_with("Final evaluation")) {
+    // TODO: implement
+  }
+}
+
 std::optional<double> Stockfish::score() {
   process.write_line("eval");
-  // TODO: parse output
+  // TODO: wait until evaluation is done
   return std::nullopt;
 }
 
