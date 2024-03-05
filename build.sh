@@ -3,13 +3,16 @@
 set -e
 
 build_dir=build
-model_file="${build_dir}/_deps/whisper.cpp-src/models/ggml-small.en.bin"
+whisper_model="models/ggml-small.en.bin"
 silero_model="models/silero_vad.onnx"
 piper_onnx="models/en_US-amy-medium.onnx"
 piper_json="${piper_onnx}.json"
 openings_dir="openings"
 
 mkdir -p models
+if [ ! -f "${whisper_model}" ]; then
+  curl -s -S -L https://huggingface.co/ggerganov/whisper.cpp/resolve/main/ggml-small.en.bin > "${whisper_model}"
+fi
 if [ ! -f "${silero_model}" ]; then
   curl -s -S -L https://raw.githubusercontent.com/snakers4/silero-vad/master/files/silero_vad.onnx > "${silero_model}"
 fi
@@ -36,7 +39,3 @@ if [ ! -d "${build_dir}" ]; then
 fi
 
 cmake --build "${build_dir}"
-
-if [ ! -f "${model_file}" ]; then
-  bash "${build_dir}/_deps/whisper.cpp-src/models/download-ggml-model.sh" small.en
-fi
