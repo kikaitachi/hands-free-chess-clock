@@ -1,6 +1,7 @@
 #include "logger.hpp"
 #include "uci.hpp"
 #include <cstdio>
+#include <regex>
 #include <thread>
 
 using namespace std::chrono_literals;
@@ -46,7 +47,7 @@ void UniversalChessInterface::best_move(chess::Position& position) {
   process.write_line("stop");
 }
 
-std::optional<double> UniversalChessInterface::score() {
+std::optional<double> UniversalChessInterface::get_score() {
   return std::nullopt;
 }
 
@@ -58,14 +59,26 @@ Stockfish::Stockfish(
 
 void Stockfish::process_line(std::string line) {
   UniversalChessInterface::process_line(line);
-  if (line.starts_with("Final evaluation")) {
-    // TODO: implement
+  std::regex eval_syntax("Final evaluation ?([+0-9.]?) ");
+  std::smatch matches;
+  if (std::regex_search(line, matches, eval_syntax)) {
+    std::string value = matches[1].str();
+    {
+      std::lock_guard guard(score_mutex);
+      score = std::atof(value.c_str());
+    }
+    score_found.notify_all();
   }
 }
 
-std::optional<double> Stockfish::score() {
+std::optional<double> Stockfish::get_score() {
+  std::unique_lock<std::mutex> lock(score_mutex);
+  score = std::nullopt;
   process.write_line("eval");
-  // TODO: wait until evaluation is done
+  if (score_found.wait_for(lock, 1s) == std::cv_status::no_timeout) {
+    return score;
+  }
+  logger::warn("Timeout while waiting to get current position score");
   return std::nullopt;
 }
 

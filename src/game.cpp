@@ -46,7 +46,7 @@ void Game::start(unsigned int time_ms, unsigned int increment_ms) {
   std::thread clock_update_thread(&Game::update_clock, this);
   clock_update_thread.detach();
 
-  text_to_speech.say("game on");
+  text_to_speech.say("Game on");
   video_capture.start_game();
 }
 
@@ -161,11 +161,11 @@ void Game::on_game_over() {
 
 void Game::stop() {
   playing = false;
-  text_to_speech.say("stopped");
+  text_to_speech.say("Game stopped");
 }
 
 void Game::resume() {
-  text_to_speech.say("resumed");
+  text_to_speech.say("Game resumed");
   std::thread clock_update_thread(&Game::update_clock, this);
   clock_update_thread.detach();
   video_capture.resume_game();
@@ -246,7 +246,7 @@ void Game::best_move() {
 }
 
 void Game::who_is_winning() {
-  std::optional<double> score = uci->score();
+  std::optional<double> score = uci->get_score();
   if (score) {
     double value = score.value();
     if (value == 0) {

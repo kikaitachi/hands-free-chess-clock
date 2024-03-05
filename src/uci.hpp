@@ -3,8 +3,10 @@
 
 #include "chess_engine.hpp"
 #include "process.hpp"
+#include <condition_variable>
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <optional>
 
 class UniversalChessInterface {
@@ -20,7 +22,7 @@ class UniversalChessInterface {
    */
   void best_move(chess::Position& position);
 
-  virtual std::optional<double> score();
+  virtual std::optional<double> get_score();
 
  protected:
   Process process;
@@ -38,10 +40,15 @@ class Stockfish: public UniversalChessInterface {
     char const *argv[],
     std::function<void(const std::string best_move)> on_best_move
   );
-  virtual std::optional<double> score() override;
+  virtual std::optional<double> get_score() override;
 
  protected:
   virtual void process_line(std::string line) override;
+
+ private:
+  std::mutex score_mutex;
+  std::condition_variable score_found;
+  std::optional<double> score;
 };
 
 std::unique_ptr<UniversalChessInterface> create_uci(
