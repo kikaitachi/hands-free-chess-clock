@@ -304,12 +304,10 @@ void VideoCapture::capture_frames() {
           int margin = 10;
           for (int x = 0; x < 8; x++) {
             for (int y = 0; y < 8; y++) {
-              logger::debug("BEFORE");
               cv::Rect cell = cv::Rect(
                 x * square_size + margin / 2, y * square_size + margin / 2,
                 square_size - margin, square_size - margin);
               diff(cell).copyTo(without_cell_boundaries(cell));
-              logger::debug("AFTER");
             }
           }
           without_cell_boundaries.copyTo(diff);

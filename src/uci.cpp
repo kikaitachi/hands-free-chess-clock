@@ -34,20 +34,24 @@ void UniversalChessInterface::process_line(std::string line) {
   }
 }
 
-void UniversalChessInterface::best_move(chess::Position& position) {
+void UniversalChessInterface::send_position(const chess::Position& position) {
   std::string start_position = "position startpos moves";
   for (auto& move : position.moves) {
     start_position += " ";
     start_position += move.to_string();
   }
   process.write_line(start_position);
+}
+
+void UniversalChessInterface::best_move(const chess::Position& position) {
+  send_position(position);
   logger::info("Initiating best move search");
   process.write_line("go infinite");
   std::this_thread::sleep_for(1s);
   process.write_line("stop");
 }
 
-std::optional<double> UniversalChessInterface::get_score() {
+std::optional<double> UniversalChessInterface::get_score(const chess::Position& position) {
   return std::nullopt;
 }
 
@@ -59,7 +63,7 @@ Stockfish::Stockfish(
 
 void Stockfish::process_line(std::string line) {
   UniversalChessInterface::process_line(line);
-  std::regex eval_syntax("Final evaluation ?([+0-9.]?) ");
+  std::regex eval_syntax("Final evaluation +([+--0-9.]+) ");
   std::smatch matches;
   if (std::regex_search(line, matches, eval_syntax)) {
     std::string value = matches[1].str();
@@ -71,7 +75,8 @@ void Stockfish::process_line(std::string line) {
   }
 }
 
-std::optional<double> Stockfish::get_score() {
+std::optional<double> Stockfish::get_score(const chess::Position& position) {
+  send_position(position);
   std::unique_lock<std::mutex> lock(score_mutex);
   score = std::nullopt;
   process.write_line("eval");

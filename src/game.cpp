@@ -246,7 +246,7 @@ void Game::best_move() {
 }
 
 void Game::who_is_winning() {
-  std::optional<double> score = uci->get_score();
+  std::optional<double> score = uci->get_score(position);
   if (score) {
     double value = score.value();
     if (value == 0) {

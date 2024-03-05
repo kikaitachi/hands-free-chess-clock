@@ -20,12 +20,13 @@ class UniversalChessInterface {
    * Request to calculate the best move.
    * Result will be returned via callback provided in constructor.
    */
-  void best_move(chess::Position& position);
+  void best_move(const chess::Position& position);
 
-  virtual std::optional<double> get_score();
+  virtual std::optional<double> get_score(const chess::Position& position);
 
  protected:
   Process process;
+  void send_position(const chess::Position& position);
   virtual void process_line(std::string line);
 
  private:
@@ -40,7 +41,7 @@ class Stockfish: public UniversalChessInterface {
     char const *argv[],
     std::function<void(const std::string best_move)> on_best_move
   );
-  virtual std::optional<double> get_score() override;
+  virtual std::optional<double> get_score(const chess::Position& position) override;
 
  protected:
   virtual void process_line(std::string line) override;
