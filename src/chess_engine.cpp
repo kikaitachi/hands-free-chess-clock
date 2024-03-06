@@ -1,5 +1,7 @@
 #include "chess_engine.hpp"
+#include <algorithm>
 #include <cmath>
+#include <exception>
 #include <forward_list>
 #include <map>
 
@@ -7,6 +9,10 @@ std::string chess::index2string(int index) {
   int row = index / 8;
   int col = index % 8;
   return std::string(1, 'a' + col) + std::to_string(row + 1);
+}
+
+int chess::string2index(std::string cell) {
+  return (cell[1] - (int)'1') * 8 + (cell[0] - (int)'a');
 }
 
 using namespace chess;
@@ -281,8 +287,65 @@ GameResult Position::move(const Move& move) {
   return {Winner::None, move.to_string().substr(0, 4)};
 }
 
+Move uci2move(std::string move) {
+  return {
+    string2index(move.substr(0, 2)),
+    string2index(move.substr(2, 4)),
+    chess::Figure::Empty
+  };
+}
+
 std::string Position::move_san(const std::string san) {
-  return "";  // TODO: implement
+  if (san == "O-O") {
+    std::string uci_notation = white_turn ? "e1g1" : "e8g8";
+    move(uci2move(uci_notation));
+    return uci_notation;
+  }
+  if (san == "O-O-O") {
+    std::string uci_notation = white_turn ? "e1c1" : "e8c8";
+    move(uci2move(uci_notation));
+    return uci_notation;
+  }
+  std::string san_notation = san;
+  san_notation.erase(std::remove(san_notation.begin(), san_notation.end(), '#'), san_notation.end());
+  san_notation.erase(std::remove(san_notation.begin(), san_notation.end(), '='), san_notation.end());
+  san_notation.erase(std::remove(san_notation.begin(), san_notation.end(), '+'), san_notation.end());
+  san_notation.erase(std::remove(san_notation.begin(), san_notation.end(), 'x'), san_notation.end());
+  std::list<Move> moves = generate_legal_moves();
+  for (auto& m : moves) {
+    std::string uci_notation = m.to_string();
+    std::string figure = figure2notation(pieces[m.from]);
+    std::string to = san_notation.substr(san_notation.size() - 2);
+    if (!uci_notation.ends_with(to)) {
+      continue;
+    }
+    if (figure.empty() && !std::islower(san_notation.at(0))) {
+      continue;
+    }
+    if (!figure.empty() && !san_notation.starts_with(figure)) {
+      continue;
+    }
+    std::string from = san_notation
+      .substr(0, san_notation.size() - 2)
+      .substr(figure.size());
+    if (from.size() == 2 && !uci_notation.starts_with(from)) {
+      continue;
+    }
+    if (from.size() == 1) {
+      if (std::isdigit(from.at(0))) {
+        if (uci_notation.at(1) != from.at(0)) {
+          continue;
+        }
+      } else {
+        if (uci_notation.at(0) != from.at(0)) {
+          continue;
+        }
+      }
+    }
+    move(m);
+    return m.to_string();
+  }
+  throw std::runtime_error("Can't convert move: " + san);
 }
 
 bool Position::equal(const Position& other) {

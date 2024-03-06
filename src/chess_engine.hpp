@@ -10,6 +10,8 @@ namespace chess {
 
 std::string index2string(int index);
 
+int string2index(std::string cell);
+
 enum Figure {
   Empty,
   King,

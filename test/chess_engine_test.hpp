@@ -2,14 +2,10 @@
 #include "../src/chess_engine.hpp"
 #include <initializer_list>
 
-int cell2index(std::string cell) {
-  return (cell[1] - (int)'1') * 8 + (cell[0] - (int)'a');
-}
-
 chess::Move move(std::string move) {
   return {
-    cell2index(move.substr(0, 2)),
-    cell2index(move.substr(2, 4)),
+    chess::string2index(move.substr(0, 2)),
+    chess::string2index(move.substr(2, 4)),
     chess::Figure::Empty
   };
 }
