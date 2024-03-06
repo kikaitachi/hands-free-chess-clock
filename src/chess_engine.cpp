@@ -281,6 +281,10 @@ GameResult Position::move(const Move& move) {
   return {Winner::None, move.to_string().substr(0, 4)};
 }
 
+std::string Position::move_san(const std::string san) {
+  return "";  // TODO: implement
+}
+
 bool Position::equal(const Position& other) {
   return pieces == other.pieces &&
     color == other.color;

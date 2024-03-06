@@ -2,6 +2,9 @@
 #include "logger.hpp"
 #include "openings.hpp"
 #include <fstream>
+#include <regex>
+
+using namespace openings;
 
 Openings::Openings() {
   for (char db = 'a'; db <= 'e'; db++) {
@@ -18,8 +21,25 @@ Openings::Openings() {
         std::size_t index = line.find_first_of('\t');
         std::string name = line.substr(0, index);
         line = line.substr(index + 1);
-        logger::debug("%s: %s", name.c_str(), line.c_str());
-        // TODO: implement
+        std::regex words_regex("[^\\s]+");
+        auto words_begin = std::sregex_iterator(line.begin(), line.end(), words_regex);
+        auto words_end = std::sregex_iterator();
+        for (std::sregex_iterator i = words_begin; i != words_end; i++) {
+          std::smatch match = *i;
+          std::string san_notation = match.str();
+          bool is_last = std::distance(i, words_end) == 1;
+          if (!san_notation.ends_with('.')) {  // Filter out move numbers
+            std::string uci_notation = position.move_san(san_notation);
+            /*Node* curr = root;
+            while (curr != nullptr) {
+              if (auto pos = curr->branches.find(uci_notation); pos != curr->branches.end()) {
+                // TODO: implement
+              } else {
+                curr->branches.emplace(uci_notation);
+              }
+            }*/
+          }
+        }
       }
     } else {
       logger::error("Can't open file: %s", file_name.c_str());

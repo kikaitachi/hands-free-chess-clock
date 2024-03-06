@@ -68,6 +68,12 @@ class Position {
   GameResult move(const Move& move);
 
   /**
+   * Make a move specified by Standard Algebraic Notation (SAN) and return
+   * move in Universal Chess Interface (UCI) notation.
+   */
+  std::string move_san(const std::string san);
+
+  /**
    * Compare current position to the given one.
    */
   bool equal(const Position& other);
