@@ -24,20 +24,22 @@ Openings::Openings() {
         std::regex words_regex("[^\\s]+");
         auto words_begin = std::sregex_iterator(line.begin(), line.end(), words_regex);
         auto words_end = std::sregex_iterator();
+        Node* curr = root;
         for (std::sregex_iterator i = words_begin; i != words_end; i++) {
           std::smatch match = *i;
           std::string san_notation = match.str();
-          bool is_last = std::distance(i, words_end) == 1;
           if (!san_notation.ends_with('.')) {  // Filter out move numbers
             std::string uci_notation = position.move_san(san_notation);
-            /*Node* curr = root;
-            while (curr != nullptr) {
-              if (auto pos = curr->branches.find(uci_notation); pos != curr->branches.end()) {
-                // TODO: implement
-              } else {
-                curr->branches.emplace(uci_notation);
-              }
-            }*/
+            if (auto pos = curr->branches.find(uci_notation); pos != curr->branches.end()) {
+              curr = pos->second;
+            } else {
+              Node* node = new Node();
+              curr->branches.emplace(uci_notation, node);
+              curr = node;
+            }
+            if (std::distance(i, words_end) == 1) {  // Last move in opening
+              curr->name = name;
+            }
           }
         }
       }
