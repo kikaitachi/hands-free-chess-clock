@@ -298,12 +298,12 @@ Move uci2move(std::string move) {
 std::string Position::move_san(const std::string san) {
   if (san == "O-O") {
     std::string uci_notation = white_turn ? "e1g1" : "e8g8";
-    move(uci2move(uci_notation));
+    make_move(uci2move(uci_notation));
     return uci_notation;
   }
   if (san == "O-O-O") {
     std::string uci_notation = white_turn ? "e1c1" : "e8c8";
-    move(uci2move(uci_notation));
+    make_move(uci2move(uci_notation));
     return uci_notation;
   }
   std::string san_notation = san;
@@ -343,7 +343,7 @@ std::string Position::move_san(const std::string san) {
         }
       }
     }
-    move(m);
+    make_move(m);
     return uci_notation;
   }
   throw std::runtime_error("Can't convert move: " + san);

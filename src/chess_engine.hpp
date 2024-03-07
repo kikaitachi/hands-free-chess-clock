@@ -71,7 +71,9 @@ class Position {
 
   /**
    * Make a move specified by Standard Algebraic Notation (SAN) and return
-   * move in Universal Chess Interface (UCI) notation.
+   * move in Universal Chess Interface (UCI) notation. This method will not
+   * check for game ending conditions. It is intended just for converting
+   * SAN to UCI notation.
    */
   std::string move_san(const std::string san);
 
