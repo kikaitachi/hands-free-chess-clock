@@ -1,12 +1,15 @@
 #include "chess_engine.hpp"
 #include "logger.hpp"
 #include "openings.hpp"
+#include <chrono>
 #include <fstream>
 #include <regex>
 
 using namespace openings;
 
 Openings::Openings() {
+  std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
+  int count = 0;
   for (char db = 'a'; db <= 'e'; db++) {
     std::string file_name = "openings/";
     file_name += db;
@@ -16,6 +19,7 @@ Openings::Openings() {
       std::string line;
       std::getline(file, line);  // Discard the first line as it is a header
       while (std::getline(file, line)) {
+        count++;
         chess::Position position;
         line = line.substr(4);  // Discard ECO classification
         std::size_t index = line.find_first_of('\t');
@@ -25,9 +29,10 @@ Openings::Openings() {
         auto words_begin = std::sregex_iterator(line.begin(), line.end(), words_regex);
         auto words_end = std::sregex_iterator();
         Node* curr = root;
-        for (std::sregex_iterator i = words_begin; i != words_end; i++) {
+        for (std::sregex_iterator i = words_begin; i != words_end; ) {
           std::smatch match = *i;
           std::string san_notation = match.str();
+          i++;
           if (!san_notation.ends_with('.')) {  // Filter out move numbers
             std::string uci_notation = position.move_san(san_notation);
             if (auto pos = curr->branches.find(uci_notation); pos != curr->branches.end()) {
@@ -37,8 +42,9 @@ Openings::Openings() {
               curr->branches.emplace(uci_notation, node);
               curr = node;
             }
-            if (std::distance(i, words_end) == 1) {  // Last move in opening
+            if (i == words_end) {  // Last move in opening
               curr->name = name;
+              break;
             }
           }
         }
@@ -47,4 +53,8 @@ Openings::Openings() {
       logger::error("Can't open file: %s", file_name.c_str());
     }
   }
+  std::chrono::steady_clock::time_point end_time = std::chrono::steady_clock::now();
+  logger::info("Loaded %d openings in %dms", count,
+    (int)std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count());
+
 }
