@@ -9,7 +9,8 @@ using namespace openings;
 
 Openings::Openings() {
   std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
-  int count = 0;
+  int opening_count = 0;
+  int move_count = 0;
   for (char db = 'a'; db <= 'e'; db++) {
     std::string file_name = "openings/";
     file_name += db;
@@ -19,7 +20,7 @@ Openings::Openings() {
       std::string line;
       std::getline(file, line);  // Discard the first line as it is a header
       while (std::getline(file, line)) {
-        count++;
+        opening_count++;
         chess::Position position;
         line = line.substr(4);  // Discard ECO classification
         std::size_t index = line.find_first_of('\t');
@@ -34,6 +35,7 @@ Openings::Openings() {
           std::string san_notation = match.str();
           i++;
           if (!san_notation.ends_with('.')) {  // Filter out move numbers
+            move_count++;
             std::string uci_notation = position.move_san(san_notation);
             if (auto pos = curr->branches.find(uci_notation); pos != curr->branches.end()) {
               curr = pos->second;
@@ -54,7 +56,7 @@ Openings::Openings() {
     }
   }
   std::chrono::steady_clock::time_point end_time = std::chrono::steady_clock::now();
-  logger::info("Loaded %d openings in %dms", count,
+  logger::info("Loaded %d openings and %d moves in %dms", opening_count, move_count,
     (int)std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count());
 
 }

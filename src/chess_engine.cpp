@@ -314,15 +314,16 @@ std::string Position::move_san(const std::string san) {
   std::list<Move> moves = generate_legal_moves();
   for (auto& m : moves) {
     std::string uci_notation = m.to_string();
-    std::string figure = figure2notation(pieces[m.from]);
     std::string to = san_notation.substr(san_notation.size() - 2);
     if (!uci_notation.ends_with(to)) {
       continue;
     }
-    if (figure.empty() && !std::islower(san_notation.at(0))) {
-      continue;
-    }
-    if (!figure.empty() && !san_notation.starts_with(figure)) {
+    std::string figure = figure2notation(pieces[m.from]);
+    if (figure.empty()) {
+      if (!std::islower(san_notation.at(0))) {
+        continue;
+      }
+    } else if (!san_notation.starts_with(figure)) {
       continue;
     }
     std::string from = san_notation
