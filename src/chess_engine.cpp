@@ -344,7 +344,7 @@ std::string Position::move_san(const std::string san) {
       }
     }
     move(m);
-    return m.to_string();
+    return uci_notation;
   }
   throw std::runtime_error("Can't convert move: " + san);
 }
