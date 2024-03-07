@@ -1,4 +1,3 @@
-#include "chess_engine.hpp"
 #include "logger.hpp"
 #include "openings.hpp"
 #include <chrono>
@@ -59,4 +58,9 @@ Openings::Openings() {
   logger::info("Loaded %d openings and %d moves in %dms", opening_count, move_count,
     (int)std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count());
 
+}
+
+std::optional<std::string> Openings::find(chess::Position position) {
+  // TODO: implement
+  return std::nullopt;
 }

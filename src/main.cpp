@@ -32,7 +32,7 @@ int main(int argc, char** argv) {
 
   openings::Openings openings;
 
-  Game game(audio_output, uci_engine, piper_process);
+  Game game(openings, audio_output, uci_engine, piper_process);
   CommandParser command_parser;
   SpeechToText speech_to_text;
   AudioCapture audio_capture(speech_to_text.getSampleRate(), audio_input);

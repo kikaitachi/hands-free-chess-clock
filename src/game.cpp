@@ -7,8 +7,8 @@
 
 using namespace std::chrono_literals;
 
-Game::Game(std::string device, std::string command, Process& piper)
-    : text_to_speech(22050, device, piper), uci(create_uci(command, [&](std::string best_move) {
+Game::Game(openings::Openings& openings, std::string device, std::string command, Process& piper)
+    : openings(openings), text_to_speech(22050, device, piper), uci(create_uci(command, [&](std::string best_move) {
       logger::info("Best move from UCI: %s", best_move.c_str());
       text_to_speech.say("The best move is: " + best_move);
     })), video_capture(
@@ -134,7 +134,12 @@ std::string Game::consider_move(SquareChange changes[64]) {
   std::optional<chess::Move> best_new_move = most_likely_move(position, changes);
   if (best_new_move) {
     chess::GameResult result = position.move(best_new_move.value());
-    text_to_speech.say(result.message);
+    std::string message = result.message;
+    std::optional opening = openings.find(position);
+    if (opening) {
+      message += " " + opening.value();
+    }
+    text_to_speech.say(message);
     if (result.winner != chess::Winner::None) {
       playing = false;
     } else {

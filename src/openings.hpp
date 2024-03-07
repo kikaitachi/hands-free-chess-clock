@@ -1,6 +1,7 @@
 #ifndef OPENINGS_H_
 #define OPENINGS_H_
 
+#include "chess_engine.hpp"
 #include <map>
 #include <optional>
 
@@ -15,6 +16,7 @@ class Node {
 class Openings {
  public:
   Openings();
+  std::optional<std::string> find(chess::Position position);
 
  private:
   Node* root = new Node();
