@@ -7,7 +7,7 @@
 
 using namespace std::chrono_literals;
 
-Game::Game(openings::Openings& openings, std::string device, std::string command, Process& piper)
+Game::Game(chess::Openings& openings, std::string device, std::string command, Process& piper)
     : openings(openings), text_to_speech(22050, device, piper), uci(create_uci(command, [&](std::string best_move) {
       logger::info("Best move from UCI: %s", best_move.c_str());
       text_to_speech.say("The best move is: " + best_move);

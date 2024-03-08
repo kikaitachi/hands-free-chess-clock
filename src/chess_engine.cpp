@@ -62,6 +62,10 @@ static std::string figure2notation(Figure figure) {
   }
 }
 
+Move::Move(int from, int to, Figure promoted)
+    : from(from), to(to), promoted(promoted) {
+}
+
 std::string Move::to_string() const {
   return index2string(from) + index2string(to) + figure2notation(promoted);
 }
@@ -116,7 +120,7 @@ std::list<Move> Position::generate_legal_moves() {
         allowed = false;
       } else {
         position = Position(*this);
-        position.move({move.from, (move.from + move.to) / 2, Empty});
+        position.move(Move(move.from, (move.from + move.to) / 2, Empty));
         if (position.is_king_attacked(white_turn))
           allowed = false;
       }
@@ -293,6 +297,10 @@ Move uci2move(std::string move) {
     string2index(move.substr(2, 4)),
     chess::Figure::Empty
   };
+}
+
+GameResult Position::move(std::string uci_notation) {
+  return move(uci2move(uci_notation));
 }
 
 std::string Position::move_san(const std::string san) {

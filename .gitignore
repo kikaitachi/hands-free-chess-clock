@@ -1,6 +1,6 @@
-build
-debug
 .vscode
-models
-openings
-piper
+/build
+/debug
+/models
+/openings
+/piper

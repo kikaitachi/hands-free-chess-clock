@@ -5,7 +5,7 @@
 #include <map>
 #include <optional>
 
-namespace openings {
+namespace chess {
 
 class Node {
  public:
@@ -15,7 +15,7 @@ class Node {
 
 class Openings {
  public:
-  Openings();
+  Openings(std::string path);
   std::optional<std::string> find(chess::Position position);
 
  private:

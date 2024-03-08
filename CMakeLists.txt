@@ -52,6 +52,9 @@ enable_testing()
 add_executable(
   unit_tests
   src/chess_engine.cpp
+  src/logger.cpp
+  src/mpscq.cpp
+  src/openings.cpp
   test/unit_tests.cpp
 )
 target_link_libraries(

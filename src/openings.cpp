@@ -4,14 +4,14 @@
 #include <fstream>
 #include <regex>
 
-using namespace openings;
+using namespace chess;
 
-Openings::Openings() {
+Openings::Openings(std::string path) {
   std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
   int opening_count = 0;
   int move_count = 0;
   for (char db = 'a'; db <= 'e'; db++) {
-    std::string file_name = "openings/";
+    std::string file_name = path + "/";
     file_name += db;
     file_name += ".tsv";
     std::ifstream file(file_name);
@@ -61,6 +61,25 @@ Openings::Openings() {
 }
 
 std::optional<std::string> Openings::find(chess::Position position) {
-  // TODO: implement
+  Node* curr = root;
+  for (auto & position_move : position.moves) {
+    if (curr == nullptr) {
+      return std::nullopt;
+    }
+    std::string uci = position_move.to_string();
+    for (auto& [opening_move, next] : curr->branches) {
+      if (opening_move == uci) {
+        curr = next;
+        if (position_move == position.moves.back()) {
+          if (curr != nullptr && curr->name) {
+            return curr->name;
+          }
+        }
+        goto found;
+      }
+    }
+    return std::nullopt;
+   found:
+  }
   return std::nullopt;
 }

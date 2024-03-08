@@ -37,6 +37,8 @@ class GameResult {
 
 class Move {
  public:
+  Move(int from, int to, Figure promoted);
+
   int from;
   int to;
   Figure promoted;
@@ -68,6 +70,8 @@ class Position {
    * provided behaviour is undefined.
    */
   GameResult move(const Move& move);
+
+  GameResult move(std::string uci_notation);
 
   /**
    * Make a move specified by Standard Algebraic Notation (SAN) and return

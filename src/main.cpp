@@ -30,7 +30,7 @@ int main(int argc, char** argv) {
   };
   Process piper_process(piper_argv);
 
-  openings::Openings openings;
+  chess::Openings openings("openings");
 
   Game game(openings, audio_output, uci_engine, piper_process);
   CommandParser command_parser;

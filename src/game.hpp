@@ -13,7 +13,7 @@
 
 class Game {
  public:
-  Game(openings::Openings& openings, std::string device, std::string command, Process& piper);
+  Game(chess::Openings& openings, std::string device, std::string command, Process& piper);
   bool playing = false;
 
   void ready();
@@ -26,7 +26,7 @@ class Game {
   void who_is_winning();
 
  private:
-  openings::Openings& openings;
+  chess::Openings& openings;
   std::unique_ptr<UniversalChessInterface> uci;
   unsigned int time_white_ms;
   unsigned int time_black_ms;

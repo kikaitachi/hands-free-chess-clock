@@ -2,14 +2,6 @@
 #include "../src/chess_engine.hpp"
 #include <initializer_list>
 
-chess::Move move(std::string move) {
-  return {
-    chess::string2index(move.substr(0, 2)),
-    chess::string2index(move.substr(2, 4)),
-    chess::Figure::Empty
-  };
-}
-
 class Move {
  public:
   std::string move;
@@ -20,7 +12,7 @@ class Move {
 void test_game(std::initializer_list<Move> moves) {
   chess::Position position;
   for (auto& m : moves) {
-    chess::GameResult result = position.move(move(m.move));
+    chess::GameResult result = position.move(m.move);
     EXPECT_EQ(result.winner, m.winner);
     EXPECT_EQ(result.message, m.message);
   }
@@ -37,13 +29,13 @@ TEST(PositionTest, Previous) {
 
   EXPECT_EQ(position1.previous(), std::nullopt);
 
-  position1.move(move("d2d4"));
-  position1.move(move("d7d5"));
+  position1.move("d2d4");
+  position1.move("d7d5");
 
   chess::Position position2 = position1.previous().value();
 
   chess::Position position3;
-  position3.move(move("d2d4"));
+  position3.move("d2d4");
 
   EXPECT_FALSE(position1.equal(position2));
   EXPECT_TRUE(position2.equal(position3));
