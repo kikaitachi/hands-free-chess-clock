@@ -1,9 +1,9 @@
 #include "chess_engine.hpp"
 #include <algorithm>
 #include <cmath>
-#include <exception>
 #include <forward_list>
 #include <map>
+#include <stdexcept>
 
 std::string chess::index2string(int index) {
   int row = index / 8;
