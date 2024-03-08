@@ -15,11 +15,11 @@ jobs:
           sudo apt-get install cmake ninja-build libasound2-dev libopencv-dev
           wget https://apt.llvm.org/llvm.sh
           chmod +x llvm.sh
-          sudo ./llvm.sh
+          sudo ./llvm.sh 18
           wget -qO- https://github.com/microsoft/onnxruntime/releases/download/v1.17.0/onnxruntime-linux-x64-1.17.0.tgz | tar xvz -C ~/
           sudo mkdir -p /usr/local/include/onnxruntime
           sudo mv ~/onnxruntime-linux-x64-1.17.0/include/* /usr/local/include/onnxruntime
           sudo mv ~/onnxruntime-linux-x64-1.17.0/lib/* /usr/local/lib
       - name: Build
         run: |
-          ./build.sh
+          CXX=/usr/bin/clang++-18 ./build.sh
