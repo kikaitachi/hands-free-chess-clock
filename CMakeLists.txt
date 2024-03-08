@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 
 project(hands-free-chess-clock LANGUAGES CXX VERSION 0.1.0)
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 include(CheckLanguage)
