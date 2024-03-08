@@ -47,15 +47,6 @@ class LogEntry {
 
 mpscq::Queue<LogEntry> entries;
 
-std::thread logging_thread([]() {
-  for ( ; ; ) {
-    entries.drain([](auto entry) {
-      entry->print();
-    });
-    std::this_thread::sleep_for(100ms);
-  }
-});
-
 static level current_level = level_debug;
 
 void set_level(level log_level) {
@@ -70,6 +61,17 @@ static bool synchronous_logging = true;
 
 void configure(bool synchronous) {
   synchronous_logging = synchronous;
+  if (synchronous) {
+    std::thread logging_thread([]() {
+      for ( ; ; ) {
+        entries.drain([](auto entry) {
+          entry->print();
+        });
+        std::this_thread::sleep_for(100ms);
+      }
+    });
+    logging_thread.detach();
+  }
 }
 
 #define log(level, message)          \
