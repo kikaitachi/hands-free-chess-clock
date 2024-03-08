@@ -3,7 +3,7 @@
 #include <chrono>
 
 void log_callback(enum ggml_log_level level, const char * text, void * user_data) {
-  logger::debug(std::string(text, strlen(text) - 1));
+  logger::debug("whisper: %.*s", strlen(text) - 1, text);
 }
 
 SpeechToText::SpeechToText() {
