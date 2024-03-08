@@ -126,8 +126,14 @@ std::list<Move> Position::generate_legal_moves() {
       }
     }
     if (allowed) {
-      // TODO: generate all possible promotions
-      legal_moves.push_front(move);
+      if (pieces[move.from] == Pawn && (move.to < 8 || move.to >= 8 * (8 - 1))) {
+        legal_moves.push_front(Move(move.from, move.to, Queen));
+        legal_moves.push_front(Move(move.from, move.to, Rook));
+        legal_moves.push_front(Move(move.from, move.to, Bishop));
+        legal_moves.push_front(Move(move.from, move.to, Knight));
+      } else {
+        legal_moves.push_front(move);
+      }
     }
   }
   return legal_moves;
