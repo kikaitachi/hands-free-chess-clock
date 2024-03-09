@@ -27,6 +27,8 @@ class VideoCapture {
 
   void start();
 
+  void detect_board(cv::Mat& frame, std::string debug_dir);
+
   /**
    * Called when game starts. Assumption is that all pieces are on their
    * initial squares.
@@ -46,6 +48,7 @@ class VideoCapture {
  private:
   cv::Mat frame;
   cv::Mat perspective_transform;
+  cv::Mat img_perspective;
   cv::Mat last_move;
   cv::Ptr<cv::BackgroundSubtractor> bg_sub;
   std::mutex frame_mutex;

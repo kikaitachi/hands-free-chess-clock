@@ -79,24 +79,22 @@ void VideoCapture::start() {
   video_thread.detach();
 }
 
-void VideoCapture::start_game() {
-  std::filesystem::remove_all("debug");
-  std::filesystem::create_directories("debug");
-  // Detect board
+void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
+  std::filesystem::remove_all(debug_dir);
+  std::filesystem::create_directories(debug_dir);
   std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
-  std::lock_guard<std::mutex> guard(frame_mutex);
-  cv::imwrite("debug/start_game_original.jpg", frame);
+  cv::imwrite(debug_dir + "/start_game_original.jpg", frame);
   cv::Mat markers;
   frame.copyTo(markers);
   cv::Mat gray;
   cv::cvtColor(frame, gray, cv::COLOR_BGR2GRAY);
-  cv::imwrite("debug/start_game_gray.jpg", gray);
+  cv::imwrite(debug_dir + "/start_game_gray.jpg", gray);
   cv::Mat blurred;
   cv::medianBlur(gray, blurred, 5);
-  cv::imwrite("debug/start_game_blurred.jpg", blurred);
+  cv::imwrite(debug_dir + "/start_game_blurred.jpg", blurred);
   cv::Mat threshold;
   cv::adaptiveThreshold(blurred, threshold, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 5, 2);
-  cv::imwrite("debug/start_game_threshold.jpg", threshold);
+  cv::imwrite(debug_dir + "/start_game_threshold.jpg", threshold);
   std::vector<std::vector<cv::Point> > contours;
   std::vector<cv::Vec4i> hierarchy;
 
@@ -104,7 +102,7 @@ void VideoCapture::start_game() {
   cv::Mat img_contours;
   frame.copyTo(img_contours);
   cv::drawContours(img_contours, contours, -1, {0, 0, 255}, 1, cv::LINE_AA);
-  cv::imwrite("debug/start_game_contours.jpg", img_contours);
+  cv::imwrite(debug_dir + "/start_game_contours.jpg", img_contours);
 
   cv::Mat img_polygons;
   frame.copyTo(img_polygons);
@@ -168,7 +166,7 @@ void VideoCapture::start_game() {
   for (int i = 0; i < polygons.size(); i++) {
     cv::polylines(img_polygons, {polygons[i]}, true, polygon_colors[i], 1, cv::LINE_AA);
   }
-  cv::imwrite("debug/start_game_polygons.jpg", img_polygons);
+  cv::imwrite(debug_dir + "/start_game_polygons.jpg", img_polygons);
 
   cv::line(markers, topmost_line.value().first, topmost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
   cv::line(markers, bottommost_line.value().first, bottommost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
@@ -196,7 +194,7 @@ void VideoCapture::start_game() {
   cv::Point final_top_right_point(top_right_point.x - distance_top / 2, top_left_point.y);
   cv::circle(markers, final_top_right_point, 8, {255, 0, 255}, -1);
 
-  cv::imwrite("debug/start_game_markers.jpg", markers);
+  cv::imwrite(debug_dir + "/start_game_markers.jpg", markers);
 
   std::vector<cv::Point2f> points_from({
     final_bottom_left_point,
@@ -212,15 +210,20 @@ void VideoCapture::start_game() {
   });
   perspective_transform = cv::getPerspectiveTransform(points_from, points_to);
 
-  cv::Mat img_perspective;
   cv::warpPerspective(
       frame, img_perspective, perspective_transform,
       {VIDEO_HEIGHT, VIDEO_HEIGHT}
   );
-  cv::imwrite("debug/start_game_perspective.jpg", img_perspective);
+  cv::imwrite(debug_dir + "/start_game_perspective.jpg", img_perspective);
   std::chrono::steady_clock::time_point end_time = std::chrono::steady_clock::now();
   logger::info("Detected chess board in %dms",
     (int)std::chrono::duration_cast<std::chrono::milliseconds>(end_time - start_time).count());
+}
+
+void VideoCapture::start_game() {
+  std::lock_guard<std::mutex> guard(frame_mutex);
+
+  detect_board(frame, "debug");
 
   cv::cvtColor(img_perspective, last_move, cv::COLOR_BGR2GRAY);
 
@@ -234,7 +237,6 @@ void VideoCapture::start_game() {
 
 void VideoCapture::resume_game() {
   std::lock_guard<std::mutex> guard(frame_mutex);
-  cv::Mat img_perspective;
   cv::warpPerspective(
       frame, img_perspective, perspective_transform,
       {VIDEO_HEIGHT, VIDEO_HEIGHT}
@@ -277,7 +279,6 @@ void VideoCapture::capture_frames() {
       }
     }
     if (!bg_sub.empty()) {
-      cv::Mat img_perspective;
       cv::warpPerspective(
           frame, img_perspective, perspective_transform,
           {VIDEO_HEIGHT, VIDEO_HEIGHT}
