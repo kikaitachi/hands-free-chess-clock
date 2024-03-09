@@ -199,8 +199,27 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
     }
   }
 
+  cv::Mat labels;
+  std::vector<cv::Point2f> centers_y;
+  std::vector<cv::Point2f> centers;
   for (auto & square : squares) {
+    centers_y.push_back(cv::Point2f(0, square.center_y));
+  }
+  cv::kmeans(centers_y, 8, labels,
+    cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 10, 1.0),
+    3, cv::KMEANS_PP_CENTERS, centers);
+
+  for (int i = 0; i < squares.size(); i++) {
+    Square& square = squares[i];
     cv::polylines(img_polygons, {square.polygon}, true, {0, 255, 0}, 1, cv::LINE_AA);
+    cv::putText(img_polygons,
+      std::to_string(labels.at<int>(i)),
+      {(int)square.center_x, (int)square.center_y},
+      cv::FONT_HERSHEY_COMPLEX,
+      1,
+      {0, 255, 0},
+      1,
+      cv::LINE_AA);
   }
   for (auto & polygon : rejected_polygons) {
     cv::polylines(img_polygons, {polygon}, true, {0, 0, 255}, 1, cv::LINE_AA);
