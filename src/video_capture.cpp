@@ -147,12 +147,10 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
       polygons.push_back(approx);
       std::vector<Line> horizontal_lines;
       std::vector<Line> vertical_lines;
-      std::vector<double> line_lengths;
       for (int i = 0; i < 4; i++) {
         cv::Point pt1 = approx.at<cv::Point>(i, 0);
         cv::Point pt2 = approx.at<cv::Point>((i + 1) % 4, 0);
         Line line(pt1, pt2);
-        line_lengths.push_back(std::sqrt(std::pow(pt2.y - pt1.y, 2) + std::pow(pt2.x - pt1.y, 2)));
         double angle = std::atan2(pt2.y - pt1.y, pt2.x - pt1.x) * 180.0 / M_PI;
         if (
             angle > -5 && angle < 5 ||
@@ -164,8 +162,7 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
           vertical_lines.push_back(line);
         }
       }
-      std::sort(line_lengths.begin(), line_lengths.end());
-      if (horizontal_lines.size() == 2 /*&& line_lengths[0] > line_lengths[3] * 0.45*/) {
+      if (horizontal_lines.size() == 2) {
         std::sort(horizontal_lines.begin(), horizontal_lines.end(), line_top);
         if (!topmost_line || !line_top.operator()(topmost_line.value(), horizontal_lines[0])) {
           topmost_line = horizontal_lines[0];
