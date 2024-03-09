@@ -212,10 +212,16 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
   for (int i = 0; i < squares.size(); i++) {
     Square& square = squares[i];
     cv::polylines(img_polygons, {square.polygon}, true, {0, 255, 0}, 1, cv::LINE_AA);
+    std::string text = std::to_string(labels.at<int>(i));
+    auto font = cv::FONT_HERSHEY_COMPLEX_SMALL;
+    cv::Size text_size = cv::getTextSize(text, font, 1, 1, 0);
     cv::putText(img_polygons,
-      std::to_string(labels.at<int>(i)),
-      {(int)square.center_x, (int)square.center_y},
-      cv::FONT_HERSHEY_COMPLEX,
+      text,
+      {
+        (int)(square.center_x - text_size.width / 2),
+        (int)(square.center_y + text_size.height / 2)
+      },
+      font,
       1,
       {0, 255, 0},
       1,
