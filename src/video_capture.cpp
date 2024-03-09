@@ -17,8 +17,6 @@ bool square_change_sorter(SquareChange const& lhs, SquareChange const& rhs) {
     return lhs.change > rhs.change;
 }
 
-typedef std::pair<cv::Point, cv::Point> Line;
-
 struct {
   bool operator()(Line a, Line b) const {
     return std::min(a.first.y, a.second.y) < std::min(b.first.y, b.second.y);
@@ -74,8 +72,9 @@ VideoCapture::VideoCapture(
     std::function<std::string(SquareChange[64])> on_move_finish
   )
     : on_move_start(on_move_start), on_move_finish(on_move_finish) {
-  // Always keep video capture running, otherwise camera will not be focused
-  // for a few frames on startup
+}
+
+void VideoCapture::start() {
   std::thread video_thread(&VideoCapture::capture_frames, this);
   video_thread.detach();
 }

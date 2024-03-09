@@ -5,6 +5,8 @@
 #include <mutex>
 #include <opencv2/opencv.hpp>
 
+typedef std::pair<cv::Point, cv::Point> Line;
+
 /**
  * How much given square changes between last move and suspected new move.
  */
@@ -22,6 +24,8 @@ class VideoCapture {
     std::function<void()> on_move_start,
     std::function<std::string(SquareChange[64])> on_move_finish
   );
+
+  void start();
 
   /**
    * Called when game starts. Assumption is that all pieces are on their

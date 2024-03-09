@@ -20,6 +20,7 @@ Game::Game(chess::Openings& openings, std::string device, std::string command, P
         return consider_move(changes);
       }
     ) {
+  video_capture.start();
 }
 
 void Game::stop_blinking() {
