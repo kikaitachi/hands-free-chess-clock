@@ -92,13 +92,36 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
   cv::Mat blurred;
   cv::medianBlur(gray, blurred, 5);
   cv::imwrite(debug_dir + "/start_game_blurred.jpg", blurred);
+
   cv::Mat threshold;
-  cv::adaptiveThreshold(blurred, threshold, 255, cv::ADAPTIVE_THRESH_MEAN_C, cv::THRESH_BINARY, 5, 2);
+  cv::threshold(blurred, threshold, 0, 255, cv::THRESH_BINARY + cv::THRESH_OTSU);
   cv::imwrite(debug_dir + "/start_game_threshold.jpg", threshold);
-  std::vector<std::vector<cv::Point> > contours;
+  cv::Mat threshold_inverted;
+  cv::threshold(blurred, threshold_inverted, 0, 255, cv::THRESH_BINARY_INV + cv::THRESH_OTSU);
+  cv::imwrite(debug_dir + "/start_game_threshold_inverted.jpg", threshold_inverted);
+
+  cv::Mat eroded;
+  int erosion_size = 3;
+  cv::Mat element = getStructuringElement(
+    cv::MORPH_RECT,
+    cv::Size(2 * erosion_size + 1, 2 * erosion_size + 1),
+    cv::Point(erosion_size, erosion_size));
+  cv::erode(threshold, eroded, element);
+  cv::imwrite(debug_dir + "/start_game_eroded.jpg", eroded);
+  cv::Mat eroded_inverted;
+  cv::erode(threshold_inverted, eroded_inverted, element);
+  cv::imwrite(debug_dir + "/start_game_eroded_inverted.jpg", eroded_inverted);
+
+  std::vector<std::vector<cv::Point>> contours;
+  std::vector<std::vector<cv::Point>> contours_inverted;
   std::vector<cv::Vec4i> hierarchy;
 
-  cv::findContours(threshold, contours, hierarchy, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
+  cv::findContours(eroded, contours, hierarchy, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
+  cv::findContours(eroded_inverted, contours_inverted, hierarchy, cv::RETR_LIST, cv::CHAIN_APPROX_SIMPLE);
+  contours.insert(
+    contours.end(),
+    std::make_move_iterator(contours_inverted.begin()),
+    std::make_move_iterator(contours_inverted.end()));
   cv::Mat img_contours;
   frame.copyTo(img_contours);
   cv::drawContours(img_contours, contours, -1, {0, 0, 255}, 1, cv::LINE_AA);
@@ -119,7 +142,7 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
       continue;  // Reject contours obviously too big to be board cells
     }
     cv::Mat approx;
-    approxPolyDP(contour, approx, 20, true);
+    approxPolyDP(contour, approx, 10, true);
     if (approx.size().height == 4 && cv::isContourConvex(approx)) {
       polygons.push_back(approx);
       std::vector<Line> horizontal_lines;
