@@ -114,6 +114,10 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
   std::optional<Line> leftmost_line;
   std::optional<Line> rightmost_line;
   for (auto & contour : contours) {
+    cv::Rect bounding_box = cv::boundingRect(contour);
+    if (bounding_box.height > VIDEO_HEIGHT / 4) {
+      continue;  // Reject contours obviously too big to be board cells
+    }
     cv::Mat approx;
     approxPolyDP(contour, approx, 20, true);
     if (approx.size().height == 4 && cv::isContourConvex(approx)) {
