@@ -13,6 +13,14 @@
 
 using namespace std::chrono_literals;
 
+class Square {
+ public:
+  std::vector<cv::Point> polygon;
+  double center_x, center_y;
+  std::optional<int> row;
+  std::optional<int> col;
+};
+
 bool square_change_sorter(SquareChange const& lhs, SquareChange const& rhs) {
     return lhs.change > rhs.change;
 }
@@ -129,8 +137,8 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
 
   cv::Mat img_polygons;
   frame.copyTo(img_polygons);
-  std::vector<std::vector<cv::Point>> polygons;
-  std::vector<cv::Scalar> polygon_colors;
+  std::vector<Square> squares;
+  std::vector<std::vector<cv::Point>> rejected_polygons;
 
   std::optional<Line> topmost_line;
   std::optional<Line> bottommost_line;
@@ -144,7 +152,6 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
     cv::Mat approx;
     approxPolyDP(contour, approx, 10, true);
     if (approx.size().height == 4 && cv::isContourConvex(approx)) {
-      polygons.push_back(approx);
       std::vector<Line> horizontal_lines;
       std::vector<Line> vertical_lines;
       for (int i = 0; i < 4; i++) {
@@ -180,15 +187,23 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
           rightmost_line = vertical_lines[1];
         }
         cv::polylines(markers, approx, true, {0, 255, 0}, 1, cv::LINE_AA);
-        polygon_colors.push_back({0, 255, 0});
+        cv::Moments m = cv::moments(contour, false);
+        squares.push_back({
+          approx,
+          m.m10 / m.m00,
+          m.m01 / m.m00
+        });
       } else {
-        polygon_colors.push_back({0, 0, 255});
+        rejected_polygons.push_back(approx);
       }
     }
   }
 
-  for (int i = 0; i < polygons.size(); i++) {
-    cv::polylines(img_polygons, {polygons[i]}, true, polygon_colors[i], 1, cv::LINE_AA);
+  for (auto & square : squares) {
+    cv::polylines(img_polygons, {square.polygon}, true, {0, 255, 0}, 1, cv::LINE_AA);
+  }
+  for (auto & polygon : rejected_polygons) {
+    cv::polylines(img_polygons, {polygon}, true, {0, 0, 255}, 1, cv::LINE_AA);
   }
   cv::imwrite(debug_dir + "/start_game_polygons.jpg", img_polygons);
 
