@@ -92,6 +92,40 @@ void VideoCapture::start() {
   video_thread.detach();
 }
 
+static int discover_columns_in_row(
+    std::vector<Square>& squares, Square* prev, int start_index, int direction) {
+  for (int i = start_index; i < squares.size() && direction == 1 || i >= 0 && direction == -1; i += direction) {
+    Square& square = squares[i];
+    if (square.row != prev->row) {
+      return i;
+    }
+    cv::Rect bounding_box = cv::boundingRect(prev->polygon);
+    square.col = prev->col.value() +
+      (int)((square.center_x - prev->center_x) / bounding_box.width);
+    prev = &square;
+  }
+  return -1;
+}
+
+static int find_square_bellow_known_column(
+    std::vector<Square>& squares, int start_index) {
+  for (int i = start_index; i < squares.size(); i++) {
+    Square& square = squares[i];
+    cv::Rect bounding_box = cv::boundingRect(square.polygon);
+    bounding_box.y -= bounding_box.height;
+    for (int k = start_index - 1; k >= 0; k--) {
+      if (squares[k].center_x > bounding_box.x &&
+          squares[k].center_x < bounding_box.x + bounding_box.width &&
+          squares[k].center_y > bounding_box.y &&
+          squares[k].center_y < bounding_box.y + bounding_box.height) {
+        square.col = squares[k].col;
+        return i;
+      }
+    }
+  }
+  return -1;
+}
+
 void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
   std::filesystem::remove_all(debug_dir);
   std::filesystem::create_directories(debug_dir);
@@ -267,17 +301,17 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
     return s1.row < s2.row;
   });
   squares[0].col = 0;
-  Square* prev_square = &squares[0];
-  for (int i = 0; i < squares.size(); i++) {
-    Square& square = squares[i];
-    if (square.row != prev_square->row.value()) {
-      break;  // TODO: implement
-    } else {
-      cv::Rect bounding_box = cv::boundingRect(prev_square->polygon);
-      square.col = prev_square->col.value() +
-        (int)((square.center_x - prev_square->center_x) / bounding_box.width);
-      prev_square = &square;
+  int next_row = discover_columns_in_row(squares, &squares[0], 1, 1);
+  while (next_row != -1) {
+    int known_column = find_square_bellow_known_column(squares, next_row);
+    if (known_column == -1) {
+      break;
     }
+    if (known_column > next_row) {  // Fill backwards
+      discover_columns_in_row(squares, &squares[known_column], known_column - 1, -1);
+    }
+    // Fill forward
+    next_row = discover_columns_in_row(squares, &squares[known_column], known_column + 1, 1);
   }
   for (int i = 0; i < squares.size(); i++) {
     Square& square = squares[i];
