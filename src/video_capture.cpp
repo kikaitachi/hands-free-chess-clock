@@ -225,6 +225,7 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
   });
 
   std::vector<cv::Vec2f> top_points;
+  std::vector<cv::Vec2f> bottom_points;
 
   for (int i = 0; i < squares.size(); i++) {
     Square& square = squares[i];
@@ -242,6 +243,17 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
             cv::Vec2f(
               square.topmost_line.value().second.x,
               square.topmost_line.value().second.y - erosion_size
+            ));
+        } else if (j == 7) {
+          bottom_points.push_back(
+            cv::Vec2f(
+              square.bottommost_line.value().first.x,
+              square.bottommost_line.value().first.y + erosion_size
+            ));
+          bottom_points.push_back(
+            cv::Vec2f(
+              square.bottommost_line.value().second.x,
+              square.bottommost_line.value().second.y + erosion_size
             ));
         }
         break;
@@ -262,6 +274,7 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
       1,
       cv::LINE_AA);
   }
+
   cv::Vec4f top_line;
   cv::fitLine(top_points, top_line, cv::DIST_L2, 0, 0.01, 0.01);
   double vx = top_line[0];
@@ -273,6 +286,18 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
     {(int)(x0 - m * vx), (int)(y0 - m * vy)},
     {(int)(x0 + m * vx), (int)(y0 + m * vy)},
     {255, 0, 0}, 1, cv::LINE_AA);
+
+  cv::Vec4f bottom_line;
+  cv::fitLine(bottom_points, bottom_line, cv::DIST_L2, 0, 0.01, 0.01);
+  vx = bottom_line[0];
+  vy = bottom_line[1];
+  x0 = bottom_line[2];
+  y0 = bottom_line[3];
+  cv::line(markers,
+    {(int)(x0 - m * vx), (int)(y0 - m * vy)},
+    {(int)(x0 + m * vx), (int)(y0 + m * vy)},
+    {255, 0, 0}, 1, cv::LINE_AA);
+
   for (auto & polygon : rejected_polygons) {
     cv::polylines(img_polygons, {polygon}, true, {0, 0, 255}, 1, cv::LINE_AA);
   }
