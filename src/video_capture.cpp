@@ -99,9 +99,9 @@ static int discover_columns_in_row(
     if (square.row != prev->row) {
       return i;
     }
-    cv::Rect bounding_box = cv::boundingRect(prev->polygon);
+    double top_line_len = prev->topmost_line->first.x - prev->topmost_line->second.x;
     square.col = prev->col.value() +
-      (int)((square.center_x - prev->center_x) / bounding_box.width);
+      (int)((square.center_x - prev->center_x) / top_line_len);
     prev = &square;
   }
   return -1;
@@ -320,7 +320,7 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
       text += "," + std::to_string(square.col.value());
     }
     auto font = cv::FONT_HERSHEY_COMPLEX_SMALL;
-    cv::Size text_size = cv::getTextSize(text, font, 1, 1, 0);
+    cv::Size text_size = cv::getTextSize(text, font, 0.5, 1, 0);
     cv::putText(img_polygons,
       text,
       {
@@ -328,7 +328,7 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
         (int)(square.center_y + text_size.height / 2)
       },
       font,
-      1,
+      0.5,
       {0, 255, 0},
       1,
       cv::LINE_AA);
