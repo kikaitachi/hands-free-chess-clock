@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <filesystem>
+#include <map>
 #include <numeric>
 #include <optional>
 #include <stdexcept>
@@ -313,11 +314,37 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
     // Fill forward
     next_row = discover_columns_in_row(squares, &squares[known_column], known_column + 1, 1);
   }
+  std::map<int, int> col2count;
+  for (auto& square : squares) {
+    if (square.col.has_value()) {
+      col2count[square.col.value()] += 1;
+    }
+  }
+  std::vector<std::pair<int, int>> col_histogram;
+  for (auto& [col, count] : col2count) {
+    col_histogram.push_back({col, count});
+  }
+  while (col_histogram.size() > 4) {
+    if (col_histogram.front().second < col_histogram.back().second) {
+      col_histogram.erase(col_histogram.begin());
+    } else {
+      col_histogram.erase(col_histogram.end());
+    }
+  }
+
+  // Draw square labels
   for (int i = 0; i < squares.size(); i++) {
     Square& square = squares[i];
     std::string text = std::to_string(square.row.value());
+    bool deleted_column = true;
     if (square.col.has_value()) {
       text += "," + std::to_string(square.col.value());
+      for (auto& [col, _] : col_histogram) {
+        if (col == square.col.value()) {
+          deleted_column = false;
+          break;
+        }
+      }
     }
     auto font = cv::FONT_HERSHEY_COMPLEX_SMALL;
     cv::Size text_size = cv::getTextSize(text, font, 0.5, 1, 0);
@@ -329,7 +356,7 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
       },
       font,
       0.5,
-      {0, 255, 0},
+      {0, 255, deleted_column ? 255.0 : 0.0},
       1,
       cv::LINE_AA);
   }
