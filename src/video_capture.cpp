@@ -259,8 +259,7 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
     return centers[i1].y < centers[i2].y;
   });
 
-  std::vector<cv::Vec2f> top_points;
-  std::vector<cv::Vec2f> bottom_points;
+  std::vector<cv::Vec2f> top_points, bottom_points, left_points, right_points;
 
   for (int i = 0; i < squares.size(); i++) {
     Square& square = squares[i];
@@ -342,6 +341,17 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
       for (auto& [col, _] : col_histogram) {
         if (col == square.col.value()) {
           deleted_column = false;
+          if (col == col_histogram.front().first) {
+            left_points.push_back(cv::Vec2f(
+              square.leftmost_line.value().first.x - erosion_size,
+              square.leftmost_line.value().first.y
+            ));
+          } else if (col == col_histogram.back().first) {
+            right_points.push_back(cv::Vec2f(
+              square.rightmost_line.value().first.x + erosion_size,
+              square.rightmost_line.value().first.y
+            ));
+          }
           break;
         }
       }
@@ -390,15 +400,38 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
     bottommost_line.value().first, bottommost_line.value().second,
     {255, 0, 0}, 1, cv::LINE_AA);
 
+  cv::Vec4f left_line;
+  cv::fitLine(left_points, left_line, cv::DIST_L2, 0, 0.01, 0.01);
+  vx = left_line[0];
+  vy = left_line[1];
+  x0 = left_line[2];
+  y0 = left_line[3];
+  leftmost_line = {
+    {(int)(x0 - m * vx), (int)(y0 - m * vy)},
+    {(int)(x0 + m * vx), (int)(y0 + m * vy)}
+  };
+  cv::line(markers,
+    leftmost_line.value().first, leftmost_line.value().second,
+    {255, 0, 0}, 1, cv::LINE_AA);
+
+  cv::Vec4f right_line;
+  cv::fitLine(right_points, right_line, cv::DIST_L2, 0, 0.01, 0.01);
+  vx = right_line[0];
+  vy = right_line[1];
+  x0 = right_line[2];
+  y0 = right_line[3];
+  rightmost_line = {
+    {(int)(x0 - m * vx), (int)(y0 - m * vy)},
+    {(int)(x0 + m * vx), (int)(y0 + m * vy)}
+  };
+  cv::line(markers,
+    rightmost_line.value().first, rightmost_line.value().second,
+    {255, 0, 0}, 1, cv::LINE_AA);
+
   for (auto & polygon : rejected_polygons) {
     cv::polylines(img_polygons, {polygon}, true, {0, 0, 255}, 1, cv::LINE_AA);
   }
   cv::imwrite(debug_dir + "/start_game_polygons.jpg", img_polygons);
-
-  cv::line(markers, topmost_line.value().first, topmost_line.value().second, {255, 0, 0}, 1, cv::LINE_AA);
-  cv::line(markers, bottommost_line.value().first, bottommost_line.value().second, {255, 0, 0}, 1, cv::LINE_AA);
-  cv::line(markers, leftmost_line.value().first, leftmost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
-  cv::line(markers, rightmost_line.value().first, rightmost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
 
   cv::Point bottom_left_point = line_intersection(leftmost_line.value(), bottommost_line.value());
   cv::circle(markers, bottom_left_point, 8, {0, 0, 255}, -1);
