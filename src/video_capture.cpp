@@ -197,10 +197,10 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
           approx,
           m.m10 / m.m00,
           m.m01 / m.m00,
-          topmost_line,
-          bottommost_line,
-          leftmost_line,
-          rightmost_line
+          horizontal_lines[0],
+          horizontal_lines[1],
+          vertical_lines[0],
+          vertical_lines[1]
         });
       } else {
         rejected_polygons.push_back(approx);
@@ -282,9 +282,12 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
   double x0 = top_line[2];
   double y0 = top_line[3];
   double m = 1000;
-  cv::line(markers,
+  topmost_line = {
     {(int)(x0 - m * vx), (int)(y0 - m * vy)},
-    {(int)(x0 + m * vx), (int)(y0 + m * vy)},
+    {(int)(x0 + m * vx), (int)(y0 + m * vy)}
+  };
+  cv::line(markers,
+    topmost_line.value().first, topmost_line.value().second,
     {255, 0, 0}, 1, cv::LINE_AA);
 
   cv::Vec4f bottom_line;
@@ -293,9 +296,12 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
   vy = bottom_line[1];
   x0 = bottom_line[2];
   y0 = bottom_line[3];
-  cv::line(markers,
+  bottommost_line = {
     {(int)(x0 - m * vx), (int)(y0 - m * vy)},
-    {(int)(x0 + m * vx), (int)(y0 + m * vy)},
+    {(int)(x0 + m * vx), (int)(y0 + m * vy)}
+  };
+  cv::line(markers,
+    bottommost_line.value().first, bottommost_line.value().second,
     {255, 0, 0}, 1, cv::LINE_AA);
 
   for (auto & polygon : rejected_polygons) {
@@ -303,8 +309,8 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
   }
   cv::imwrite(debug_dir + "/start_game_polygons.jpg", img_polygons);
 
-  cv::line(markers, topmost_line.value().first, topmost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
-  cv::line(markers, bottommost_line.value().first, bottommost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
+  cv::line(markers, topmost_line.value().first, topmost_line.value().second, {255, 0, 0}, 1, cv::LINE_AA);
+  cv::line(markers, bottommost_line.value().first, bottommost_line.value().second, {255, 0, 0}, 1, cv::LINE_AA);
   cv::line(markers, leftmost_line.value().first, leftmost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
   cv::line(markers, rightmost_line.value().first, rightmost_line.value().second, {0, 0, 255}, 5, cv::LINE_AA);
 
