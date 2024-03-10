@@ -442,16 +442,26 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
   cv::Point top_right_point = line_intersection(rightmost_line.value(), topmost_line.value());
   cv::circle(markers, top_right_point, 8, {0, 0, 255}, -1);
 
-  int distance_bottom = bottom_left_point.x - bottom_right_point.x;
-  cv::Point final_bottom_left_point(bottom_left_point.x + distance_bottom / 2, bottom_left_point.y);
+  int distance_bottom_x = bottom_left_point.x - bottom_right_point.x;
+  int distance_bottom_y = bottom_left_point.y - bottom_right_point.y;
+  cv::Point final_bottom_left_point(
+    bottom_left_point.x + distance_bottom_x / 2,
+    bottom_left_point.y + distance_bottom_y / 2);
   cv::circle(markers, final_bottom_left_point, 8, {255, 0, 255}, -1);
-  cv::Point final_bottom_right_point(bottom_right_point.x - distance_bottom / 2, bottom_left_point.y);
+  cv::Point final_bottom_right_point(
+    bottom_right_point.x - distance_bottom_x / 2,
+    bottom_right_point.y - distance_bottom_y / 2);
   cv::circle(markers, final_bottom_right_point, 8, {255, 0, 255}, -1);
 
-  int distance_top = top_left_point.x - top_right_point.x;
-  cv::Point final_top_left_point(top_left_point.x + distance_top / 2, top_left_point.y);
+  int distance_top_x = top_left_point.x - top_right_point.x;
+  int distance_top_y = top_left_point.y - top_right_point.y;
+  cv::Point final_top_left_point(
+    top_left_point.x + distance_top_x / 2,
+    top_left_point.y + distance_top_y / 2);
   cv::circle(markers, final_top_left_point, 8, {255, 0, 255}, -1);
-  cv::Point final_top_right_point(top_right_point.x - distance_top / 2, top_left_point.y);
+  cv::Point final_top_right_point(
+    top_right_point.x - distance_top_x / 2,
+    top_right_point.y - distance_top_y / 2);
   cv::circle(markers, final_top_right_point, 8, {255, 0, 255}, -1);
 
   cv::imwrite(debug_dir + "/start_game_markers.jpg", markers);
