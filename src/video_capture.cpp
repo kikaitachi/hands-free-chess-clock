@@ -259,7 +259,32 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
         break;
       }
     }
+  }
+  std::stable_sort(squares.begin(), squares.end(), [](const Square& s1, const Square& s2) {
+    if (s1.row == s2.row) {
+      return s1.center_x < s2.center_x;
+    }
+    return s1.row < s2.row;
+  });
+  squares[0].col = 0;
+  Square* prev_square = &squares[0];
+  for (int i = 0; i < squares.size(); i++) {
+    Square& square = squares[i];
+    if (square.row != prev_square->row.value()) {
+      break;  // TODO: implement
+    } else {
+      cv::Rect bounding_box = cv::boundingRect(prev_square->polygon);
+      square.col = prev_square->col.value() +
+        (int)((square.center_x - prev_square->center_x) / bounding_box.width);
+      prev_square = &square;
+    }
+  }
+  for (int i = 0; i < squares.size(); i++) {
+    Square& square = squares[i];
     std::string text = std::to_string(square.row.value());
+    if (square.col.has_value()) {
+      text += "," + std::to_string(square.col.value());
+    }
     auto font = cv::FONT_HERSHEY_COMPLEX_SMALL;
     cv::Size text_size = cv::getTextSize(text, font, 1, 1, 0);
     cv::putText(img_polygons,
