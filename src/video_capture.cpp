@@ -3,6 +3,7 @@
 #include <algorithm>
 #include <cmath>
 #include <filesystem>
+#include <numeric>
 #include <optional>
 #include <stdexcept>
 #include <thread>
@@ -209,10 +210,23 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
     cv::TermCriteria(cv::TermCriteria::EPS + cv::TermCriteria::COUNT, 10, 1.0),
     3, cv::KMEANS_PP_CENTERS, centers);
 
+  std::vector<int> idx(centers.size());
+  std::iota(idx.begin(), idx.end(), 0);
+  std::stable_sort(idx.begin(), idx.end(), [&centers](int i1, int i2) {
+    return centers[i1].y < centers[i2].y;
+  });
+
   for (int i = 0; i < squares.size(); i++) {
     Square& square = squares[i];
     cv::polylines(img_polygons, {square.polygon}, true, {0, 255, 0}, 1, cv::LINE_AA);
-    std::string text = std::to_string(labels.at<int>(i));
+    int index = -1;
+    for (int j = 0; j < 8; j++) {
+      if (labels.at<int>(i) == idx[j]) {
+        index = j;
+        break;
+      }
+    }
+    std::string text = std::to_string(index);
     auto font = cv::FONT_HERSHEY_COMPLEX_SMALL;
     cv::Size text_size = cv::getTextSize(text, font, 1, 1, 0);
     cv::putText(img_polygons,
