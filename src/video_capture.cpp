@@ -18,6 +18,10 @@ class Square {
  public:
   std::vector<cv::Point> polygon;
   double center_x, center_y;
+  std::optional<Line> topmost_line;
+  std::optional<Line> bottommost_line;
+  std::optional<Line> leftmost_line;
+  std::optional<Line> rightmost_line;
   std::optional<int> row;
   std::optional<int> col;
 };
@@ -192,7 +196,11 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
         squares.push_back({
           approx,
           m.m10 / m.m00,
-          m.m01 / m.m00
+          m.m01 / m.m00,
+          topmost_line,
+          bottommost_line,
+          leftmost_line,
+          rightmost_line
         });
       } else {
         rejected_polygons.push_back(approx);
@@ -216,17 +224,30 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
     return centers[i1].y < centers[i2].y;
   });
 
+  std::vector<cv::Vec2f> top_points;
+
   for (int i = 0; i < squares.size(); i++) {
     Square& square = squares[i];
     cv::polylines(img_polygons, {square.polygon}, true, {0, 255, 0}, 1, cv::LINE_AA);
-    int index = -1;
     for (int j = 0; j < 8; j++) {
       if (labels.at<int>(i) == idx[j]) {
-        index = j;
+        square.row = j;
+        if (j == 0) {
+          top_points.push_back(
+            cv::Vec2f(
+              square.topmost_line.value().first.x,
+              square.topmost_line.value().first.y - erosion_size
+            ));
+          top_points.push_back(
+            cv::Vec2f(
+              square.topmost_line.value().second.x,
+              square.topmost_line.value().second.y - erosion_size
+            ));
+        }
         break;
       }
     }
-    std::string text = std::to_string(index);
+    std::string text = std::to_string(square.row.value());
     auto font = cv::FONT_HERSHEY_COMPLEX_SMALL;
     cv::Size text_size = cv::getTextSize(text, font, 1, 1, 0);
     cv::putText(img_polygons,
@@ -241,6 +262,17 @@ void VideoCapture::detect_board(cv::Mat& frame, std::string debug_dir) {
       1,
       cv::LINE_AA);
   }
+  cv::Vec4f top_line;
+  cv::fitLine(top_points, top_line, cv::DIST_L2, 0, 0.01, 0.01);
+  double vx = top_line[0];
+  double vy = top_line[1];
+  double x0 = top_line[2];
+  double y0 = top_line[3];
+  double m = 1000;
+  cv::line(markers,
+    {(int)(x0 - m * vx), (int)(y0 - m * vy)},
+    {(int)(x0 + m * vx), (int)(y0 + m * vy)},
+    {255, 0, 0}, 1, cv::LINE_AA);
   for (auto & polygon : rejected_polygons) {
     cv::polylines(img_polygons, {polygon}, true, {0, 0, 255}, 1, cv::LINE_AA);
   }
