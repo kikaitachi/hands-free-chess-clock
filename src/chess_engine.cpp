@@ -326,7 +326,7 @@ std::string Position::move_san(const std::string san) {
   san_notation.erase(std::remove(san_notation.begin(), san_notation.end(), '+'), san_notation.end());
   san_notation.erase(std::remove(san_notation.begin(), san_notation.end(), 'x'), san_notation.end());
   std::list<Move> moves = generate_legal_moves();
-  for (auto& m : moves) {
+  for (const auto& m : moves) {
     std::string uci_notation = m.to_string();
     std::string to = san_notation.substr(san_notation.size() - 2);
     if (!uci_notation.ends_with(to)) {
