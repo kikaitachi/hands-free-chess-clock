@@ -218,11 +218,6 @@ bool Position::is_king_attacked(bool white_turn) {
 
 void Position::make_move(const Move& move) {
   Figure piece = pieces[move.from];
-  if (piece == Pawn || pieces[move.to] != Empty) {
-    prev_positions.clear();
-  } else {
-    prev_positions.push_front(*this);
-  }
   passing_pawn = 0;
   if (piece == King) {
     if (move.from - move.to == 2) {
@@ -263,6 +258,11 @@ void Position::make_move(const Move& move) {
 
 GameResult Position::move(const Move& move) {
   moves.push_back(move);
+  if (pieces[move.from] == Pawn || pieces[move.to] != Empty) {
+    prev_positions.clear();
+  } else {
+    prev_positions.push_front(*this);
+  }
   make_move(move);
   int piece_count = 0;
   for (auto& piece : pieces) {
