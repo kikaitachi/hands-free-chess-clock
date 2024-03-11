@@ -2,7 +2,6 @@
 #include "openings.hpp"
 #include <chrono>
 #include <fstream>
-#include <regex>
 
 using namespace chess;
 
@@ -10,7 +9,6 @@ Openings::Openings(std::string path) {
   std::chrono::steady_clock::time_point start_time = std::chrono::steady_clock::now();
   int opening_count = 0;
   int move_count = 0;
-  std::regex words_regex("[^\\s]+");
   for (char db = 'a'; db <= 'e'; db++) {
     std::string file_name = path + "/";
     file_name += db;
@@ -25,13 +23,11 @@ Openings::Openings(std::string path) {
         line = line.substr(4);  // Discard ECO classification
         std::size_t index = line.find_first_of('\t');
         std::string name = line.substr(0, index);
-        line = line.substr(index + 1);
-        auto words_begin = std::sregex_iterator(line.begin(), line.end(), words_regex);
-        auto words_end = std::sregex_iterator();
         Node* curr = root;
-        for (std::sregex_iterator i = words_begin; i != words_end; i++) {
-          std::smatch match = *i;
-          std::string san_notation = match.str();
+        for (int i = index + 1, end = line.size(); i < end; ) {
+          index = line.find_first_of(' ', i);
+          std::string san_notation = line.substr(i, index == line.npos ? end - i : index - i);
+          i += san_notation.size() + 1;
           if (!san_notation.ends_with('.')) {  // Filter out move numbers
             move_count++;
             std::string uci_notation = position.move_san(san_notation);
