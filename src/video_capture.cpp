@@ -541,7 +541,7 @@ void VideoCapture::capture_frames() {
       cv::Scalar mean, stddev;
       cv::meanStdDev(laplacian, mean, stddev);
       double variance = stddev.val[0] * stddev.val[0];
-      if (variance < 100) {
+      if (variance < 80) {
         cv::imwrite("debug/blurry.jpg", frame);
         logger::info("Rejecting blurry image with variance: %f", variance);
       } else {

@@ -31,7 +31,6 @@ class Game {
   unsigned int time_white_ms;
   unsigned int time_black_ms;
   unsigned int increment_ms;
-  bool white_turn;
   chess::Position position;
   Display display;
   TextToSpeech text_to_speech;

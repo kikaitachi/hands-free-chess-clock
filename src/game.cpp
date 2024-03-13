@@ -37,7 +37,6 @@ void Game::ready() {
 void Game::start(unsigned int time_ms, unsigned int increment_ms) {
   time_white_ms = time_black_ms = time_ms;
   this->increment_ms = increment_ms;
-  white_turn = true;
   position.reset();
   std::string time = format_time(time_ms);
   stop_blinking();
@@ -153,6 +152,7 @@ std::string Game::consider_move(SquareChange changes[64]) {
     std::optional<chess::Move> take_back_move = most_likely_move(previous.value(), changes);
     if (take_back_move) {
       position = previous.value();
+      switch_clock();
       text_to_speech.say("Take back " + take_back_move.value().to_string());
       return "take back";
     }
@@ -178,14 +178,13 @@ void Game::resume() {
 }
 
 void Game::switch_clock() {
-  if (white_turn) {
+  if (!position.white_turn) {
     time_white_ms += increment_ms;
     display.set_white(format_time(time_white_ms));
   } else {
     time_black_ms += increment_ms;
     display.set_black(format_time(time_black_ms));
   }
-  white_turn = !white_turn;
 }
 
 void Game::update_clock() {
@@ -195,7 +194,7 @@ void Game::update_clock() {
     std::this_thread::sleep_for(50ms);
     std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
     unsigned int millis = std::chrono::duration_cast<std::chrono::milliseconds>(now - last_clock_change).count();
-    if (white_turn) {
+    if (position.white_turn) {
       if (time_white_ms > millis) {
         time_white_ms -= millis;
       } else {
