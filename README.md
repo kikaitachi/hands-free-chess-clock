@@ -88,4 +88,4 @@ This project directly or indirectly uses these open source projects:
 * [Stockfish](https://github.com/official-stockfish/Stockfish)
 * [whisper.cpp](https://github.com/ggerganov/whisper.cpp)
 
-Thanks to [Nvidia](https://www.nvidia.com/) for providing [Jetson Orin Nano Developer Kit](https://developer.nvidia.com/embedded/learn/get-started-jetson-orin-nano-devkit) via [AI Innovation Challenge](https://www.hackster.io/contests/SparkFun-NVIDIA-AI-Innovation-Challenge) contest.
+Thanks to [Nvidia](https://www.nvidia.com/) for providing [Jetson Orin Nano Developer Kit](https://developer.nvidia.com/embedded/learn/get-started-jetson-orin-nano-devkit) via [AI Innovation Challenge](https://www.hackster.io/contests/SparkFun-NVIDIA-AI-Innovation-Challenge) contest and to hackster.io and SparkFun for organizing and sponsoring it.
