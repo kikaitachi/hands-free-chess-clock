@@ -106,6 +106,7 @@ void Position::reset() {
   move_number = 1;
   prev_positions.clear();
   prev_positions.push_front(*this);
+  moves.clear();
 }
 
 std::list<Move> Position::generate_legal_moves() {
