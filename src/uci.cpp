@@ -4,8 +4,6 @@
 #include <regex>
 #include <thread>
 
-using namespace std::chrono_literals;
-
 UniversalChessInterface::UniversalChessInterface(
       char const *argv[],
       std::function<void(const std::string best_move)> on_best_move
@@ -51,7 +49,9 @@ void UniversalChessInterface::best_move(const chess::Position& position) {
   process.write_line("stop");
 }
 
-std::optional<double> UniversalChessInterface::get_score(const chess::Position& position) {
+std::optional<double> UniversalChessInterface::get_score(
+    const chess::Position& position,
+    const std::chrono::milliseconds timeout) {
   return std::nullopt;
 }
 
@@ -75,15 +75,17 @@ void Stockfish::process_line(std::string line) {
   }
 }
 
-std::optional<double> Stockfish::get_score(const chess::Position& position) {
+std::optional<double> Stockfish::get_score(
+    const chess::Position& position,
+    const std::chrono::milliseconds timeout) {
   send_position(position);
   std::unique_lock<std::mutex> lock(score_mutex);
   score = std::nullopt;
   process.write_line("eval");
-  if (score_found.wait_for(lock, 1s) == std::cv_status::no_timeout) {
+  if (score_found.wait_for(lock, timeout) == std::cv_status::no_timeout) {
     return score;
   }
-  logger::warn("Timeout while waiting to get current position score");
+  logger::warn("Timeout while waiting to get position score");
   return std::nullopt;
 }
 

@@ -4,10 +4,13 @@
 #include "chess_engine.hpp"
 #include "process.hpp"
 #include <condition_variable>
+#include <chrono>
 #include <functional>
 #include <memory>
 #include <mutex>
 #include <optional>
+
+using namespace std::chrono_literals;
 
 class UniversalChessInterface {
  public:
@@ -22,7 +25,9 @@ class UniversalChessInterface {
    */
   void best_move(const chess::Position& position);
 
-  virtual std::optional<double> get_score(const chess::Position& position);
+  virtual std::optional<double> get_score(
+    const chess::Position& position,
+    const std::chrono::milliseconds timeout = 1s);
 
  protected:
   Process process;
@@ -41,7 +46,9 @@ class Stockfish: public UniversalChessInterface {
     char const *argv[],
     std::function<void(const std::string best_move)> on_best_move
   );
-  virtual std::optional<double> get_score(const chess::Position& position) override;
+  virtual std::optional<double> get_score(
+    const chess::Position& position,
+    const std::chrono::milliseconds timeout) override;
 
  protected:
   virtual void process_line(std::string line) override;
