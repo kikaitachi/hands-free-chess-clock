@@ -58,13 +58,16 @@ std::list<chess::Score> UniversalChessInterface::evaluate_moves(
     const std::list<chess::Move>& moves,
     const int depth,
     const std::chrono::milliseconds timeout) {
+  std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+  end += timeout;
   send_position(position);
   std::list<chess::Score> result;
   std::unique_lock<std::mutex> lock(score_mutex);
   for (auto& move : moves) {
     process.write_line("go depth " + std::to_string(depth) + " searchmoves " + move.to_string());
     for ( ; ; ) {
-      if (score_found.wait_for(lock, timeout) == std::cv_status::no_timeout) {
+      std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+      if (score_found.wait_for(lock, end - now) == std::cv_status::no_timeout) {
         if (score.has_value()) {
           if (score.value().depth == depth) {
             result.push_back(score.value());
