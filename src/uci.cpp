@@ -27,7 +27,11 @@ void UniversalChessInterface::read() {
 }
 
 void UniversalChessInterface::process_line(std::string line) {
-  if (line.starts_with("bestmove ")) {
+  if (line.starts_with("info depth")) {
+    // TODO: parse
+    std::lock_guard guard(score_mutex);
+    // TODO: set score
+  } else if (line.starts_with("bestmove ")) {
     on_best_move(line.substr(9, 4));
   }
 }
@@ -47,6 +51,25 @@ void UniversalChessInterface::best_move(const chess::Position& position) {
   process.write_line("go infinite");
   std::this_thread::sleep_for(1s);
   process.write_line("stop");
+}
+
+std::list<int> UniversalChessInterface::evaluate_moves(
+    const chess::Position& position,
+    const std::list<chess::Move>& moves,
+    const int depth,
+    const std::chrono::milliseconds timeout) {
+  send_position(position);
+  std::list<int> result;
+  std::unique_lock<std::mutex> lock(score_mutex);
+  for (auto& move : moves) {
+    process.write_line("go depth " + std::to_string(depth) + " searchmoves " + move.to_string());
+    if (score_found.wait_for(lock, timeout) == std::cv_status::no_timeout) {
+      result.push_back(score);
+    } else {
+      break;
+    }
+  }
+  return result;
 }
 
 std::optional<double> UniversalChessInterface::get_score(

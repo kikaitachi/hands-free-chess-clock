@@ -25,12 +25,22 @@ class UniversalChessInterface {
    */
   void best_move(const chess::Position& position);
 
+  std::list<int> evaluate_moves(
+    const chess::Position& position,
+    const std::list<chess::Move>& moves,
+    const int depth = 10,
+    const std::chrono::milliseconds timeout = 3s);
+
   virtual std::optional<double> get_score(
     const chess::Position& position,
     const std::chrono::milliseconds timeout = 1s);
 
  protected:
   Process process;
+  std::mutex score_mutex;
+  std::condition_variable score_found;
+  int score;
+  int depth;
   void send_position(const chess::Position& position);
   virtual void process_line(std::string line);
 
@@ -54,8 +64,6 @@ class Stockfish: public UniversalChessInterface {
   virtual void process_line(std::string line) override;
 
  private:
-  std::mutex score_mutex;
-  std::condition_variable score_found;
   std::optional<double> score;
 };
 
