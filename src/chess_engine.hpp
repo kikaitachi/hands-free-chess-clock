@@ -35,6 +35,14 @@ class GameResult {
   std::string message;
 };
 
+enum class ScoreUnit { Centipawn, MateIn };
+
+class Score {
+ public:
+  int value;
+  ScoreUnit unit;
+};
+
 class Move {
  public:
   Move(int from, int to, Figure promoted);
