@@ -28,9 +28,19 @@ void UniversalChessInterface::read() {
 
 void UniversalChessInterface::process_line(std::string line) {
   if (line.starts_with("info depth")) {
-    // TODO: parse
-    std::lock_guard guard(score_mutex);
-    // TODO: set score
+    size_t index = line.find("score");
+    if (index != line.npos) {
+      chess::ScoreUnit unit = line.at(index + 6) == 'c' ?
+        chess::ScoreUnit::Centipawn : chess::ScoreUnit::MateIn;
+      size_t value_start = line.find(' ', index + 6);
+      size_t value_end = line.find(' ', value_start + 1);
+      std::lock_guard guard(score_mutex);
+      score = {
+        std::atoi(line.substr(value_start + 1, value_end - value_start - 1).c_str()),
+        unit,
+        std::atoi(line.substr(11, line.find(' ', 12) - 11).c_str())
+      };
+    }
   } else if (line.starts_with("bestmove ")) {
     on_best_move(line.substr(9, 4));
   }
@@ -62,11 +72,12 @@ std::list<chess::Score> UniversalChessInterface::evaluate_moves(
   end += timeout;
   send_position(position);
   std::list<chess::Score> result;
-  std::unique_lock<std::mutex> lock(score_mutex);
   for (auto& move : moves) {
     process.write_line("go depth " + std::to_string(depth) + " searchmoves " + move.to_string());
     for ( ; ; ) {
       std::chrono::steady_clock::time_point now = std::chrono::steady_clock::now();
+      std::unique_lock<std::mutex> lock(score_mutex);
+      score.reset();
       if (score_found.wait_for(lock, end - now) == std::cv_status::no_timeout) {
         if (score.has_value()) {
           if (score.value().depth == depth) {
