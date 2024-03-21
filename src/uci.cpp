@@ -53,20 +53,29 @@ void UniversalChessInterface::best_move(const chess::Position& position) {
   process.write_line("stop");
 }
 
-std::list<int> UniversalChessInterface::evaluate_moves(
+std::list<chess::Score> UniversalChessInterface::evaluate_moves(
     const chess::Position& position,
     const std::list<chess::Move>& moves,
     const int depth,
     const std::chrono::milliseconds timeout) {
   send_position(position);
-  std::list<int> result;
+  std::list<chess::Score> result;
   std::unique_lock<std::mutex> lock(score_mutex);
   for (auto& move : moves) {
     process.write_line("go depth " + std::to_string(depth) + " searchmoves " + move.to_string());
-    if (score_found.wait_for(lock, timeout) == std::cv_status::no_timeout) {
-      result.push_back(score);
-    } else {
-      break;
+    for ( ; ; ) {
+      if (score_found.wait_for(lock, timeout) == std::cv_status::no_timeout) {
+        if (score.has_value()) {
+          if (score.value().depth == depth) {
+            result.push_back(score.value());
+            break;
+          }
+        } else {
+          return result;
+        }
+      } else {
+        return result;
+      }
     }
   }
   return result;

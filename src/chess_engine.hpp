@@ -35,12 +35,40 @@ class GameResult {
   std::string message;
 };
 
-enum class ScoreUnit { Centipawn, MateIn };
+/**
+ * Type of move score.
+ */
+enum class ScoreUnit {
+  /**
+   * Unit of 0.01 pawn value.
+   */
+  Centipawn,
 
+  /**
+   * Indicates that checkmate can be forced in given number of moves.
+   */
+  MateIn
+};
+
+/**
+ * Score of the move.
+ */
 class Score {
  public:
+  /**
+   * Value of the move.
+   */
   int value;
+
+  /**
+   * Unit of value.
+   */
   ScoreUnit unit;
+
+  /**
+   * At which depth this score was calculated.
+   */
+  int depth;
 };
 
 class Move {

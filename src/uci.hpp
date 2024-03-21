@@ -25,7 +25,7 @@ class UniversalChessInterface {
    */
   void best_move(const chess::Position& position);
 
-  std::list<int> evaluate_moves(
+  std::list<chess::Score> evaluate_moves(
     const chess::Position& position,
     const std::list<chess::Move>& moves,
     const int depth = 10,
@@ -39,8 +39,7 @@ class UniversalChessInterface {
   Process process;
   std::mutex score_mutex;
   std::condition_variable score_found;
-  int score;
-  int depth;
+  std::optional<chess::Score> score;
   void send_position(const chess::Position& position);
   virtual void process_line(std::string line);
 
