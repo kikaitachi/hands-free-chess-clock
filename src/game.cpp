@@ -3,6 +3,7 @@
 #include "logger.hpp"
 #include <chrono>
 #include <map>
+#include <numeric>
 #include <thread>
 
 using namespace std::chrono_literals;
@@ -51,7 +52,7 @@ void Game::start(unsigned int time_ms, unsigned int increment_ms) {
 }
 
 std::optional<chess::Move> Game::most_likely_move(chess::Position& position, SquareChange changes[64]) {
-  std::list<chess::Move> moves = position.generate_legal_moves();
+  std::vector<chess::Move> moves = position.generate_legal_moves();
   std::map<int, chess::Move> candidates;
   for (auto & move : moves) {
     int from = -1;
@@ -247,7 +248,31 @@ void Game::shutdown() {
 }
 
 void Game::best_move() {
-  uci->best_move(position);
+  std::vector<chess::Move> moves = position.generate_legal_moves();
+  std::vector<chess::Score> scores = uci->evaluate_moves(position, moves);
+  if (scores.empty()) {
+    return;
+  }
+  std::vector<int> idx(scores.size());
+  std::iota(idx.begin(), idx.end(), 0);
+  std::stable_sort(idx.begin(), idx.end(), [&scores](int i1, int i2) {
+    chess::Score& s1 = scores[i1];
+    chess::Score& s2 = scores[i2];
+    if (s1.unit == chess::ScoreUnit::MateIn && s2.unit != chess::ScoreUnit::MateIn) {
+      return false;
+    }
+    if (s1.unit != chess::ScoreUnit::MateIn && s2.unit == chess::ScoreUnit::MateIn) {
+      return true;
+    }
+    if (s1.unit == chess::ScoreUnit::MateIn && s2.unit == chess::ScoreUnit::MateIn) {
+      return s1.value > s2.value;
+    }
+    return s1.value < s2.value;
+  });
+  int best_index = idx[0];
+  std::string best_move = moves[best_index].to_string();
+  logger::info("Best move from UCI: %s", best_move.c_str());
+  text_to_speech.say("The best move is: " + best_move);
 }
 
 void Game::who_is_winning() {

@@ -9,6 +9,7 @@
 #include <memory>
 #include <mutex>
 #include <optional>
+#include <vector>
 
 using namespace std::chrono_literals;
 
@@ -25,9 +26,9 @@ class UniversalChessInterface {
    */
   void best_move(const chess::Position& position);
 
-  std::list<chess::Score> evaluate_moves(
+  std::vector<chess::Score> evaluate_moves(
     const chess::Position& position,
-    const std::list<chess::Move>& moves,
+    const std::vector<chess::Move>& moves,
     const int depth = 10,
     const std::chrono::milliseconds timeout = 3s);
 

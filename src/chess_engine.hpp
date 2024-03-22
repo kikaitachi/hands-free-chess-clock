@@ -5,6 +5,7 @@
 #include <list>
 #include <optional>
 #include <string>
+#include <vector>
 
 namespace chess {
 
@@ -99,7 +100,7 @@ class Position {
   /**
    * Return all legal moves in this position.
    */
-  std::list<Move> generate_legal_moves();
+  std::vector<Move> generate_legal_moves();
 
   /**
    * Make a legal move. Method doesn't validate move. If illegal move is

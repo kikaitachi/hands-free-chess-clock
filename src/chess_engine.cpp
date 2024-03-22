@@ -109,8 +109,8 @@ void Position::reset() {
   moves.clear();
 }
 
-std::list<Move> Position::generate_legal_moves() {
-  std::list<Move> legal_moves;
+std::vector<Move> Position::generate_legal_moves() {
+  std::vector<Move> legal_moves;
   for (auto & move : generate_possible_moves(white_turn)) {
     Position position(*this);
     position.make_move(move);
@@ -128,12 +128,12 @@ std::list<Move> Position::generate_legal_moves() {
     }
     if (allowed) {
       if (pieces[move.from] == Pawn && (move.to < 8 || move.to >= 8 * (8 - 1))) {
-        legal_moves.push_front(Move(move.from, move.to, Queen));
-        legal_moves.push_front(Move(move.from, move.to, Rook));
-        legal_moves.push_front(Move(move.from, move.to, Bishop));
-        legal_moves.push_front(Move(move.from, move.to, Knight));
+        legal_moves.emplace(legal_moves.end(), move.from, move.to, Queen);
+        legal_moves.emplace(legal_moves.end(), move.from, move.to, Rook);
+        legal_moves.emplace(legal_moves.end(), move.from, move.to, Bishop);
+        legal_moves.emplace(legal_moves.end(), move.from, move.to, Knight);
       } else {
-        legal_moves.push_front(move);
+        legal_moves.push_back(move);
       }
     }
   }
@@ -326,7 +326,7 @@ std::string Position::move_san(const std::string san) {
   san_notation.erase(std::remove(san_notation.begin(), san_notation.end(), '='), san_notation.end());
   san_notation.erase(std::remove(san_notation.begin(), san_notation.end(), '+'), san_notation.end());
   san_notation.erase(std::remove(san_notation.begin(), san_notation.end(), 'x'), san_notation.end());
-  std::list<Move> moves = generate_legal_moves();
+  std::vector<Move> moves = generate_legal_moves();
   for (const auto& m : moves) {
     std::string uci_notation = m.to_string();
     std::string to = san_notation.substr(san_notation.size() - 2);
