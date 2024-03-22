@@ -55,7 +55,9 @@ add_executable(
   src/logger.cpp
   src/mpscq.cpp
   src/openings.cpp
+  src/process.cpp
   src/video_capture.cpp
+  src/uci.cpp
   test/unit_tests.cpp
 )
 target_link_libraries(
