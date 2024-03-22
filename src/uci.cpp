@@ -40,6 +40,7 @@ void UniversalChessInterface::process_line(std::string line) {
         unit,
         std::atoi(line.substr(11, line.find(' ', 12) - 11).c_str())
       };
+      score_found.notify_all();
     }
   } else if (line.starts_with("bestmove ")) {
     on_best_move(line.substr(9, 4));
