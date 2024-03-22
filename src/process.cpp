@@ -40,6 +40,11 @@ Process::Process(char const *argv[]) {
   }
 }
 
+Process::~Process() {
+  close(write_fd);
+  close(read_fd);
+}
+
 void Process::write_line(std::string line) {
   if (write(write_fd, (line + "\n").c_str(), line.size() + 1) == -1) {
     logger::last("Failed to write '%s' to process", line.c_str());

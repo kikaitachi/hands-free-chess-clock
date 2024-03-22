@@ -6,6 +6,12 @@
 class Process {
  public:
   Process(char const *argv[]);
+
+  /**
+   * Terminate process.
+   */
+  ~Process();
+
   void write_line(std::string line);
 
   int read_fd;
