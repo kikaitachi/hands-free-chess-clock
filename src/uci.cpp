@@ -4,10 +4,8 @@
 #include <regex>
 #include <thread>
 
-UniversalChessInterface::UniversalChessInterface(
-      char const *argv[],
-      std::function<void(const std::string best_move)> on_best_move
-    ) : process(argv), on_best_move(on_best_move) {
+UniversalChessInterface::UniversalChessInterface(char const *argv[])
+    : process(argv) {
   std::thread read_thread(&UniversalChessInterface::read, this);
   read_thread.detach();
 }
@@ -42,8 +40,6 @@ void UniversalChessInterface::process_line(std::string line) {
       };
       score_found.notify_all();
     }
-  } else if (line.starts_with("bestmove ")) {
-    on_best_move(line.substr(9, 4));
   }
 }
 
@@ -54,14 +50,6 @@ void UniversalChessInterface::send_position(const chess::Position& position) {
     start_position += move.to_string();
   }
   process.write_line(start_position);
-}
-
-void UniversalChessInterface::best_move(const chess::Position& position) {
-  send_position(position);
-  logger::info("Initiating best move search");
-  process.write_line("go infinite");
-  std::this_thread::sleep_for(1s);
-  process.write_line("stop");
 }
 
 std::vector<chess::Score> UniversalChessInterface::evaluate_moves(
@@ -102,10 +90,8 @@ std::optional<double> UniversalChessInterface::get_score(
   return std::nullopt;
 }
 
-Stockfish::Stockfish(
-    char const *argv[],
-    std::function<void(const std::string best_move)> on_best_move
-  ) : UniversalChessInterface(argv, on_best_move) {
+Stockfish::Stockfish(char const *argv[])
+    : UniversalChessInterface(argv) {
 }
 
 void Stockfish::process_line(std::string line) {
@@ -136,14 +122,12 @@ std::optional<double> Stockfish::get_score(
   return std::nullopt;
 }
 
-std::unique_ptr<UniversalChessInterface> create_uci(
-    std::string command,
-    std::function<void(const std::string best_move)> on_best_move) {
+std::unique_ptr<UniversalChessInterface> create_uci(std::string command) {
   char const *uci_engine_argv[] = {
     command.c_str(), nullptr
   };
   if (command.ends_with("stockfish")) {
-    return std::make_unique<Stockfish>(uci_engine_argv, on_best_move);
+    return std::make_unique<Stockfish>(uci_engine_argv);
   }
-  return std::make_unique<UniversalChessInterface>(uci_engine_argv, on_best_move);
+  return std::make_unique<UniversalChessInterface>(uci_engine_argv);
 }

@@ -5,8 +5,7 @@ TEST(UCITest, InitialPosition) {
   char const *uci_engine_argv[] = {
     "/usr/games/stockfish", nullptr
   };
-  UniversalChessInterface uci(uci_engine_argv, [&](std::string best_move) {
-  });
+  UniversalChessInterface uci(uci_engine_argv);
 
   chess::Position position;
 

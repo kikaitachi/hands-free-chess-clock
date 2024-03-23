@@ -9,9 +9,7 @@
 using namespace std::chrono_literals;
 
 Game::Game(chess::Openings& openings, std::string device, std::string command, Process& piper)
-    : openings(openings), text_to_speech(22050, device, piper), uci(create_uci(command, [&](std::string best_move) {
-      // TODO: remove this callback
-    })), video_capture(
+    : openings(openings), text_to_speech(22050, device, piper), uci(create_uci(command)), video_capture(
       [&]() {
         logger::info("Move started");
       },

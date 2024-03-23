@@ -5,7 +5,6 @@
 #include "process.hpp"
 #include <condition_variable>
 #include <chrono>
-#include <functional>
 #include <memory>
 #include <mutex>
 #include <optional>
@@ -15,16 +14,7 @@ using namespace std::chrono_literals;
 
 class UniversalChessInterface {
  public:
-  UniversalChessInterface(
-    char const *argv[],
-    std::function<void(const std::string best_move)> on_best_move
-  );
-
-  /**
-   * Request to calculate the best move.
-   * Result will be returned via callback provided in constructor.
-   */
-  void best_move(const chess::Position& position);
+  UniversalChessInterface(char const *argv[]);
 
   std::vector<chess::Score> evaluate_moves(
     const chess::Position& position,
@@ -45,17 +35,12 @@ class UniversalChessInterface {
   virtual void process_line(std::string line);
 
  private:
-  std::function<void(const std::string best_move)> on_best_move;
-
   void read();
 };
 
 class Stockfish: public UniversalChessInterface {
  public:
-  Stockfish(
-    char const *argv[],
-    std::function<void(const std::string best_move)> on_best_move
-  );
+  Stockfish(char const *argv[]);
   virtual std::optional<double> get_score(
     const chess::Position& position,
     const std::chrono::milliseconds timeout) override;
@@ -67,8 +52,6 @@ class Stockfish: public UniversalChessInterface {
   std::optional<double> score;
 };
 
-std::unique_ptr<UniversalChessInterface> create_uci(
-  std::string command,
-  std::function<void(const std::string best_move)> on_best_move);
+std::unique_ptr<UniversalChessInterface> create_uci(std::string command);
 
 #endif  // UCI_H_
