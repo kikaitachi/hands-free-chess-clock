@@ -34,6 +34,9 @@ CommandParser::CommandParser()
       best_move_command_syntax(
         "please tell (?:the )?best move",
         std::regex_constants::ECMAScript | std::regex_constants::icase),
+      worst_move_command_syntax(
+        "what is (?:the )?worst move",
+        std::regex_constants::ECMAScript | std::regex_constants::icase),
       who_is_winning_command_syntax(
         "who(?: is|'s) winning",
         std::regex_constants::ECMAScript | std::regex_constants::icase) {
@@ -76,6 +79,8 @@ Command CommandParser::recognised(std::string text) {
     return SHUTDOWN;
   } else if (std::regex_search(text, matches, best_move_command_syntax)) {
     return BEST_MOVE;
+  } else if (std::regex_search(text, matches, worst_move_command_syntax)) {
+    return WORST_MOVE;
   } else if (std::regex_search(text, matches, who_is_winning_command_syntax)) {
     return WHO_IS_WINNING;
   }

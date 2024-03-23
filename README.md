@@ -67,6 +67,7 @@ Clock is controlled by the following voice commands:
 * `continue game` - will resume clock.
 * `shutdown` - will halt computer running the clock. Handy when you don't have keyboard or remote terminal for a safe shutdown. /etc/sudoers file must be [modified accordingly](https://askubuntu.com/questions/168879/shutdown-from-terminal-without-entering-password).
 * `please tell best move` - will use external chess engine to evaluate current position and will tell what it thinks the best move is.
+* `what is worst move` - will use external chess engine to evaluate current position and will tell what it thinks the worst move is.
 * `who is winning` - will use external chess engine to evaluate current position and will tell who is winning (available only if chess engine is Stockfish).
 
 ## Future work

@@ -11,6 +11,7 @@ enum Command {
   RESUME_GAME,
   SHUTDOWN,
   BEST_MOVE,
+  WORST_MOVE,
   WHO_IS_WINNING,
 };
 
@@ -42,6 +43,7 @@ class CommandParser {
   std::regex resume_command_syntax;
   std::regex shutdown_command_syntax;
   std::regex best_move_command_syntax;
+  std::regex worst_move_command_syntax;
   std::regex who_is_winning_command_syntax;
 };
 

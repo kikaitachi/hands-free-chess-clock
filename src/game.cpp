@@ -10,8 +10,7 @@ using namespace std::chrono_literals;
 
 Game::Game(chess::Openings& openings, std::string device, std::string command, Process& piper)
     : openings(openings), text_to_speech(22050, device, piper), uci(create_uci(command, [&](std::string best_move) {
-      logger::info("Best move from UCI: %s", best_move.c_str());
-      text_to_speech.say("The best move is: " + best_move);
+      // TODO: remove this callback
     })), video_capture(
       [&]() {
         logger::info("Move started");
@@ -270,9 +269,37 @@ void Game::best_move() {
     return s1.value < s2.value;
   });
   int best_index = idx[0];
-  std::string best_move = moves[best_index].to_string();
-  logger::info("Best move from UCI: %s", best_move.c_str());
-  text_to_speech.say("The best move is: " + best_move);
+  std::string move = moves[best_index].to_string();
+  logger::info("Best move from UCI: %s", move.c_str());
+  text_to_speech.say("The best move is: " + move);
+}
+
+void Game::worst_move() {
+  std::vector<chess::Move> moves = position.generate_legal_moves();
+  std::vector<chess::Score> scores = uci->evaluate_moves(position, moves);
+  if (scores.empty()) {
+    return;
+  }
+  std::vector<int> idx(scores.size());
+  std::iota(idx.begin(), idx.end(), 0);
+  std::stable_sort(idx.begin(), idx.end(), [&scores](int i1, int i2) {
+    chess::Score& s1 = scores[i1];
+    chess::Score& s2 = scores[i2];
+    if (s1.unit == chess::ScoreUnit::MateIn && s2.unit != chess::ScoreUnit::MateIn) {
+      return false;
+    }
+    if (s1.unit != chess::ScoreUnit::MateIn && s2.unit == chess::ScoreUnit::MateIn) {
+      return true;
+    }
+    if (s1.unit == chess::ScoreUnit::MateIn && s2.unit == chess::ScoreUnit::MateIn) {
+      return s1.value > s2.value;
+    }
+    return s1.value < s2.value;
+  });
+  int best_index = idx[idx.size() - 1];
+  std::string move = moves[best_index].to_string();
+  logger::info("Worst move from UCI: %s", move.c_str());
+  text_to_speech.say("The worst move is: " + move);
 }
 
 void Game::who_is_winning() {

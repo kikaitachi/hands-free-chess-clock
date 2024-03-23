@@ -23,6 +23,7 @@ class Game {
   void resume();
   void shutdown();
   void best_move();
+  void worst_move();
   void who_is_winning();
 
  private:
