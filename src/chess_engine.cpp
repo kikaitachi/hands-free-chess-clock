@@ -83,6 +83,21 @@ bool Move::operator==(const Move &right) const {
   return true;
 }
 
+bool operator<(EvaluatedMove const &left, EvaluatedMove const &right) {
+  const Score& s1 = left.score;
+  const Score& s2 = right.score;
+  if (s1.unit == chess::ScoreUnit::MateIn && s2.unit != chess::ScoreUnit::MateIn) {
+    return false;
+  }
+  if (s1.unit != chess::ScoreUnit::MateIn && s2.unit == chess::ScoreUnit::MateIn) {
+    return true;
+  }
+  if (s1.unit == chess::ScoreUnit::MateIn && s2.unit == chess::ScoreUnit::MateIn) {
+    return s1.value > s2.value;
+  }
+  return s1.value < s2.value;
+}
+
 Position::Position() {
   reset();
 }

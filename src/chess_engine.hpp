@@ -85,6 +85,17 @@ class Move {
   bool operator==(const Move &right) const;
 };
 
+/**
+ * Move which was evaluated by chess engine and has a score.
+ */
+class EvaluatedMove {
+ public:
+  Move move;
+  Score score;
+};
+
+bool operator<(EvaluatedMove const &left, EvaluatedMove const &right);
+
 class Position {
  public:
   /**
