@@ -16,7 +16,7 @@ class UniversalChessInterface {
  public:
   UniversalChessInterface(char const *argv[]);
 
-  std::vector<chess::Score> evaluate_moves(
+  std::vector<chess::EvaluatedMove> evaluate_moves(
     const chess::Position& position,
     const std::vector<chess::Move>& moves,
     const int depth = 10,

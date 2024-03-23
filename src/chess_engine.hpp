@@ -92,9 +92,9 @@ class EvaluatedMove {
  public:
   Move move;
   Score score;
-};
 
-bool operator<(EvaluatedMove const &left, EvaluatedMove const &right);
+  bool operator<(EvaluatedMove const &other) const;
+};
 
 class Position {
  public:

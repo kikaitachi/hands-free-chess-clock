@@ -83,9 +83,9 @@ bool Move::operator==(const Move &right) const {
   return true;
 }
 
-bool operator<(EvaluatedMove const &left, EvaluatedMove const &right) {
-  const Score& s1 = left.score;
-  const Score& s2 = right.score;
+bool EvaluatedMove::operator<(EvaluatedMove const &other) const {
+  const Score& s1 = this->score;
+  const Score& s2 = other.score;
   if (s1.unit == chess::ScoreUnit::MateIn && s2.unit != chess::ScoreUnit::MateIn) {
     return false;
   }

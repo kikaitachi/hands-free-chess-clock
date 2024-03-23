@@ -3,7 +3,6 @@
 #include "logger.hpp"
 #include <chrono>
 #include <map>
-#include <numeric>
 #include <thread>
 
 using namespace std::chrono_literals;
@@ -246,56 +245,22 @@ void Game::shutdown() {
 
 void Game::best_move() {
   std::vector<chess::Move> moves = position.generate_legal_moves();
-  std::vector<chess::Score> scores = uci->evaluate_moves(position, moves);
+  std::vector<chess::EvaluatedMove> scores = uci->evaluate_moves(position, moves);
   if (scores.empty()) {
     return;
   }
-  std::vector<int> idx(scores.size());
-  std::iota(idx.begin(), idx.end(), 0);
-  std::stable_sort(idx.begin(), idx.end(), [&scores](int i1, int i2) {
-    chess::Score& s1 = scores[i1];
-    chess::Score& s2 = scores[i2];
-    if (s1.unit == chess::ScoreUnit::MateIn && s2.unit != chess::ScoreUnit::MateIn) {
-      return false;
-    }
-    if (s1.unit != chess::ScoreUnit::MateIn && s2.unit == chess::ScoreUnit::MateIn) {
-      return true;
-    }
-    if (s1.unit == chess::ScoreUnit::MateIn && s2.unit == chess::ScoreUnit::MateIn) {
-      return s1.value > s2.value;
-    }
-    return s1.value < s2.value;
-  });
-  int best_index = idx[0];
-  std::string move = moves[best_index].to_string();
+  std::string move = scores[0].move.to_string();
   logger::info("Best move from UCI: %s", move.c_str());
   text_to_speech.say("The best move is: " + move);
 }
 
 void Game::worst_move() {
   std::vector<chess::Move> moves = position.generate_legal_moves();
-  std::vector<chess::Score> scores = uci->evaluate_moves(position, moves);
+  std::vector<chess::EvaluatedMove> scores = uci->evaluate_moves(position, moves);
   if (scores.empty()) {
     return;
   }
-  std::vector<int> idx(scores.size());
-  std::iota(idx.begin(), idx.end(), 0);
-  std::stable_sort(idx.begin(), idx.end(), [&scores](int i1, int i2) {
-    chess::Score& s1 = scores[i1];
-    chess::Score& s2 = scores[i2];
-    if (s1.unit == chess::ScoreUnit::MateIn && s2.unit != chess::ScoreUnit::MateIn) {
-      return false;
-    }
-    if (s1.unit != chess::ScoreUnit::MateIn && s2.unit == chess::ScoreUnit::MateIn) {
-      return true;
-    }
-    if (s1.unit == chess::ScoreUnit::MateIn && s2.unit == chess::ScoreUnit::MateIn) {
-      return s1.value > s2.value;
-    }
-    return s1.value < s2.value;
-  });
-  int best_index = idx[idx.size() - 1];
-  std::string move = moves[best_index].to_string();
+  std::string move = scores[scores.size() - 1].move.to_string();
   logger::info("Worst move from UCI: %s", move.c_str());
   text_to_speech.say("The worst move is: " + move);
 }

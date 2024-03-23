@@ -52,7 +52,7 @@ void UniversalChessInterface::send_position(const chess::Position& position) {
   process.write_line(start_position);
 }
 
-std::vector<chess::Score> UniversalChessInterface::evaluate_moves(
+std::vector<chess::EvaluatedMove> UniversalChessInterface::evaluate_moves(
     const chess::Position& position,
     const std::vector<chess::Move>& moves,
     const int depth,
@@ -60,7 +60,7 @@ std::vector<chess::Score> UniversalChessInterface::evaluate_moves(
   std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
   end += timeout;
   send_position(position);
-  std::vector<chess::Score> result;
+  std::vector<chess::EvaluatedMove> result;
   for (auto& move : moves) {
     process.write_line("go depth " + std::to_string(depth) + " searchmoves " + move.to_string());
     for ( ; ; ) {
@@ -70,7 +70,7 @@ std::vector<chess::Score> UniversalChessInterface::evaluate_moves(
       if (score_found.wait_for(lock, end - now) == std::cv_status::no_timeout) {
         if (score.has_value()) {
           if (score.value().depth == depth) {
-            result.push_back(score.value());
+            result.emplace(result.end(), move, score.value());
             break;
           }
         } else {
@@ -81,6 +81,7 @@ std::vector<chess::Score> UniversalChessInterface::evaluate_moves(
       }
     }
   }
+  std::stable_sort(result.begin(), result.end());
   return result;
 }
 
