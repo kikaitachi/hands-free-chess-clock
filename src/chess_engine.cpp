@@ -129,27 +129,27 @@ std::vector<Move> Position::generate_legal_moves() {
   for (auto & move : generate_possible_moves(white_turn)) {
     Position position(*this);
     position.make_move(move);
-    bool allowed = !position.is_king_attacked(white_turn);
+    if (position.is_king_attacked(white_turn)) {
+      continue;
+    }
     // Disallow castling when king is under check or goes through checked cell
     if (pieces[move.to] == King && abs(move.from - move.to) == 2) {
       if (is_king_attacked(white_turn)) {
-        allowed = false;
-      } else {
-        position = Position(*this);
-        position.move(Move(move.from, (move.from + move.to) / 2, Empty));
-        if (position.is_king_attacked(white_turn))
-          allowed = false;
+        continue;
+      }
+      position = Position(*this);
+      position.make_move(Move(move.from, (move.from + move.to) / 2, Empty));
+      if (position.is_king_attacked(white_turn)) {
+        continue;
       }
     }
-    if (allowed) {
-      if (pieces[move.from] == Pawn && (move.to < 8 || move.to >= 8 * (8 - 1))) {
-        legal_moves.emplace(legal_moves.end(), move.from, move.to, Queen);
-        legal_moves.emplace(legal_moves.end(), move.from, move.to, Rook);
-        legal_moves.emplace(legal_moves.end(), move.from, move.to, Bishop);
-        legal_moves.emplace(legal_moves.end(), move.from, move.to, Knight);
-      } else {
-        legal_moves.push_back(move);
-      }
+    if (pieces[move.from] == Pawn && (move.to < 8 || move.to >= 8 * (8 - 1))) {
+      legal_moves.emplace_back(move.from, move.to, Queen);
+      legal_moves.emplace_back(move.from, move.to, Rook);
+      legal_moves.emplace_back(move.from, move.to, Bishop);
+      legal_moves.emplace_back(move.from, move.to, Knight);
+    } else {
+      legal_moves.emplace_back(move);
     }
   }
   return legal_moves;
