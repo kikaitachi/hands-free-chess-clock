@@ -2,6 +2,7 @@
 #define CHESS_ENGINE_H_
 
 #include <array>
+#include <functional>
 #include <list>
 #include <optional>
 #include <string>
@@ -155,7 +156,8 @@ class Position {
   /**
    * Does include moves prohibited by check.
    */
-  std::vector<Move> generate_possible_moves(bool white_turn);
+  bool generate_possible_moves(bool white_turn,
+    std::function<bool(Move move)> on_move);
 
   bool is_king_attacked(bool white_turn);
 
