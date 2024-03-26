@@ -155,7 +155,7 @@ class Position {
   /**
    * Does include moves prohibited by check.
    */
-  std::list<Move> generate_possible_moves(bool white_turn);
+  std::vector<Move> generate_possible_moves(bool white_turn);
 
   bool is_king_attacked(bool white_turn);
 

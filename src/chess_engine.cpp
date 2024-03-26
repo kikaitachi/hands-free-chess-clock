@@ -155,8 +155,8 @@ std::vector<Move> Position::generate_legal_moves() {
   return legal_moves;
 }
 
-std::list<Move> Position::generate_possible_moves(bool white_turn) {
-  std::list<Move> moves;
+std::vector<Move> Position::generate_possible_moves(bool white_turn) {
+  std::vector<Move> moves;
   for (int y = 0; y < 8; y++) {
     for (int x = 0; x < 8; x++) {
       int from = y * 8 + x;
@@ -169,29 +169,29 @@ std::list<Move> Position::generate_possible_moves(bool white_turn) {
         int to = from + dir * 8;  // One square ahead
         // Stroke to the right
         if (x < 7 && (pieces[to + 1] != Empty && color[to + 1] != white_turn || from + 1 == passing_pawn)) {
-          moves.emplace_front(from, to + 1, Empty);
+          moves.emplace_back(from, to + 1, Empty);
         }
         // Stroke to the left
         if (x > 0 && (pieces[to - 1] != Empty && color[to - 1] != white_turn || from - 1 == passing_pawn)) {
-          moves.emplace_front(from, to - 1, Empty);
+          moves.emplace_back(from, to - 1, Empty);
         }
         // Move one square forward
         if (pieces[to] == Empty) {
-          moves.emplace_front(from, to, Empty);
+          moves.emplace_back(from, to, Empty);
         }
         // Move two squares forward
         if (!moved[from] && pieces[to] == Empty && pieces[to + dir * 8] == Empty) {
-          moves.emplace_front(from, to + dir * 8, Empty);
+          moves.emplace_back(from, to + dir * 8, Empty);
         }
       } else {
         if (piece == King && !moved[from]) {
           // Short castling
           if (pieces[from + 1] == Empty && pieces[from + 2] == Empty && !moved[from + 3]) {
-            moves.emplace_front(from, from + 2, Empty);
+            moves.emplace_back(from, from + 2, Empty);
           }
           // Long castling
           if (pieces[from - 1] == Empty && pieces[from - 2] == Empty && pieces[from - 3] == Empty && !moved[from - 4]) {
-            moves.emplace_front(from, from - 2, Empty);
+            moves.emplace_back(from, from - 2, Empty);
           }
         }
         auto iterator = lookup_table.find(piece);
@@ -208,7 +208,7 @@ std::list<Move> Position::generate_possible_moves(bool white_turn) {
               }
               int to = to_y * 8 + to_x;
               if (pieces[to] == Empty || color[to] != white_turn) {
-                moves.emplace_front(from, to, Empty);
+                moves.emplace_back(from, to, Empty);
               }
               if (pieces[to] != Empty) {
                 // Path is not clear for longer distance moves
