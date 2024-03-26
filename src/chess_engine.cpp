@@ -161,7 +161,7 @@ std::vector<Move> Position::generate_possible_moves(bool white_turn) {
     for (int x = 0; x < 8; x++) {
       int from = y * 8 + x;
       Figure piece = pieces[from];
-      if (color[from] != white_turn) {
+      if (piece == Empty || color[from] != white_turn) {
         continue;
       }
       if (piece == Pawn) {
