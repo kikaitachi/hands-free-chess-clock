@@ -22,10 +22,6 @@ class UniversalChessInterface {
     const int depth = 10,
     const std::chrono::milliseconds timeout = 3s);
 
-  virtual std::optional<double> get_score(
-    const chess::Position& position,
-    const std::chrono::milliseconds timeout = 1s);
-
  protected:
   Process process;
   std::mutex score_mutex;
@@ -36,20 +32,6 @@ class UniversalChessInterface {
 
  private:
   void read();
-};
-
-class Stockfish: public UniversalChessInterface {
- public:
-  Stockfish(char const *argv[]);
-  virtual std::optional<double> get_score(
-    const chess::Position& position,
-    const std::chrono::milliseconds timeout) override;
-
- protected:
-  virtual void process_line(std::string line) override;
-
- private:
-  std::optional<double> score;
 };
 
 std::unique_ptr<UniversalChessInterface> create_uci(std::string command);

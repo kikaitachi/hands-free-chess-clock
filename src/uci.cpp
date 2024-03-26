@@ -85,50 +85,9 @@ std::vector<chess::EvaluatedMove> UniversalChessInterface::evaluate_moves(
   return result;
 }
 
-std::optional<double> UniversalChessInterface::get_score(
-    const chess::Position& position,
-    const std::chrono::milliseconds timeout) {
-  return std::nullopt;
-}
-
-Stockfish::Stockfish(char const *argv[])
-    : UniversalChessInterface(argv) {
-}
-
-void Stockfish::process_line(std::string line) {
-  UniversalChessInterface::process_line(line);
-  std::regex eval_syntax("Final evaluation +([+--0-9.]+) ");
-  std::smatch matches;
-  if (std::regex_search(line, matches, eval_syntax)) {
-    std::string value = matches[1].str();
-    {
-      std::lock_guard guard(score_mutex);
-      score = std::atof(value.c_str());
-    }
-    score_found.notify_all();
-  }
-}
-
-std::optional<double> Stockfish::get_score(
-    const chess::Position& position,
-    const std::chrono::milliseconds timeout) {
-  send_position(position);
-  std::unique_lock<std::mutex> lock(score_mutex);
-  score = std::nullopt;
-  process.write_line("eval");
-  if (score_found.wait_for(lock, timeout) == std::cv_status::no_timeout) {
-    return score;
-  }
-  logger::warn("Timeout while waiting to get position score");
-  return std::nullopt;
-}
-
 std::unique_ptr<UniversalChessInterface> create_uci(std::string command) {
   char const *uci_engine_argv[] = {
     command.c_str(), nullptr
   };
-  if (command.ends_with("stockfish")) {
-    return std::make_unique<Stockfish>(uci_engine_argv);
-  }
   return std::make_unique<UniversalChessInterface>(uci_engine_argv);
 }
