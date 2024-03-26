@@ -268,19 +268,26 @@ void Game::worst_move() {
 }
 
 void Game::who_is_winning() {
-  std::optional<double> score = uci->get_score(position);
-  if (score) {
-    double value = score.value();
-    if (value == 0) {
-      text_to_speech.say("dead equal");
-    } else if (fabs(value) < 0.4) {
-      text_to_speech.say("about equal");
-    } else if (fabs(value) < 1) {
-      text_to_speech.say("slightly favours " + std::string(value > 0 ? "white": "black"));
-    } else if (fabs(value) < 2) {
-      text_to_speech.say(std::string(value > 0 ? "white": "black") + " has an advantage");
-    } else {
-      text_to_speech.say(std::string(value > 0 ? "white": "black") + " has winning advantage");
-    }
+  std::vector<chess::Move> moves = position.generate_legal_moves();
+  std::vector<chess::EvaluatedMove> scores = uci->evaluate_moves(position, moves);
+  if (scores.empty()) {
+    return;
+  }
+  chess::EvaluatedMove move = position.white_turn ? scores.back() : scores.front();
+  if (move.score.unit == chess::ScoreUnit::MateIn) {
+    text_to_speech.say("Mate in " + std::to_string(move.score.value));
+    return;
+  }
+  double value = move.score.value / 100.0;
+  if (value == 0) {
+    text_to_speech.say("dead equal");
+  } else if (fabs(value) < 0.4) {
+    text_to_speech.say("about equal");
+  } else if (fabs(value) < 1) {
+    text_to_speech.say("slightly favours " + std::string(value > 0 ? "white": "black"));
+  } else if (fabs(value) < 2) {
+    text_to_speech.say(std::string(value > 0 ? "white": "black") + " has an advantage");
+  } else {
+    text_to_speech.say(std::string(value > 0 ? "white": "black") + " has winning advantage");
   }
 }
