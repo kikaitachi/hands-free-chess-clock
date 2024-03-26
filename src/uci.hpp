@@ -14,7 +14,7 @@ using namespace std::chrono_literals;
 
 class UniversalChessInterface {
  public:
-  UniversalChessInterface(char const *argv[]);
+  UniversalChessInterface(std::string command);
 
   std::vector<chess::EvaluatedMove> evaluate_moves(
     const chess::Position& position,
@@ -33,7 +33,5 @@ class UniversalChessInterface {
  private:
   void read();
 };
-
-std::unique_ptr<UniversalChessInterface> create_uci(std::string command);
 
 #endif  // UCI_H_

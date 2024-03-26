@@ -2,10 +2,7 @@
 #include "../src/uci.hpp"
 
 TEST(UCITest, InitialPosition) {
-  char const *uci_engine_argv[] = {
-    "/usr/games/stockfish", nullptr
-  };
-  UniversalChessInterface uci(uci_engine_argv);
+  UniversalChessInterface uci("/usr/games/stockfish");
 
   chess::Position position;
 

@@ -2,19 +2,19 @@
 #include "process.hpp"
 #include <unistd.h>
 
-Process::Process(char const *argv[]) {
+Process::Process(std::vector<std::string> command) {
   int stdin_pipe[2], stdout_pipe[2];
   if (pipe(stdin_pipe) == -1) {
-    logger::last("Failed to create stdin pipe for process %s", argv[0]);
+    logger::last("Failed to create stdin pipe for process %s", command.front().c_str());
     return;
   }
   if (pipe(stdout_pipe) == -1) {
-    logger::last("Failed to create stdout pipe for process %s", argv[0]);
+    logger::last("Failed to create stdout pipe for process %s", command.front().c_str());
     return;
   }
   pid_t child_pid = fork();
   if (child_pid == -1) {
-    logger::last("Failed to fork for process %s", argv[0]);
+    logger::last("Failed to fork for process %s", command.front().c_str());
     return;
   }
   if (child_pid != 0) {  // This is parent process
@@ -33,8 +33,13 @@ Process::Process(char const *argv[]) {
       dup2(stdout_pipe[1], 1);
       close(stdout_pipe[1]);
     }
-    if (execv(argv[0], const_cast<char**>(argv)) == -1) {
-      logger::last("Failed to execute process %s", argv[0]);
+    char * argv[command.size() + 1];
+    for (int i = 0; i < command.size(); i++) {
+      argv[i] = const_cast<char*>(command[i].c_str());
+    }
+    argv[command.size()] = nullptr;
+    if (execv(command.front().c_str(), argv) == -1) {
+      logger::last("Failed to execute process %s", command.front().c_str());
       exit(127);
     }
   }

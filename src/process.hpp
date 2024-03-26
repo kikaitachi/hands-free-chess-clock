@@ -2,10 +2,11 @@
 #define PROCESS_H_
 
 #include <string>
+#include <vector>
 
 class Process {
  public:
-  Process(char const *argv[]);
+  Process(std::vector<std::string> argv);
 
   /**
    * Terminate process.

@@ -8,7 +8,7 @@
 using namespace std::chrono_literals;
 
 Game::Game(chess::Openings& openings, std::string device, std::string command, Process& piper)
-    : openings(openings), text_to_speech(22050, device, piper), uci(create_uci(command)), video_capture(
+    : openings(openings), text_to_speech(22050, device, piper), uci(command), video_capture(
       [&]() {
         logger::info("Move started");
       },
@@ -245,7 +245,7 @@ void Game::shutdown() {
 
 void Game::best_move() {
   std::vector<chess::Move> moves = position.generate_legal_moves();
-  std::vector<chess::EvaluatedMove> scores = uci->evaluate_moves(position, moves);
+  std::vector<chess::EvaluatedMove> scores = uci.evaluate_moves(position, moves);
   if (scores.empty()) {
     return;
   }
@@ -257,7 +257,7 @@ void Game::best_move() {
 
 void Game::worst_move() {
   std::vector<chess::Move> moves = position.generate_legal_moves();
-  std::vector<chess::EvaluatedMove> scores = uci->evaluate_moves(position, moves);
+  std::vector<chess::EvaluatedMove> scores = uci.evaluate_moves(position, moves);
   if (scores.empty()) {
     return;
   }
@@ -269,7 +269,7 @@ void Game::worst_move() {
 
 void Game::who_is_winning() {
   std::vector<chess::Move> moves = position.generate_legal_moves();
-  std::vector<chess::EvaluatedMove> scores = uci->evaluate_moves(position, moves);
+  std::vector<chess::EvaluatedMove> scores = uci.evaluate_moves(position, moves);
   if (scores.empty()) {
     return;
   }

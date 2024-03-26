@@ -25,10 +25,9 @@ int main(int argc, char** argv) {
     uci_engine = "/usr/games/stockfish";
   }
 
-  char const *piper_argv[] = {
-    "piper/piper", "--model", "models/en_US-amy-medium.onnx", "-q", "--output_raw", nullptr
-  };
-  Process piper_process(piper_argv);
+  Process piper_process({
+    "piper/piper", "--model", "models/en_US-amy-medium.onnx", "-q", "--output_raw"
+  });
 
   chess::Openings openings("openings");
 

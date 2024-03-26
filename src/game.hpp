@@ -28,7 +28,7 @@ class Game {
 
  private:
   chess::Openings& openings;
-  std::unique_ptr<UniversalChessInterface> uci;
+  UniversalChessInterface uci;
   unsigned int time_white_ms;
   unsigned int time_black_ms;
   unsigned int increment_ms;

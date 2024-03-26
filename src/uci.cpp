@@ -4,8 +4,8 @@
 #include <regex>
 #include <thread>
 
-UniversalChessInterface::UniversalChessInterface(char const *argv[])
-    : process(argv) {
+UniversalChessInterface::UniversalChessInterface(std::string command)
+    : process({command.c_str()}) {
   std::thread read_thread(&UniversalChessInterface::read, this);
   read_thread.detach();
 }
@@ -83,11 +83,4 @@ std::vector<chess::EvaluatedMove> UniversalChessInterface::evaluate_moves(
   }
   std::stable_sort(result.begin(), result.end());
   return result;
-}
-
-std::unique_ptr<UniversalChessInterface> create_uci(std::string command) {
-  char const *uci_engine_argv[] = {
-    command.c_str(), nullptr
-  };
-  return std::make_unique<UniversalChessInterface>(uci_engine_argv);
 }
