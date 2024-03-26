@@ -126,8 +126,9 @@ void Position::reset() {
 
 std::vector<Move> Position::generate_legal_moves() {
   std::vector<Move> legal_moves;
-  generate_possible_moves(white_turn, [&](Move move) {
+  generate_possible_moves(white_turn, [&](int from, int to) {
     Position position(*this);
+    Move move(from, to, Empty);
     position.make_move(move);
     if (position.is_king_attacked(white_turn)) {
       return false;
@@ -157,7 +158,7 @@ std::vector<Move> Position::generate_legal_moves() {
 }
 
 bool Position::generate_possible_moves(bool white_turn,
-    std::function<bool(Move move)> on_move) {
+    std::function<bool(int from, int to)> on_move) {
   for (int y = 0; y < 8; y++) {
     for (int x = 0; x < 8; x++) {
       int from = y * 8 + x;
@@ -170,25 +171,25 @@ bool Position::generate_possible_moves(bool white_turn,
         int to = from + dir * 8;  // One square ahead
         // Stroke to the right
         if (x < 7 && (pieces[to + 1] != Empty && color[to + 1] != white_turn || from + 1 == passing_pawn)) {
-          if (on_move({from, to + 1, Empty})) {
+          if (on_move(from, to + 1)) {
             return true;
           }
         }
         // Stroke to the left
         if (x > 0 && (pieces[to - 1] != Empty && color[to - 1] != white_turn || from - 1 == passing_pawn)) {
-          if (on_move({from, to - 1, Empty})) {
+          if (on_move(from, to - 1)) {
             return true;
           }
         }
         // Move one square forward
         if (pieces[to] == Empty) {
-          if (on_move({from, to, Empty})) {
+          if (on_move(from, to)) {
             return true;
           }
         }
         // Move two squares forward
         if (!moved[from] && pieces[to] == Empty && pieces[to + dir * 8] == Empty) {
-          if (on_move({from, to + dir * 8, Empty})) {
+          if (on_move(from, to + dir * 8)) {
             return true;
           }
         }
@@ -196,13 +197,13 @@ bool Position::generate_possible_moves(bool white_turn,
         if (piece == King && !moved[from]) {
           // Short castling
           if (pieces[from + 1] == Empty && pieces[from + 2] == Empty && !moved[from + 3]) {
-            if (on_move({from, from + 2, Empty})) {
+            if (on_move(from, from + 2)) {
               return true;
             }
           }
           // Long castling
           if (pieces[from - 1] == Empty && pieces[from - 2] == Empty && pieces[from - 3] == Empty && !moved[from - 4]) {
-            if (on_move({from, from - 2, Empty})) {
+            if (on_move(from, from - 2)) {
               return true;
             }
           }
@@ -221,7 +222,7 @@ bool Position::generate_possible_moves(bool white_turn,
               }
               int to = to_y * 8 + to_x;
               if (pieces[to] == Empty || color[to] != white_turn) {
-                if (on_move({from, to, Empty})) {
+                if (on_move(from, to)) {
                   return true;
                 }
               }
@@ -239,8 +240,8 @@ bool Position::generate_possible_moves(bool white_turn,
 }
 
 bool Position::is_king_attacked(bool white_turn) {
-  return generate_possible_moves(!white_turn, [&](Move move) {
-    return pieces[move.to] == King && color[move.to] == white_turn;
+  return generate_possible_moves(!white_turn, [&](int from, int to) {
+    return pieces[to] == King && color[to] == white_turn;
   });
 }
 

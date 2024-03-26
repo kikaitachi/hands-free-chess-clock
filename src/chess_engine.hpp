@@ -157,7 +157,7 @@ class Position {
    * Does include moves prohibited by check.
    */
   bool generate_possible_moves(bool white_turn,
-    std::function<bool(Move move)> on_move);
+    std::function<bool(int from, int to)> on_move);
 
   bool is_king_attacked(bool white_turn);
 
