@@ -26,7 +26,7 @@ class PieceMove {
 
 static std::map<Figure, std::forward_list<PieceMove>> lookup_table({
   {Rook, {
-    { 1,  0, 8}, { 0,  1, 8}, { 0, -1, 8}, {-1,  0, 8},
+    { 1,  0, 7}, { 0,  1, 7}, { 0, -1, 7}, {-1,  0, 7},
   }},
   {Knight, {
     { 1,  2, 1}, { 1, -2, 1}, { 2,  1, 1}, { 2, -1, 1},

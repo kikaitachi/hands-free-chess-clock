@@ -6,7 +6,7 @@
 
 class Process {
  public:
-  Process(std::vector<std::string> argv);
+  Process(std::vector<std::string> command);
 
   /**
    * Terminate process.
