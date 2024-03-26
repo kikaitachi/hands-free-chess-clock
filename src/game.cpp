@@ -249,7 +249,8 @@ void Game::best_move() {
   if (scores.empty()) {
     return;
   }
-  std::string move = scores[0].move.to_string();
+  std::string move = position.white_turn ?
+    scores.back().move.to_string() : scores.front().move.to_string();
   logger::info("Best move from UCI: %s", move.c_str());
   text_to_speech.say("The best move is: " + move);
 }
@@ -260,7 +261,8 @@ void Game::worst_move() {
   if (scores.empty()) {
     return;
   }
-  std::string move = scores[scores.size() - 1].move.to_string();
+  std::string move = position.white_turn ?
+    scores.front().move.to_string() : scores.back().move.to_string();
   logger::info("Worst move from UCI: %s", move.c_str());
   text_to_speech.say("The worst move is: " + move);
 }
